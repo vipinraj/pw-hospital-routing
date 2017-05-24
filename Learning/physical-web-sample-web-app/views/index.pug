@@ -1,0 +1,52 @@
+//- Html and javscript for the center pane to load map
+extends contentLayout
+
+block content
+  script.
+    function onButtonClick() {
+      // Filter by custom srervice UID
+      let options = { filters: [{ services: ['13333333-3333-3333-3333-333333333337'] }] };
+      console.log('Requesting Bluetooth Device...');
+      navigator.bluetooth.requestDevice(options)
+      .then(device => {
+        console.log('> Name:             ' + device.name);
+        console.log('> Id:               ' + device.id);
+        console.log('> Connected:        ' + device.gatt.connected);
+        // connect to device
+        return device.gatt.connect();
+      })
+      .then(server => {
+        // Getting location service
+        return server.getPrimaryService('13333333-3333-3333-3333-333333333337');
+      })
+      .then(service => {
+        // Getting latlong Characteristic...
+        return service.getCharacteristic('13333333-3333-3333-3333-333333330002');
+      })
+      .then(characteristic => {
+        // Reading the value of latlong
+        return characteristic.readValue();
+      })
+      .then(value => {
+        let decoder = new TextDecoder('utf-8');
+        // Convert Array Buffer to readable string.
+        // The latlong value is in the form: latitude:longitude
+        var latlong = decoder.decode(value).split(":");
+        console.log("Lat: " + latlong[0] + ", Long: " + latlong[1]);
+
+        // Code to load map from google pointing to our latlong
+        var point = {lat: Number(latlong[0]), lng: Number(latlong[1])};
+        var map = new google.maps.Map(document.getElementById('centerContainer'), {
+          zoom: 15,
+          center: point
+        });
+        var marker = new google.maps.Marker({
+          position: point,
+          map: map
+        });
+      })
+      .catch(error => {
+        console.log('Argh! ' + error);
+      });
+    }
+  script(async='', defer='', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyCuF0jO6w-aCgx7P28epp7zKGbNJwjlw6g')

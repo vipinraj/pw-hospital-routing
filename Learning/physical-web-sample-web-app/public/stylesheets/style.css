@@ -1,0 +1,11 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+body {
+	font-family: Lucida Sans,Lucida Grande,Arial !important;
+	font-size: 13px !important;
+	background: white;
+	color: #333;
+}

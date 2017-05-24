@@ -1,0 +1,43 @@
+//- Login page
+extends layout
+
+block content
+  // configure Dojo
+  script(src='dojo/dojo.js')
+  script.
+    var dojoConfig = {
+    async: true,
+    baseUrl: '.',
+    packages: [
+    'dojo',
+    'dijit',
+    'dojox',
+    'demo'
+    ]
+    };
+    // Require the Dialog class
+    require(["dijit/registry", "dojo/parser", "dijit/Dialog", "dijit/form/Button", "dijit/form/TextBox", "dojo/domReady!"], function(registry, parser){      
+      parser.parse();
+      registry.byId("loginDialog").show();
+    });
+  .dijitHidden
+    #loginDialog(data-dojo-type='dijit/Dialog', data-dojo-props="title:'Login', closable:false")
+      form(action='/login', method='post')
+        table
+          tr
+            td
+              label(for='username') Username
+            td
+              input#username(type='text', name='username', data-dojo-type='dijit/form/TextBox', data-dojo-props='trim:true')
+          tr
+            td
+              label(for='password') Password
+            td
+              input#password(type='password', name='password', data-dojo-type='dijit/form/TextBox')
+          tr
+            td(colspan='2',  style="text-align: center")
+              button(type='submit', data-dojo-type='dijit/form/Button') Login
+              a(href="/register", style="float:right;margin-top: 6px;") Register
+              if (error && error.length > 0)
+                br
+                label(style='color:red').error-msg= error

@@ -1,0 +1,29 @@
+{
+  "name": "physical-web-sample",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "make test"
+  },
+  "author": "Vipin Raj",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.10.2",
+    "chai": "~1.8.1",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.3.3",
+    "debug": "^2.1.1",
+    "express": "^4.11.1",
+    "express-session": "^1.10.1",
+    "pug": "~2.0.0-beta11",
+    "mocha": "~1.14.0",
+    "mongoose": "^4.4.1",
+    "morgan": "^1.5.1",
+    "passport": "^0.2.1",
+    "passport-local": "^1.0.0",
+    "passport-local-mongoose": "^1.0.0",
+    "serve-favicon": "^2.2.0",
+    "should": "~2.1.0"
+  }
+}
