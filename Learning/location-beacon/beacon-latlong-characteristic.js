@@ -17,17 +17,4 @@ function LatLongCharacteristic() {
 
 util.inherits(LatLongCharacteristic, bleno.Characteristic);
 
-// LatLongCharacteristic.prototype.onWriteRequest = function(data, offset, withoutResponse, callback) {
-//   if (offset) {
-//     callback(this.RESULT_ATTR_NOT_LONG);
-//   }
-//   else if (data.length !== 2) {
-//     callback(this.RESULT_INVALID_ATTRIBUTE_LENGTH);
-//   }
-//   else {
-//     this.pizza.toppings = data.readUInt16BE(0);
-//     callback(this.RESULT_SUCCESS);
-//   }
-// };
-
 module.exports = LatLongCharacteristic;
