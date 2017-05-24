@@ -10,7 +10,7 @@ var bleno = require('bleno');
 var BeaconService = require('./beacon-service');
 
 //
-// A name to advertise our Pizza Service.
+// A name to advertise service
 //
 var name = 'LatLongBeacon';
 var beaconService = new BeaconService();
