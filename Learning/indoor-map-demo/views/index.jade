@@ -1,0 +1,136 @@
+extends layout
+
+block content
+  #map
+    script.
+      var map;
+
+      // to create a custom control for showing feature properties
+      function InfoControl(controlDiv, map) {
+
+        // Set CSS for the control border.
+        var controlUI = document.createElement('div');
+        controlUI.style.backgroundColor = '#fff';
+        controlUI.style.border = '2px solid #fff';
+        controlUI.style.borderRadius = '3px';
+        controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+        controlUI.style.cursor = 'pointer';
+        controlUI.style.marginBottom = '20px';
+        controlUI.style.width = '200px';  
+        controlDiv.appendChild(controlUI);
+
+        // Set CSS for the control interior.
+        var controlText = document.createElement('div');
+        controlText.style.color = 'rgb(25,25,25)';
+        controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+        controlText.style.fontSize = '16px';
+        controlText.style.padding = '7px';
+        controlText.id = 'infoBar';
+        controlUI.appendChild(controlText);
+
+      }
+
+      function LevelControl(controlDiv, map, targetLayerNo) {
+        map.data.setStyle({}); //clear current style
+        // Set CSS for the control border.
+        var controlUI = document.createElement('div');
+        controlUI.style.backgroundColor = '#fff';
+        controlUI.style.border = '2px solid #fff';
+        controlUI.style.borderRadius = '3px';
+        controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+        controlUI.style.cursor = 'pointer';
+        controlUI.style.marginRight = '10px';
+        controlUI.style.textAlign = 'center';
+        controlUI.title = 'Click to view Level ' + targetLayerNo;
+        controlDiv.appendChild(controlUI);
+
+        // Set CSS for the control interior.
+        var controlText = document.createElement('div');
+        controlText.style.color = 'rgb(25,25,25)';
+        controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+        controlText.style.fontSize = '16px';
+        controlText.style.padding = '7px';
+        controlText.innerHTML = targetLayerNo.toString();
+        controlUI.appendChild(controlText);
+
+        // Setup the click event listeners to change the level on map
+        controlUI.addEventListener('click', function() {
+          var infoBar = document.getElementById('infoBar'); // this is the custom control in which the properties are appended
+          infoBar.innerHTML = ""; // clear the current contents
+          map.data.setStyle(function(feature) {
+              var level = feature.getProperty('level'); // get level
+              var color = 'green';
+              var visibility = level == targetLayerNo ? true : false;
+              return {
+                icon: '/images/door.png',
+                fillColor: color,
+                strokeColor: color,
+                strokeWeight: 1,
+                visible: visibility
+              };
+          });
+        });
+      }
+
+      // function called after loading map script
+      function initMap() {
+
+        // define new map
+        map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 28, // zoom level
+        center: {lat: 12.992634899999999, lng: 77.71721695} // the default center point for the map
+        });
+
+        // create a custom control for first layer switch button
+        var layerOneControlDiv = document.createElement('div');
+        var layerOneControl = new LevelControl(layerOneControlDiv, map, 0);
+
+        // custom control for second layer
+        var layerTwoControlDiv = document.createElement('div');
+        var layerTwoControl = new LevelControl(layerTwoControlDiv, map, 1);
+
+        // custom control for showing feature properties/tags
+        var infoBarControlDiv = document.createElement('div');
+        var infoBarControl = new InfoControl(infoBarControlDiv, map);
+
+        // set the order for custom controls
+        layerOneControlDiv.index = 1;
+        layerTwoControlDiv.index = 2;
+        infoBarControlDiv.index = 1;
+
+        // place the custom controls in map
+        map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(infoBarControlDiv);
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(layerOneControlDiv);
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(layerTwoControlDiv);
+
+        // load the geoJson data from file
+        map.data.loadGeoJson('pg.json');
+
+        // set initial style -- level 0 is shown by default
+        map.data.setStyle(function(feature) {
+            var level = feature.getProperty('level'); // get level - 0/1
+            var color = 'green';
+            var visibility = level == 0 ? true : false; 
+            return {
+              icon: '/images/door.png', // icon for point geometry(in this case - doors)
+              fillColor: color, // set fill color for polygon features
+              strokeColor: color, // stroke color for polygons
+              strokeWeight: 1,
+              visible: visibility // make layer 0 features visible
+            };
+        });
+
+        // event handlers for click function on features
+        map.data.addListener('click', function(event) {
+          var infoBar = document.getElementById('infoBar'); // this is the custom control in which the properties are appended
+          infoBar.innerHTML = ""; // clear the current contents
+          map.data.revertStyle(); // revert last overrided style
+          map.data.overrideStyle(event.feature,
+            {strokeWeight: 2, strokeColor: 'yellow', fillColor: 'yellow'}); // change the style of current feature
+
+          event.feature.forEachProperty(function(value, name) { // loop through the properties of the feature
+            infoBar.insertAdjacentHTML('afterbegin', "<strong>" + name + ": </strong>" + value + "<br>"); //append it to the infoBar
+          })
+        });
+      }
+    script(async='', defer='', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyCuF0jO6w-aCgx7P28epp7zKGbNJwjlw6g&callback=initMap')
