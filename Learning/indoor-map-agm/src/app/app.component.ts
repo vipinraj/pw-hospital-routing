@@ -9,7 +9,7 @@ import { IndoorDataService } from "./indoordata.service";
 })
 
 export class AppComponent implements OnInit {
-  title: string = 'My first AGM project';
+  title: string = 'Mapping with Angular';
   lat: number = 12.992634899999999;
   lng: number = 77.71721695;
   zoom: number = 20;
@@ -17,28 +17,33 @@ export class AppComponent implements OnInit {
 
   constructor(private _indoorDataService: IndoorDataService) {}
 
+  // function to consume IndoorDataService observable
   getGeoJSON(): void {
     this._indoorDataService.getGeoJson()
       .subscribe(resGeoJsonData => this.geoJsonObject = resGeoJsonData);
   }
+  // on init lifecycle hook
+  // We get the GeoJSON here
   ngOnInit() : void {
     this.getGeoJSON();
   }
 
-  clicked(clickEvent) {
-    console.log(clickEvent);
-  }
-
   styleFunc(feature) {
-  var level = feature.getProperty('level'); // get level - 0/1
-  var color = 'green';
-  var visibility = level == 1 ? true : false; 
-  return {
-    // icon: '/images/door.png', // icon for point geometry(in this case - doors)
-    fillColor: color, // set fill color for polygon features
-    strokeColor: color, // stroke color for polygons
-    strokeWeight: 1,
-    visible: visibility // make layer 0 features visible
-  };
+    // get level - 0/1
+    var level = feature.getProperty('level');
+    var color = 'green';
+    // only show level one features
+    var visibility = level == 1 ? true : false;
+    return {
+      // icon for point geometry(in this case - doors)
+      icon: 'assets/images/door.png',
+      // set fill color for polygon features
+      fillColor: color,
+      // stroke color for polygons
+      strokeColor: color,
+      strokeWeight: 1,
+      // make layer 1 features visible
+      visible: visibility
+    };
   }
 }
