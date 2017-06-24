@@ -1,8 +1,43 @@
-html, body {
-  height: 100%;
+html, body, app-root {
+  height: 100% !important;
   margin: 0;
   padding: 0;
 }
-app-root, agm-map {
-  height: 500px;
+
+.mapContainer {
+  height: 638px !important;
+}
+
+.card .card-content {
+	padding: 10px !important;
+  width: 400px;
+}
+
+.card .card-content .row {
+	margin-bottom: 0px !important;
+}
+
+*::-moz-placeholder {
+    color: #d1d1d1;
+}
+.scan-btn-container {
+    padding-top: 30px !important;
+    padding-left: 29px !important;
+}
+
+.select-dropdown {
+  margin-bottom: 0px !important;
+  border-bottom-width: 0px !important;
+}
+
+.input-field {
+  margin-top: 0px !important;
+}
+
+.btn-floating {
+  text-align: center;
+}
+
+.layerSwitchButton {
+  color: black;
 }

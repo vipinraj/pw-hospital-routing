@@ -9,7 +9,7 @@ declare var google:any;
   template: ''
 })
 export class MapContentComponent implements OnInit {
-
+  map: any;
   constructor(public mapApiWrapper:GoogleMapsAPIWrapper) {
 
   }
@@ -18,7 +18,7 @@ export class MapContentComponent implements OnInit {
 
     this.mapApiWrapper.getNativeMap()
       .then((map: any)=> {
-
+        this.map = map;
         // I have been manually updating core/services/google-maps-types.d.ts to include things they didn't include.
         console.log(map.getZoom());
 
@@ -35,7 +35,7 @@ export class MapContentComponent implements OnInit {
           radius: 10000
         });
         console.log(map.data);
-        map.data.addListener('click', function(event) {
+        map.data.addListener('mouseover', function(event) {
           map.data.revertStyle();
           console.log(event);
           map.data.overrideStyle(event.feature,
@@ -45,5 +45,6 @@ export class MapContentComponent implements OnInit {
       });
 
   }
+
 
 }
