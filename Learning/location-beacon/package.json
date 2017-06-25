@@ -4,7 +4,8 @@
   "description": "This is an example program demonstrating BLE connectivity between a peripheral running bleno, and a central running noble.",
   "main": "beacon-latlong-characteristic.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node peripheral.js"
   },
   "author": "",
   "license": "ISC",
