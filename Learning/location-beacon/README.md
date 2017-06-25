@@ -4,4 +4,4 @@ To run:
 
 sudo service bluetooth stop
 
-sudo node peripheral.js
+sudo npm start
