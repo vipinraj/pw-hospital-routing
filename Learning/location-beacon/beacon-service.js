@@ -2,12 +2,13 @@ var util = require('util');
 var bleno = require('bleno');
 
 var BeaconLatlongCharacteristic = require('./beacon-latlong-characteristic');
-
-function BeaconService(pizza) {
+var UrlCharacteristic = require('./beacon-url-characteristic');
+function BeaconService() {
     bleno.PrimaryService.call(this, {
         uuid: '13333333333333333333333333333337',
         characteristics: [
-            new BeaconLatlongCharacteristic(pizza),
+            new BeaconLatlongCharacteristic(),
+            new UrlCharacteristic(),
         ]
     });
 }
