@@ -1,6 +1,6 @@
 # IndoorMapAgm
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.1.1.
+An indoor mapping application built on top of Google Maps. Uses GeoJSON for mapping building features and BLE beacons for localization.
 
 ## Development server
 
