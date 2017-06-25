@@ -5,16 +5,11 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { HttpModule } from '@angular/http';
 import { AgmCoreModule } from '@agm/core';
-import {MapContentComponent} from './map-content/map-content.component';
 import { MaterializeModule } from "angular2-materialize";
-import {MaterialInput,
-        Option, MaterialSelect} from "./materialize/model-bindings/index"
 
 @NgModule({
   declarations: [
-    AppComponent,
-    MapContentComponent,
-    MaterialSelect
+    AppComponent
   ],
   imports: [
     BrowserModule,

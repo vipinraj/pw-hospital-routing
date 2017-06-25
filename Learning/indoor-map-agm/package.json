@@ -28,6 +28,7 @@
     "jquery": "^2.2.4",
     "materialize-css": "^0.99.0",
     "rxjs": "^5.1.0",
+    "text-encoding-shim": "^1.0.0",
     "zone.js": "^0.8.4"
   },
   "devDependencies": {

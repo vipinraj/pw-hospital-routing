@@ -1,49 +1,48 @@
-<!-- this creates a google map on the page with the given lat/lng from -->
-<!-- the component as the initial center of the map: -->
-
+<!-- Div to hold the map-->
 <div [style.height]="mapHeight" #map class="mapContainer">
 </div>
 
+<!-- HTML for infobar -->
 <div class="infoBarContainer" #infoBarContainer id="infoBarContainer">
-    <div class="card horizontal">
-        <div class="card-image">
-            <img src="assets/images/corridor.png">
-        </div>
-        <div class="card-stacked">
-            <div class="card-content">
-                <div class="row">
-                    <div class="col s9">
-                        <div class="row">
-                            <div class="col s8">
-                                <h6>{{selectedFeatureName}}</h6>
-                                {{selectedFeatureType}}
-                            </div>
-                            <div class="input-field col s4">
-                                <select ng-if="optionsForSelect" [(ngModel)]="selectedOption" name="selectedOption" materialize="material_select" 
-                                [materializeSelectOptions]="optionsForSelect" [attr.disabled]="isDisabled?true:null" (change)="selectChanged($event)">
+  <div class="card horizontal">
+    <div class="card-image">
+      <img src="assets/images/corridor.png">
+    </div>
+    <div class="card-stacked">
+      <div class="card-content">
+        <div class="row">
+          <div class="col s9">
+            <div class="row">
+              <div class="col s8">
+                <h6>{{selectedFeatureName}}</h6>
+                {{selectedFeatureType}}
+              </div>
+              <div class="input-field col s4">
+                <select ng-if="optionsForSelect" [(ngModel)]="selectedOption" name="selectedOption" materialize="material_select" [materializeSelectOptions]="optionsForSelect"
+                  [attr.disabled]="isDisabled?true:null" (change)="selectChanged($event)">
                                     <option value="" disabled selected>Choose</option>
                                     <option *ngFor="let option of optionsForSelect" [value]="option.value">{{option.name}}</option>
                                 </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col s12">
-                                {{selectedFeatureDescription}}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col s3 scan-btn-container">
-                        <a class="btn-floating" (click)="scanBtnClick($event)"><i class="material-icons">my_location</i></a>
-                    </div>
-                </div>
+              </div>
             </div>
+            <div class="row">
+              <div class="col s12">
+                {{selectedFeatureDescription}}
+              </div>
+            </div>
+          </div>
+          <div class="col s3 scan-btn-container">
+            <a class="btn-floating" (click)="scanBtnClick($event)"><i class="material-icons">my_location</i></a>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 <div class="fixed-action-btn" id="layerSwitcher">
-    <a class="btn-floating">{{selectedLevel}}</a>
-    <ul>
-        <li><a class="btn-floating white layerSwitchButton" (click)="levelChangeClick($event)">0</a></li>
-        <li><a class="btn-floating white layerSwitchButton" (click)="levelChangeClick($event)">1</a></li>
-    </ul>
+  <a class="btn-floating">{{selectedLevel}}</a>
+  <ul>
+    <li><a class="btn-floating white layerSwitchButton" (click)="levelChangeClick($event)">0</a></li>
+    <li><a class="btn-floating white layerSwitchButton" (click)="levelChangeClick($event)">1</a></li>
+  </ul>
 </div>
