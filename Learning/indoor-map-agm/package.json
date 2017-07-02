@@ -13,7 +13,7 @@
   "private": true,
   "dependencies": {
     "@agm/core": "^1.0.0-beta.0",
-    "@angular/animations": "^4.2.4",
+    "@angular/animations": "^4.1.3",
     "@angular/common": "^4.0.0",
     "@angular/compiler": "^4.0.0",
     "@angular/core": "^4.0.0",
@@ -23,11 +23,9 @@
     "@angular/platform-browser": "^4.0.0",
     "@angular/platform-browser-dynamic": "^4.0.0",
     "@angular/router": "^4.0.0",
-    "angular2-materialize": "^15.0.4",
     "core-js": "^2.4.1",
     "hammerjs": "^2.0.8",
     "jquery": "^2.2.4",
-    "materialize-css": "^0.99.0",
     "rxjs": "^5.1.0",
     "text-encoding-shim": "^1.0.0",
     "zone.js": "^0.8.4"

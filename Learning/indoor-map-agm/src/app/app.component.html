@@ -4,45 +4,72 @@
 
 <!-- HTML for infobar -->
 <div class="infoBarContainer" #infoBarContainer id="infoBarContainer">
-  <div class="card horizontal">
-    <div class="card-image">
-      <img src="assets/images/corridor.png">
-    </div>
-    <div class="card-stacked">
-      <div class="card-content">
-        <div class="row">
-          <div class="col s9">
-            <div class="row">
-              <div class="col s8">
-                <h6>{{selectedFeatureName}}</h6>
-                {{selectedFeatureType}}
-              </div>
-              <div class="input-field col s4">
-                <select ng-if="optionsForSelect" [(ngModel)]="selectedOption" name="selectedOption" materialize="material_select" [materializeSelectOptions]="optionsForSelect"
-                  [attr.disabled]="isDisabled?true:null" (change)="selectChanged($event)">
-                                    <option value="" disabled selected>Choose</option>
-                                    <option *ngFor="let option of optionsForSelect" [value]="option.value">{{option.name}}</option>
-                                </select>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col s12">
-                {{selectedFeatureDescription}}
-              </div>
-            </div>
+  <md-grid-list cols="5" rowHeight="25" gutterSize="0px">
+    <md-grid-tile rowspan="5" style="background: url('/assets/images/corridor.png') no-repeat;background-size: 100%;"></md-grid-tile>
+    <md-grid-tile colspan="3" rowspan="2" class="titleTile">
+      <div>
+        <h2 class="mat-title">{{selectedFeatureData.title}}</h2>
+        <h4 class="mat-subheading-1">{{selectedFeatureData.subtitle}}</h4>
+      </div>
+    </md-grid-tile>
+    <md-grid-tile rowspan="5" class="scanBtnContainer">
+      <button md-fab class="scanBtn" (click)="scanBtnClick($event)">
+        <md-icon>my_location</md-icon>
+      </button>
+      <button md-icon-button [mdMenuTriggerFor]="menu" class="moreButton">
+        <md-icon>more_vert</md-icon>
+      </button>
+    </md-grid-tile>
+    <md-grid-tile colspan="3" rowspan="2" class="bodyTile">
+      <p class="mat-body-1">{{selectedFeatureData.description}}
+      </p>
+    </md-grid-tile>
+    <md-grid-tile colspan="3" class="footerTile" 
+      [class.topborder]="selectedFeatureData.openTime || selectedFeatureData.website">
+      <div class="attachmentContainer">
+        <div *ngIf="selectedFeatureData.openTime" class="attachment">
+          <div class="attachMentIconContainer">
+            <md-icon class="smallIcon">access_time</md-icon>
           </div>
-          <div class="col s3 scan-btn-container">
-            <a class="btn-floating" (click)="scanBtnClick($event)"><i class="material-icons">my_location</i></a>
+          <div class="attachMentValueContainer time">
+            {{selectedFeatureData.openTime}}
+          </div>
+        </div>
+        <div *ngIf="selectedFeatureData.website" class="attachment">
+          <div class="attachMentIconContainer">
+            <md-icon class="smallIcon">language</md-icon>
+          </div>
+          <div class="attachMentValueContainer link">
+            <a href="" href="http://{{selectedFeatureData.website}}" target="_blank">
+                {{selectedFeatureData.website}}
+            </a>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </md-grid-tile>
+  </md-grid-list>
 </div>
-<div class="fixed-action-btn" id="layerSwitcher">
-  <a class="btn-floating">{{selectedLevel}}</a>
-  <ul>
-    <li><a class="btn-floating white layerSwitchButton" (click)="levelChangeClick($event)">0</a></li>
-    <li><a class="btn-floating white layerSwitchButton" (click)="levelChangeClick($event)">1</a></li>
-  </ul>
+
+<md-menu #menu="mdMenu">
+  <button md-menu-item disabled>
+    <span>Level {{selectedLevel}}</span>
+  </button>
+  <button *ngFor="let option of optionsForSelect" 
+    md-menu-item data-value="{{option.value}}" (click)="selectChanged($event)">
+    <!--<md-icon>voicemail</md-icon>-->
+    <span>{{option.name}}</span>
+  </button>
+</md-menu>
+
+<div class="levelButtonContainer" id="layerSwitcher">
+  <div class="levelButton mat-body-1">2</div>
+  <div class="levelButton mat-body-1" [class.levelSelected]="selectedLevel==1" (click)="levelChangeClick($event)" data-value="1">1</div>
+  <div class="levelButton mat-body-1" [class.levelSelected]="selectedLevel==0"  (click)="levelChangeClick($event)" data-value="0">0</div>
+</div>
+
+<div id="beaconTester">
+  <md-input-container>
+    <input mdInput placeholder="Beacon ref ID" value="1" id="beaconRefTxt">
+  </md-input-container>
+  <button md-raised-button (click)="testScanBtnClick($event)">Go</button>
 </div>

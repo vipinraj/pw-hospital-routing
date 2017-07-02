@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@an
 import { GoogleMapsAPIWrapper } from '@agm/core';
 import { GoogleMap, MapOptions } from "@agm/core/services/google-maps-types";
 import { IndoorDataService } from "./indoordata.service";
-import { MaterializeDirective } from "angular2-materialize";
 import { TextEncoder, TextDecoder } from 'text-encoding-shim';
 
 declare var google: any;
@@ -26,23 +25,25 @@ export class AppComponent implements OnInit {
   zoom: number = 28;
   // set map height to maximum
   mapHeight: string = '100%';
+  infoBarWidth: string;
   // holds the currently active level/floor
   selectedLevel: any = 0;
   // style for indoor features
   mapFillColor: string = '#FFFFDD';
   mapStrokeColor: string = '#CFA992';
   // Holds the information about currently 
-  // highlighted feature.
-  selectedFeatureName: string = "";
-  selectedFeatureType: string = "";
-  selectedFeatureDescription: string = "";
-  selectedFeatureRef: string = "";
-  // Options array for select box -
-  // contains features in the current layer.
-  selectedOption = "";
+  // selected feature's data.
+  selectedFeatureData = { 
+                          ref: null, title: null, subtitle: null,
+                          description: null, beaconAttached: null,
+                          beaconRef: null, website: null,
+                          openTime: null, imageUrl: null
+                        };
+
   // to make the select box enable/disable
   isDisabled = false;
-  // to hold the option value for the select
+  // Options array for select box -
+  // contains features in the current layer.
   optionsForSelect: any;
   // Contain an entry for each beacon and the 
   // corresponding marker in the map.
@@ -52,6 +53,10 @@ export class AppComponent implements OnInit {
   // The currently active beacon marker (represents
   // users current location)
   activeBeaconMarker;
+  pathCovered = [];
+  pathPolyLine;
+  
+
 
   constructor(private _indoorDataService: IndoorDataService, private mapApi: GoogleMapsAPIWrapper, private _chRef: ChangeDetectorRef) { }
 
@@ -64,10 +69,19 @@ export class AppComponent implements OnInit {
   // We get the GeoJSON here
   // and initialize map,
   ngOnInit(): void {
+    // set the width of infoBar control
+    var windowWidth = window.innerWidth
+        || document.documentElement.clientWidth
+        || document.body.clientWidth;
+    this.infoBarWidth = (windowWidth / 2) + 'px';
     this.getGeoJSON();
     this.initMap();
   }
 
+  // function to capitalize a string
+  capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
   styleFunc(feature) {
     // get level - 0/1
     var level = feature.getProperty('level');
@@ -90,12 +104,15 @@ export class AppComponent implements OnInit {
     // create a new map instance
     this.mapApi.createMap(this.m.nativeElement, <MapOptions>{
       streetViewControl: false,
-      zoomControl: false,
+      zoomControl: true,
+      zoomControlOptions: {
+        position: 7
+      },
       mapTypeControl: true,
       mapTypeId: 'roadmap',
       mapTypeControlOptions: {
         mapTypeIds: ['hybrid', 'roadmap', 'satellite'],
-        position: 3
+        position: 1
       },
       center: {
         lat: this.lat,
@@ -113,9 +130,7 @@ export class AppComponent implements OnInit {
         if (feature.getProperty('building')) {
           // Set building as the selected feature
           // on load of the application.
-          that.selectedFeatureName = feature.getProperty('name');
-          that.selectedFeatureDescription = feature.getProperty('note');
-          that.selectedFeatureType = feature.getProperty('building');
+          that.selectedFeatureData = that.extractFeatureData(feature);
         }
         if (feature.getProperty('ref:beacon')) {
           // create a "point" for the beacon
@@ -135,18 +150,31 @@ export class AppComponent implements OnInit {
       var layerSwitchControlDiv = document.createElement('div');
       var layerSwitchControl = document.getElementById('layerSwitcher');
       layerSwitchControlDiv.appendChild(layerSwitchControl);
-      map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(layerSwitchControlDiv);
+      map.controls[google.maps.ControlPosition.RIGHT_TOP].push(layerSwitchControlDiv);
+      
+      // test beacon control div beaconTester
+      var testBeaconControlDiv = document.createElement('div');
+      var testBeaconControl = document.getElementById('beaconTester');
+      testBeaconControlDiv.appendChild(testBeaconControl);
+      map.controls[google.maps.ControlPosition.TOP_CENTER].push(testBeaconControlDiv);
 
       // handle feature click events
       map.data.addListener('click', function (event) {
         that.highLightFeature(event.feature, false);
         that.updateInfoBar(event.feature);
-        // update the select box's selected option
-        that.selectedOption = event.feature.getProperty('ref');
         // Force update view
         that._chRef.detectChanges();
       });
 
+      // initialize path polyline 
+      that.pathPolyLine = new google.maps.Polyline({
+          path: that.pathCovered,
+          geodesic: true,
+          strokeColor: 'gray',
+          strokeOpacity: 1.0,
+          strokeWeight: 1,
+          map: that._map
+      });
     }));
   }
 
@@ -163,24 +191,154 @@ export class AppComponent implements OnInit {
 
   // update information bar with info from a feature
   updateInfoBar(feature) {
-    this.selectedFeatureName = feature.getProperty('name');
-    this.selectedFeatureDescription = feature.getProperty('note');
-    this.selectedFeatureType = feature.getProperty('indoor');
+    this.selectedFeatureData = this.extractFeatureData(feature);
+  }
 
-    if (this.selectedFeatureType == 'room') {
-      // get the "type" of the room
-      if (feature.getProperty('room')) {
-        this.selectedFeatureType += '(' + feature.getProperty('room') + ')';
-      }
+  /* 
+   * Extract feature informations and convert them
+   * into a form which is compatible to be displayed 
+   * in info bar. 
+   * 
+   */
+  extractFeatureData(feature) {
+    var featureData = { ref: null, title: null, subtitle: null,
+                        description: null, beaconAttached:null,
+                        beaconRef: null, website: null,
+                        openTime: null, imageUrl: null };
+
+    var ref = feature.getProperty('ref');
+    var refBeacon = feature.getProperty('ref:beacon');
+
+    featureData.ref = feature.getProperty('ref');
+    featureData.title = feature.getProperty('name');
+    featureData.description = feature.getProperty('note');
+
+    if (refBeacon) {
+      featureData.beaconAttached = true;
+      featureData.beaconRef = refBeacon;
+    } else {
+      featureData.beaconAttached = false;
     }
+
+    var subtitle = [];
+    if (feature.getProperty('indoor')) {
+      // Manage room, corridor, area, wall
+      // Todo: manage stairs, escalators and elevators
+      var indoorType;
+      indoorType = feature.getProperty('indoor');
+      subtitle.push(feature.getProperty('indoor'));
+      if (indoorType = 'room') {
+        if (feature.getProperty('room')) {
+          var roomType = feature.getProperty('room');
+          if (['stairs','toilets','toilet'].indexOf(roomType.toLowerCase()) >= 0) {
+            subtitle.push('has ' + roomType.toLowerCase());
+          } else {
+            subtitle.pop();
+            subtitle.push(roomType);
+          }
+        }
+        if (feature.getProperty('amenity')) {
+          subtitle.unshift(feature.getProperty('amenity'));
+        }
+      }
+      featureData.subtitle = this.capitalizeFirstLetter(subtitle.join(', '));
+    } else if (feature.getProperty('door')) {
+      var doorType = feature.getProperty('door');
+      var subtitle = [];
+      if (doorType.toLowerCase() == 'yes') {
+        subtitle.push('Door');
+      } else {
+        subtitle.push(this.capitalizeFirstLetter(doorType) + " door" );
+      }
+      if (feature.getProperty('entrance')) {
+        subtitle.push(feature.getProperty('entrance').toLowerCase());
+      }
+      if (feature.getProperty('wheelchair')) {
+        var wheelchair = feature.getProperty('wheelchair');
+        if (wheelchair.toLowerCase() == 'yes') {
+          subtitle.push('wheelchair allowed');
+        } else if (wheelchair == 'no') {
+          subtitle.push('wheelchair not allowed');
+        } else {
+          subtitle.push('limited wheelchair access');
+        }
+      }
+      featureData.subtitle = subtitle.join(', ');
+    } else if (feature.getProperty('building')) {
+      var subtitle = [];
+      subtitle.push(this.capitalizeFirstLetter(feature.getProperty('building')));
+      if (feature.getProperty('wheelchair')) {
+        var wheelchair = feature.getProperty('wheelchair');
+        if (wheelchair.toLowerCase() == 'yes') {
+          subtitle.push('wheelchair allowed');
+        } else if (wheelchair == 'no') {
+          subtitle.push('wheelchair not allowed');
+        } else {
+          subtitle.push('limited wheelchair access');
+        }
+      }
+      featureData.subtitle = subtitle.join(', ');
+    }
+
+    if (feature.getProperty('website')) {
+      featureData.website = feature.getProperty('website');
+    }
+
+    if (feature.getProperty('opening_hours')) {
+      featureData.openTime = feature.getProperty('opening_hours');
+    }
+
+    if (feature.getProperty('image_url')) {
+      featureData.imageUrl = feature.getProperty('image_url');
+    }
+
+    return featureData;
   }
 
   // handle for level change button
   levelChangeClick(event) {
-    this.selectedLevel = parseInt(event.target.text);
+    console.log(event.target);
+    this.selectedLevel = parseInt(event.target.dataset.value);
     this.switchLevel();
   }
 
+  testScanBtnClick(event) {
+    var that = this;
+    // scanning success!
+    // get beacon identifier
+    var beaconRef = (<HTMLInputElement>document.getElementById('beaconRefTxt')).value;;
+    // get the marker corresponding to the beacon
+    var marker = that.beaconMarkers[beaconRef];
+    // get the feature attached to the beacon 
+    // and set it as selected feature
+    var selectedFeature = marker.feature;
+    // get the level of beacon
+    var level = selectedFeature.getProperty('level');
+    that.selectedLevel = level;
+
+    // change current active beacon icon, if any, to inactive
+    if (that.activeBeaconMarker) {
+      console.log(that.activeBeaconMarker);
+      var image = 'assets/images/inactive.png';
+      that.activeBeaconMarker.setIcon(image);
+    }
+
+    // update the active beacon with newly discoverd beacon
+    that.activeBeaconMarker = marker;
+    // change marker icon to active
+    var image = 'assets/images/active.png';
+    marker.setIcon(image);
+    // switch layer if needed
+    that.switchLevel();
+    // highlight feature attached to beacon
+    that.highLightFeature(selectedFeature, true);
+    // update infobar
+    that.updateInfoBar(selectedFeature);
+    // add marker point to path covered
+    that.pathCovered.push({lat: marker.getPosition().lat(), lng: marker.getPosition().lng()});
+    
+    that.pathPolyLine.setPath(that.pathCovered);
+  }
   // handle for beacon scan button
   scanBtnClick(event) {
     var that = this;
@@ -205,7 +363,7 @@ export class AppComponent implements OnInit {
         // change current active beacon icon, if any, to inactive
         if (that.activeBeaconMarker) {
           var image = 'assets/images/inactive.png';
-          marker.setIcon(image);
+          that.activeBeaconMarker.setIcon(image);
         }
 
         // update the active beacon with newly discoverd beacon

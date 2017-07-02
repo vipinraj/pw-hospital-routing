@@ -2,7 +2,7 @@
   height: 100% !important;
 }
 
-.card .card-content {
+/*.card .card-content {
 	padding: 10px !important;
   width: 400px;
 }
@@ -30,8 +30,176 @@
 
 .btn-floating {
   text-align: center;
+}*/
+
+/*.layerSwitchButton {
+  color: black;
+}*/
+
+@media (min-width:320px)  {
+   /* smartphones, iPhone, portrait 480x320 phones */
+  .infoBarContainer {
+    width: 100vw;
+    margin: 20px;
+  }
+}
+@media (min-width:481px)  {
+  /* portrait e-readers (Nook/Kindle), smaller tablets @ 600 or @ 640 wide. */ 
+  .infoBarContainer {
+    width: 100vw;
+    margin: 20px;
+  }
+}
+@media (min-width:641px)  { 
+  /* portrait tablets, portrait iPad, landscape e-readers, landscape 800x480 or 854x480 phones */ 
+  .infoBarContainer {
+    width: 90vw;
+    margin: 20px;
+  }
+}
+@media (min-width:961px)  { 
+  /* tablet, landscape iPad, lo-res laptops ands desktops */ 
+  .infoBarContainer {
+    width: 60vw;
+    margin: 20px;
+  }
+}
+@media (min-width:1025px) { 
+  /* big landscape tablets, laptops, and desktops */ 
+  .infoBarContainer {
+    width: 50vw;
+    margin: 20px;
+  }
+}
+@media (min-width:1281px) { 
+  /* hi-res laptops and desktops */
+  .infoBarContainer {
+    width: 40vw;
+    margin: 20px;
+  }
 }
 
-.layerSwitchButton {
-  color: black;
+.infoBarContainer h2, .infoBarContainer h4 {
+  margin-bottom: 2px;
+  margin-left: 10px;
+}
+
+.infoBarContainer h2 {
+  margin-top: 10px;
+  line-height: 15px !important;
+}
+
+.infoBarContainer h5 {
+  line-height: 15px !important;
+  color: #2E2E2E;
+}
+
+.infoBarContainer p.mat-body-1 {
+  margin: 10px;
+}
+
+.attachmentContainer {
+  margin-left: 10px;
+}
+
+.smallIcon {
+  font-size: 15px;
+  height: 15px;
+  width: 15px;
+  color: #4285F4;
+}
+
+.attachment {
+  float: left;
+}
+
+.attachMentValueContainer, .attachMentIconContainer {
+  float: left;
+}
+
+.attachMentValueContainer.time {
+  padding-top: 2px;
+  padding-left: 5px;
+  padding-right: 10px;
+}
+
+.attachMentValueContainer.link {
+  padding-top: 1px;
+  padding-left: 5px;
+}
+
+.attachMentValueContainer.link a {
+  text-decoration: none;
+}
+
+.scanBtn {
+  background-color: #4285F4;
+}
+
+md-grid-tile {
+  background: white;
+  color: #282828;
+}
+
+.titleTile {
+  background-color: #4285F4;
+  color: white;
+}
+
+.bodyTile, .footerTile {
+  background-color: #F8F8F8;
+}
+
+.topborder {
+  border-top: 1px solid #F0F0F0;
+}
+
+.moreButton {
+  float: right;
+  top: 0px;
+  right: 0px;
+  position: absolute;
+  color: gray;
+}
+
+.levelButtonContainer {
+  -moz-user-select: none;
+  box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+  cursor: pointer;
+  background-color: rgb(255, 255, 255);
+  width: 28px;
+  margin-right: 10px;
+}
+
+.levelButton {
+  position: relative;
+  width: 28px;
+  height: 27px;
+  left: 0px;
+  top: 0px;
+  text-align: center;
+  line-height: 27px;
+}
+
+.levelButton:hover {
+  font-weight: bold;
+}
+
+.levelSelected {
+  background: #f1f1f1;
+  font-weight: bold;
+}
+
+/* /deep/ is depricated, need to find alternative */
+md-grid-tile >  /deep/ figure {
+     justify-content: flex-start !important;
+ }
+
+.scanBtnContainer > /deep/ figure {
+     justify-content: center !important;
+ }
+
+#beaconTester {
+  background: white;
 }

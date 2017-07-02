@@ -1,6 +1,11 @@
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 /* You can add global styles to this file, and also import other style files */
 html, body, app-root {
   height: 100% !important;
   margin: 0;
   padding: 0;
+}
+
+.mat-menu-panel {
+  max-height: 50vh !important;
 }

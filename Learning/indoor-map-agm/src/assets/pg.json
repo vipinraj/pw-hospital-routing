@@ -25,13 +25,12 @@
         {
             "type":"Feature",
             "properties":{
-                "amenity":"toilets",
                 "indoor":"room",
                 "level":"0",
                 "name":"Toilet 10",
                 "note":"Toilet and shower",
                 "ref":"10",
-                "room":"toilet"
+                "room":"toilets"
             },
             "geometry":{
                 "type":"Polygon",
@@ -491,11 +490,14 @@
             "properties":{
                 
                 "indoor":"room",
+                "room":"office",
                 "level":"0",
-                "name":"Room 9",
-                "note":"Room with Beds",
+                "name":"Dr.S.S. Sanal Dev",
+                "note":"Prior apppoinment is required",
                 "ref":"9",
-                "ref:beacon":"1"
+                "ref:beacon":"1",
+                "amenity":"dentist",
+                "opening_hours":"9AM - 6PM"
             },
             "geometry":{
                 "type":"Polygon",
@@ -535,7 +537,9 @@
                 "name":"Sree Sai PG",
                 "note":"Accomodation for Mens",
                 "ref":"1",
-                "wheelchair":"no"
+                "wheelchair":"no",
+                "opening_hours": "6AM - 10PM",
+                "website": "www.sreesaipg.com"
             },
             "geometry":{
                 "type":"Polygon",
@@ -699,7 +703,6 @@
         {
             "type":"Feature",
             "properties":{
-                "amenity":"toilets",
                 "indoor":"room",
                 "level":"0",
                 "name":"Toilet 12",
@@ -755,7 +758,6 @@
         {
             "type":"Feature",
             "properties":{
-                "amenity":"toilets",
                 "indoor":"room",
                 "level":"1",
                 "name":"Room 19",
@@ -866,7 +868,6 @@
         {
             "type":"Feature",
             "properties":{
-                "amenity":"toilets",
                 "indoor":"room",
                 "level":"1",
                 "name":"Room 24",
@@ -1005,7 +1006,6 @@
         {
             "type":"Feature",
             "properties":{
-                "amenity":"toilets",
                 "indoor":"room",
                 "level":"0",
                 "name":"Room 6",
@@ -1046,6 +1046,7 @@
             "type":"Feature",
             "properties":{
                 "door":"yes",
+                "ref:beacon":"0",
                 "entrance":"Main entrance",
                 "level":"0",
                 "name":"Main Gate",
@@ -1081,7 +1082,6 @@
         {
             "type":"Feature",
             "properties":{
-                "amenity":"toilets",
                 "indoor":"room",
                 "level":"1",
                 "name":"Toilet 22",
