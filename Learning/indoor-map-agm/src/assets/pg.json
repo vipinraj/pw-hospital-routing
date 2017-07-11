@@ -225,7 +225,7 @@
         {
             "type":"Feature",
             "properties":{
-                
+                "ref:beacon": "-1",
                 "door":"sliding",
                 "entrance":"yes",
                 "indoor":"corridor",
@@ -497,7 +497,8 @@
                 "ref":"9",
                 "ref:beacon":"1",
                 "amenity":"dentist",
-                "opening_hours":"9AM - 6PM"
+                "opening_hours":"9AM - 6PM",
+                "image_url":"/assets/images/dentist.png"
             },
             "geometry":{
                 "type":"Polygon",
@@ -539,7 +540,8 @@
                 "ref":"1",
                 "wheelchair":"no",
                 "opening_hours": "6AM - 10PM",
-                "website": "www.sreesaipg.com"
+                "website": "www.sreesaipg.com",
+                "image_url":"/assets/images/building.png"
             },
             "geometry":{
                 "type":"Polygon",
@@ -818,7 +820,8 @@
                 "level":"0",
                 "name":"Room 3",
                 "note":"Room with Beds",
-                "ref":"3"
+                "ref":"3",
+                "image_url":"/assets/images/room.png"
             },
             "geometry":{
                 "type":"Polygon",

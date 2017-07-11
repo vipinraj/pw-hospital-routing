@@ -7,7 +7,6 @@ import { AppComponent } from './app.component';
 import { HttpModule } from '@angular/http';
 import { AgmCoreModule } from '@agm/core';
 import { MaterialModule, MdNativeDateModule } from '@angular/material';
-
 @NgModule({
   declarations: [
     AppComponent

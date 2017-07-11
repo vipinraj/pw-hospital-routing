@@ -5,7 +5,11 @@
 <!-- HTML for infobar -->
 <div class="infoBarContainer" #infoBarContainer id="infoBarContainer">
   <md-grid-list cols="5" rowHeight="25" gutterSize="0px">
-    <md-grid-tile rowspan="5" style="background: url('/assets/images/corridor.png') no-repeat;background-size: 100%;"></md-grid-tile>
+    <md-grid-tile class="infoImageContainer" rowspan="5" [ngStyle]="{ 
+        'background' : (selectedFeatureData.imageUrl) ?
+        'url('+selectedFeatureData.imageUrl+') no-repeat':
+        'url(/assets/images/corridor.png) no-repeat'}">
+    </md-grid-tile>
     <md-grid-tile colspan="3" rowspan="2" class="titleTile">
       <div>
         <h2 class="mat-title">{{selectedFeatureData.title}}</h2>
@@ -55,16 +59,14 @@
     <span>Level {{selectedLevel}}</span>
   </button>
   <button *ngFor="let option of optionsForSelect" 
-    md-menu-item data-value="{{option.value}}" (click)="selectChanged($event)">
+    md-menu-item (click)="selectChanged(option)">
     <!--<md-icon>voicemail</md-icon>-->
     <span>{{option.name}}</span>
   </button>
 </md-menu>
 
 <div class="levelButtonContainer" id="layerSwitcher">
-  <div class="levelButton mat-body-1">2</div>
-  <div class="levelButton mat-body-1" [class.levelSelected]="selectedLevel==1" (click)="levelChangeClick($event)" data-value="1">1</div>
-  <div class="levelButton mat-body-1" [class.levelSelected]="selectedLevel==0"  (click)="levelChangeClick($event)" data-value="0">0</div>
+  <div *ngFor="let level of indoorLevels" class="levelButton mat-body-1" [class.levelSelected]="selectedLevel==level" (click)="levelChangeClick($event)" [attr.data-value]="level">{{level}}</div>
 </div>
 
 <div id="beaconTester">

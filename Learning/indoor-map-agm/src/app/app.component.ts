@@ -3,7 +3,7 @@ import { GoogleMapsAPIWrapper } from '@agm/core';
 import { GoogleMap, MapOptions } from "@agm/core/services/google-maps-types";
 import { IndoorDataService } from "./indoordata.service";
 import { TextEncoder, TextDecoder } from 'text-encoding-shim';
-
+import * as polylabel from 'polylabel';
 declare var google: any;
 
 @Component({
@@ -16,7 +16,6 @@ declare var google: any;
 export class AppComponent implements OnInit {
   // get a reference to the map dom
   @ViewChild('map') m: ElementRef;
-  // title: string = 'Mapping with Angular';
   geoJsonObject: Object;
   private _map: any;
   // default center and zoom
@@ -26,6 +25,8 @@ export class AppComponent implements OnInit {
   // set map height to maximum
   mapHeight: string = '100%';
   infoBarWidth: string;
+  // list of levels
+  indoorLevels = [];
   // holds the currently active level/floor
   selectedLevel: any = 0;
   // style for indoor features
@@ -55,8 +56,6 @@ export class AppComponent implements OnInit {
   activeBeaconMarker;
   pathCovered = [];
   pathPolyLine;
-  
-
 
   constructor(private _indoorDataService: IndoorDataService, private mapApi: GoogleMapsAPIWrapper, private _chRef: ChangeDetectorRef) { }
 
@@ -82,24 +81,24 @@ export class AppComponent implements OnInit {
   capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
-  styleFunc(feature) {
-    // get level - 0/1
-    var level = feature.getProperty('level');
-    var color = 'green';
-    // only show level one features
-    var visibility = level == 1 ? true : false;
-    return {
-      // icon for point geometry(in this case - doors)
-      icon: 'assets/images/door.png',
-      // set fill color for polygon features
-      fillColor: color,
-      // stroke color for polygons
-      strokeColor: color,
-      strokeWeight: 1,
-      // make layer 1 features visible
-      visible: visibility
-    };
-  }
+  // styleFunc(feature) {
+  //   // get level - 0/1
+  //   var level = feature.getProperty('level');
+  //   var color = 'green';
+  //   // only show level one features
+  //   var visibility = level == 1 ? true : false;
+  //   return {
+  //     // icon for point geometry(in this case - doors)
+  //     icon: 'assets/images/door.png',
+  //     // set fill color for polygon features
+  //     fillColor: color,
+  //     // stroke color for polygons
+  //     strokeColor: color,
+  //     strokeWeight: 1,
+  //     // make layer 1 features visible
+  //     visible: visibility
+  //   };
+  // }
   private initMap() {
     // create a new map instance
     this.mapApi.createMap(this.m.nativeElement, <MapOptions>{
@@ -126,20 +125,37 @@ export class AppComponent implements OnInit {
       // add geosjson data
       this._map.data.addGeoJson(this.geoJsonObject);
       // find out "building" and "features with beacons"
+      // extract levels
+      var addedLevels = {};
       this._map.data.forEach(feature => {
         if (feature.getProperty('building')) {
           // Set building as the selected feature
           // on load of the application.
           that.selectedFeatureData = that.extractFeatureData(feature);
         }
+        
         if (feature.getProperty('ref:beacon')) {
           // create a "point" for the beacon
           this.addBeaconMarker(feature);
         }
-      });
 
+        // extract level information
+        if (!feature.getProperty('stairs') && !feature.getProperty('highway') 
+            && !feature.getProperty('building')) {
+          
+          var level = feature.getProperty('level');
+          if (!addedLevels[level]) {
+            addedLevels[level] = true;
+            that.indoorLevels.push(level);
+          }
+        }
+      });
+      console.log(that.indoorLevels.sort().reverse());
       // apply style and show ground (default) floor
-      this.switchLevel();
+      // (setTimeOut to give time for beacon and labels to be placed)
+      setTimeout(function() {
+        that.switchLevel();
+      }, 300);
       // custom control for showing feature properties/tags
       var infoBarControlDiv = document.createElement('div');
       var infoBarControl = document.getElementById('infoBarContainer');
@@ -183,10 +199,12 @@ export class AppComponent implements OnInit {
     this._map.data.revertStyle();
     this._map.data.overrideStyle(feature,
       { strokeWeight: 2, strokeColor: this.mapStrokeColor, fillColor: 'yellow' });
-    var center = this.getCenter(feature);
-    if (doPan) {
-      this._map.panTo(center);
-    }
+    var that = this;
+    var center = this.getCenter(feature, function(center) {
+      if (doPan) {
+        that._map.panTo(center);
+      }
+    });
   }
 
   // update information bar with info from a feature
@@ -297,8 +315,8 @@ export class AppComponent implements OnInit {
 
   // handle for level change button
   levelChangeClick(event) {
-    console.log(event.target);
-    this.selectedLevel = parseInt(event.target.dataset.value);
+    console.log(event.target.dataset.value);
+    this.selectedLevel = event.target.dataset.value;
     this.switchLevel();
   }
 
@@ -381,21 +399,31 @@ export class AppComponent implements OnInit {
     });
   }
 
-  // function to get the approximate center of a feature
+  // function to get the approximate center  of a feature
   // For point: return lat and long
-  // For polygon: find bounding box and return it's center
-  getCenter(feature) {
+  // For polygon: find "pole of inaccessibility"
+  getCenter(feature, callback) {
     // find bound of the feature
     if (feature.getGeometry().getType() === 'Polygon') {
-      var bounds = new google.maps.LatLngBounds();
-      feature.getGeometry().getArray().forEach(function (path) {
-        path.getArray().forEach(function (latLng) { bounds.extend(latLng); })
+      feature.toGeoJson(function(geoJson) {
+        var pointArray = [];
+        pointArray[0] = [];
+        var coordinates = geoJson.geometry.coordinates[0];
+        // console.log(coordinates);
+        for (var i = 0; i < coordinates.length; i++) {
+          pointArray[0].push([coordinates[i][0], coordinates[i][1]]);
+          // console.log(coordinates[i][0]);
+        }
+        console.log(pointArray);
+        var centerPoint = polylabel(pointArray, .000000001, true);
+        console.log(centerPoint);
+        var latLong = new google.maps.LatLng(centerPoint[1], centerPoint[0]);
+        // console.log(latLong);
+        callback(latLong);
       });
-      feature.setProperty('bounds', bounds);
-      return bounds.getCenter();
     } else {
       // points
-      return feature.getGeometry().get();
+      callback(feature.getGeometry().get());
     }
   }
 
@@ -406,7 +434,6 @@ export class AppComponent implements OnInit {
     this._map.data.setStyle(function (feature) {
       var level = feature.getProperty('level'); // get level
       var visibility = level == that.selectedLevel ? true : false;
-      // populate "optionsForSelect" with selected levels's features
       if (visibility) {
         selectOptions.push(
           {
@@ -441,23 +468,26 @@ export class AppComponent implements OnInit {
   addBeaconMarker(feature) {
     // Get center of the feature
     // for placing the point
-    var center = this.getCenter(feature);
-    var image = 'assets/images/inactive.png';
-    // create marker object
-    var marker = new google.maps.Marker({
-      position: center,
-      map: this._map,
-      feature: feature,
-      icon: image
+    var that = this;
+    this.getCenter(feature, function(center) {
+      // console.log(center);
+      var image = 'assets/images/inactive.png';
+      // create marker object
+      var marker = new google.maps.Marker({
+        position: center,
+        map: that._map,
+        feature: feature,
+        icon: image
+      });
+      var markerObj = {};
+      // add marker to collection
+      that.beaconMarkers[feature.getProperty('ref:beacon')] = marker;
     });
-    var markerObj = {};
-    // add marker to collection
-    this.beaconMarkers[feature.getProperty('ref:beacon')] = marker;
   }
 
   // handle for selectbox 'change' event
-  selectChanged(event) {
-    var featureRef = event.target.value;
+  selectChanged(selectedOption) {
+    var featureRef = selectedOption.value;
     // find the respective feature
     var selectedFeature;
     this._map.data.forEach(feature => {

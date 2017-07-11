@@ -203,3 +203,7 @@ md-grid-tile >  /deep/ figure {
 #beaconTester {
   background: white;
 }
+
+.infoImageContainer {
+  background-size: 100% !important;
+}
