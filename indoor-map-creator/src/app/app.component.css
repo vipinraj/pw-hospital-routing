@@ -1,0 +1,11 @@
+.logo-icon {
+  padding: 0 14px;
+}
+
+md-sidenav-container {
+    height: 90%;
+}
+
+md-sidenav {
+    width: 300px;
+}

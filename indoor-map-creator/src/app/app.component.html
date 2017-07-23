@@ -1,0 +1,13 @@
+<md-toolbar color="primary">
+  <md-icon class="logo-icon">map</md-icon>
+  <span>Indoor Map Creator</span>
+</md-toolbar>
+
+<md-sidenav-container class="example-sidenav-fab-container">
+  <md-sidenav #sidenav mode="side" opened="true">
+    <app-side-pane [mapApi]="mapApi"></app-side-pane>
+    <br><br>
+    <button md-raised-button (click)="sidenav.toggle()" style="float:right"><md-icon>keyboard_arrow_left</md-icon></button>
+  </md-sidenav>
+  <app-map [mapApi]="mapApi" [sidenav]="sidenav" ></app-map>
+</md-sidenav-container>

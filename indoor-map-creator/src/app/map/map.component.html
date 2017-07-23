@@ -1,0 +1,10 @@
+<div  #map class="mapContainer">
+</div>
+<div class="toolbar-container" #toolbar>
+  <app-tool-bar *ngIf="map" [map]='gMap' [mapApi]="mapApi"></app-tool-bar>
+</div>
+<div #sideBarToggleBtn>
+  <button md-raised-button (click)="sidenav.toggle()" style="float:right">
+    <md-icon>keyboard_arrow_left</md-icon>
+  </button>
+</div>
