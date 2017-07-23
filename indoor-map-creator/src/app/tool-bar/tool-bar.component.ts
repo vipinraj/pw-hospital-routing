@@ -1,6 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { GoogleMapsAPIWrapper } from '@agm/core';
 import { Polyline } from "@agm/core/services/google-maps-types";
+import { FeatureTypeService }   from '../services/feature-type.service';
 
 @Component({
   selector: 'app-tool-bar',
@@ -10,27 +11,39 @@ import { Polyline } from "@agm/core/services/google-maps-types";
 })
 export class ToolBarComponent implements OnInit {
   @Input() map:any;
-  @Input('mapApi') mapApi:GoogleMapsAPIWrapper;
+  @Input('mapApi') mapApi: GoogleMapsAPIWrapper;
+
   private geofences: Polyline[] = [];
   private activeGeofence?: Polyline;
-  
-  constructor() { }
+  private _onMapClickListener: any;
+  private _onMapDbClickListner: any;
+  private currentGeometryType: string = 'area';
+  update_timeout = null;
+
+  constructor(private _featureTypeService: FeatureTypeService, private _chRef: ChangeDetectorRef) { }
 
   ngOnInit() {
     console.log(this.map);
     
   }
 
-  private _onMapClickListener: any;
-  private _onMapDbClickListner: any;
+
   private onMapClick = (e): void => {
-    this.activeGeofence.getPath().push(e.latLng);
-    console.log('clicked');
+    var context = this;
+    this.update_timeout = setTimeout(function() {
+      context.activeGeofence.getPath().push(e.latLng);
+      console.log('clicked');
+    }, 200);
   }
 
   private onMapDbClick = (e): void => {
+    clearTimeout(this.update_timeout);
+    if (this.activeGeofence) {
+      this.activeGeofence.getPath().push(e.latLng);
+    }
+    this._featureTypeService.changeFeature('line');
     console.log('Double click');
-    this.saveGeofence() ;
+    document.getElementById('saveBtn').click(); // To do: improve this
   }
 
   addGeofence() {
@@ -84,7 +97,6 @@ export class ToolBarComponent implements OnInit {
       this._onMapClickListener.remove();
     }
   }
-
 }
 interface GeofencePoint {
   id: number;

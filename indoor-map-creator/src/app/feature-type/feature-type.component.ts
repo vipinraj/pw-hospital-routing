@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-feature-type',
@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./feature-type.component.css']
 })
 export class FeatureTypeComponent implements OnInit {
-  selectedGeometry: string;
+  @Input("selectedGeometryType") selectedGeometry: string;
   geometryFeatureMapping = {
     'area': [
       { name: "building", label: "Building", icon: "" },
