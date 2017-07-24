@@ -41,7 +41,7 @@ export class ToolBarComponent implements OnInit {
     if (this.activeGeofence) {
       this.activeGeofence.getPath().push(e.latLng);
     }
-    this._featureTypeService.changeFeature('line');
+    this._featureTypeService.changeFeature(this.currentGeometryType);
     console.log('Double click');
     document.getElementById('saveBtn').click(); // To do: improve this
   }

@@ -9,10 +9,10 @@ export class FeatureTypeComponent implements OnInit {
   @Input("selectedGeometryType") selectedGeometry: string;
   geometryFeatureMapping = {
     'area': [
-      { name: "building", label: "Building", icon: "" },
-      { name: "room", label: "Room", icon: "" },
-      { name: "corridor", label: "Corridor", icon: "" },
-      { name: "area", label: "Area", icon: "" }
+      { name: "building", label: "Building", icon: "home" },
+      { name: "room", label: "Room", icon: "tab_unselected" },
+      { name: "corridor", label: "Corridor", icon: "view_stream" },
+      { name: "area", label: "Area", icon: "video_label" }
     ],
     'line': [
       { name: "wall", label: "Wall", icon: "" },

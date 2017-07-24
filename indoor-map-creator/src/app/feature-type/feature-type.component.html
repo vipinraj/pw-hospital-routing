@@ -1,3 +1,8 @@
-<p>
-  feature-type: {{selectedGeometry}}
-</p>
+<md-card *ngFor="let feature of geometryFeatureMapping[selectedGeometry]" class="featureType">
+  <div>
+    <md-icon >{{feature.icon}}</md-icon>
+  </div>
+  <div>
+    <span>{{feature.label}}</span>
+  </div>
+</md-card>

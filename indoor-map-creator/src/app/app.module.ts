@@ -11,6 +11,7 @@ import { SidePaneComponent } from './side-pane/side-pane.component';
 import { ToolBarComponent } from './tool-bar/tool-bar.component';
 import { SearchPlacesComponent } from './search-places/search-places.component';
 import { FeatureTypeComponent } from './feature-type/feature-type.component';
+import { FeatureTagEditorComponent } from './feature-tag-editor/feature-tag-editor.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { FeatureTypeComponent } from './feature-type/feature-type.component';
     SidePaneComponent,
     ToolBarComponent,
     SearchPlacesComponent,
-    FeatureTypeComponent
+    FeatureTypeComponent,
+    FeatureTagEditorComponent
   ],
   imports: [
     BrowserModule,
