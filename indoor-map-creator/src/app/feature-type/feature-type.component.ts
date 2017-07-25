@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-feature-type',
@@ -24,7 +25,9 @@ export class FeatureTypeComponent implements OnInit {
       { name: "elevators", label: "Elevators", icon: "" },
     ]
   };
-  constructor() { }
+  constructor(private route: ActivatedRoute) { 
+    route.params.subscribe(params => { this.selectedGeometry = params['selectedGeomType']; });
+  }
 
   ngOnInit() {
   }

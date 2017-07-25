@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, View
 import { GoogleMapsAPIWrapper } from '@agm/core';
 import { Polyline } from "@agm/core/services/google-maps-types";
 import { FeatureTypeService }   from '../services/feature-type.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tool-bar',
@@ -20,7 +21,7 @@ export class ToolBarComponent implements OnInit {
   private currentGeometryType: string = 'area';
   update_timeout = null;
 
-  constructor(private _featureTypeService: FeatureTypeService, private _chRef: ChangeDetectorRef) { }
+  constructor(private _featureTypeService: FeatureTypeService, private _chRef: ChangeDetectorRef, private router: Router ) { }
 
   ngOnInit() {
     console.log(this.map);
@@ -30,6 +31,7 @@ export class ToolBarComponent implements OnInit {
 
   private onMapClick = (e): void => {
     var context = this;
+    this.router.navigateByUrl("/select-feature/" + this.currentGeometryType);
     this.update_timeout = setTimeout(function() {
       context.activeGeofence.getPath().push(e.latLng);
       console.log('clicked');
@@ -41,7 +43,7 @@ export class ToolBarComponent implements OnInit {
     if (this.activeGeofence) {
       this.activeGeofence.getPath().push(e.latLng);
     }
-    this._featureTypeService.changeFeature(this.currentGeometryType);
+    // this._featureTypeService.changeFeature(this.currentGeometryType); -- not needed as using router
     console.log('Double click');
     document.getElementById('saveBtn').click(); // To do: improve this
   }
