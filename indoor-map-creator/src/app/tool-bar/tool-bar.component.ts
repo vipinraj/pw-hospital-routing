@@ -3,7 +3,9 @@ import { GoogleMapsAPIWrapper } from '@agm/core';
 import { Polyline } from "@agm/core/services/google-maps-types";
 import { FeatureTypeService }   from '../services/feature-type.service';
 import { Router } from '@angular/router';
+declare var google: any;
 
+// drawing tools
 @Component({
   selector: 'app-tool-bar',
   templateUrl: './tool-bar.component.html',
@@ -14,6 +16,7 @@ export class ToolBarComponent implements OnInit {
   @Input() map:any;
   @Input('mapApi') mapApi: GoogleMapsAPIWrapper;
 
+  // poligon
   private geofences: Polyline[] = [];
   private activeGeofence?: Polyline;
   private _onMapClickListener: any;
@@ -27,45 +30,56 @@ export class ToolBarComponent implements OnInit {
     
   }
 
-
+  // handle map click
   private onMapClick = (e): void => {
-    var context = this;
-    context.activeGeofence.getPath().push(e.latLng);
     console.log('clicked');
-  }
-
-  private onMapRightClick = (e): void => {
-    // clearTimeout(this.update_timeout);
-    if (this.activeGeofence) {
+    // change route navigation
+    this.router.navigateByUrl("/select-feature/" + this.currentGeometryType);
+    if (this.currentGeometryType == "point") {
+      document.getElementById('saveBtn').click(); // To do: improve this
+      // draw marker
+      var marker = new google.maps.Marker({
+          position: e.latLng,
+          map: this.map
+        });
+    } else {
       this.activeGeofence.getPath().push(e.latLng);
     }
+  }
+
+  // handle map right click
+  private onMapRightClick = (e): void => {
     // this._featureTypeService.changeFeature(this.currentGeometryType); -- not needed as using router
     // this.router.navigateByUrl("/select-feature/" + this.currentGeometryType);
-    setTimeout(() => {
-      this.router.navigateByUrl("/select-feature/" + this.currentGeometryType);
-    }, 110);
     console.log('Right click');
     document.getElementById('saveBtn').click(); // To do: improve this
   }
 
+  // handle draw area button
   onDrawPolygonClick() {
     this.currentGeometryType = 'area';
     this.addGeofence();
   }
 
+  // handle draw line button
   onDrawLineClick() {
     this.currentGeometryType = 'line';
     this.addGeofence();
   }
 
+  // handle draw point button
   onDrawPointClick() {
-    
+    this.currentGeometryType = 'point';
+    this._onMapClickListener = this.map.addListener('click', this.onMapClick);
+    this._onMapDbClickListner = this.map.addListener('rightclick', this.onMapRightClick)
   }
 
+  // draw polygon
   addGeofence() {
     if (this.activeGeofence == undefined || this.activeGeofence == null) {    
       this._onMapClickListener = this.map.addListener('click', this.onMapClick);
-      this._onMapDbClickListner = this.map.addListener('rightclick', this.onMapRightClick)
+      this._onMapDbClickListner = this.map.addListener('rightclick', this.onMapRightClick);
+      // create a polygon
       this.mapApi.createPolygon({ editable: true, draggable: true }).
       then(p => { console.log('polygon created');
         this.activeGeofence = p});
@@ -113,6 +127,7 @@ export class ToolBarComponent implements OnInit {
     }
   }
 }
+// represent a point
 interface GeofencePoint {
   id: number;
   latitude: number;

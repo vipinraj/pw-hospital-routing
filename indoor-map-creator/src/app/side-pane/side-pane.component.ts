@@ -3,6 +3,7 @@ import { GoogleMapsAPIWrapper } from '@agm/core';
 import { Subscription } from 'rxjs/Subscription';
 import { FeatureTypeService }   from '../services/feature-type.service';
 
+// parent component for side navigation
 @Component({
   selector: 'app-side-pane',
   templateUrl: './side-pane.component.html',

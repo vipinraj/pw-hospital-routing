@@ -4,17 +4,23 @@ import { GoogleMap, MapOptions } from "@agm/core/services/google-maps-types";
 import { ToolBarComponent } from '../tool-bar/tool-bar.component'
 declare var google: any;
 
+// this component shows the map
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css']
 })
 export class MapComponent implements OnInit, AfterViewInit {
+  // set css class for this component
   @HostBinding('attr.class') cssClass = 'mapContainer';
   @ViewChild('map') m: ElementRef;
+  // reference to side bar toggle control
   @ViewChild('sideBarToggleBtn') sideBarToggleBtn: ElementRef;
+  // reference to toolbar container
   @ViewChild('toolbar') toolbar: ElementRef;
+  // reference to sidebar 
   @Input('sidenav') sidenav;
+  // if side bar opened or not
   sideNavOpened = true;
   gMap: any;
   @Input('mapApi') mapApi: GoogleMapsAPIWrapper;
@@ -51,6 +57,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     }).then(() => this.mapApi.getNativeMap().then((map: any) => {
       // map holds a reference to the map instance created
       this.gMap = map;
+      // push drawing tool bar and toggle button to map
       var testBeaconControlDiv = document.createElement('div');
       testBeaconControlDiv.appendChild(this.toolbar.nativeElement);
       this.gMap.controls[google.maps.ControlPosition.TOP_LEFT].push(testBeaconControlDiv);

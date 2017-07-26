@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit } from '
 import { GoogleMapsAPIWrapper } from '@agm/core';
 declare var google: any;
 
+// takes care of location search
 @Component({
   selector: 'app-search-places',
   templateUrl: './search-places.component.html',
@@ -32,7 +33,6 @@ export class SearchPlacesComponent implements OnInit, AfterViewInit {
           return;
         }
 
-
         // For each place, get the icon, name and location.
         var bounds = new google.maps.LatLngBounds();
         places.forEach(function(place) {
@@ -40,13 +40,13 @@ export class SearchPlacesComponent implements OnInit, AfterViewInit {
             console.log("Returned place contains no geometry");
             return;
           }
-          var icon = {
-            url: place.icon,
-            size: new google.maps.Size(71, 71),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(17, 34),
-            scaledSize: new google.maps.Size(25, 25)
-          };
+          // var icon = {
+          //   url: place.icon,
+          //   size: new google.maps.Size(71, 71),
+          //   origin: new google.maps.Point(0, 0),
+          //   anchor: new google.maps.Point(17, 34),
+          //   scaledSize: new google.maps.Size(25, 25)
+          // };
 
           if (place.geometry.viewport) {
             // Only geocodes have viewport.
@@ -55,6 +55,7 @@ export class SearchPlacesComponent implements OnInit, AfterViewInit {
             bounds.extend(place.geometry.location);
           }
         });
+        // fit bound of map to choosen location
         map.fitBounds(bounds);
       });
     });

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
+// this component take care of the tag editor form
 @Component({
   selector: 'app-feature-tag-editor',
   templateUrl: './feature-tag-editor.component.html',
