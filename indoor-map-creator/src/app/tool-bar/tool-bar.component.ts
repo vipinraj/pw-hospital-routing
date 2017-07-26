@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit, HostBinding } from '@angular/core';
 import { GoogleMapsAPIWrapper } from '@agm/core';
 import { Polyline } from "@agm/core/services/google-maps-types";
 import { FeatureTypeService }   from '../services/feature-type.service';
@@ -18,8 +18,7 @@ export class ToolBarComponent implements OnInit {
   private activeGeofence?: Polyline;
   private _onMapClickListener: any;
   private _onMapDbClickListner: any;
-  private currentGeometryType: string = 'area';
-  update_timeout = null;
+  private currentGeometryType: string = 'none';
 
   constructor(private _featureTypeService: FeatureTypeService, private _chRef: ChangeDetectorRef, private router: Router ) { }
 
@@ -31,30 +30,44 @@ export class ToolBarComponent implements OnInit {
 
   private onMapClick = (e): void => {
     var context = this;
-    this.router.navigateByUrl("/select-feature/" + this.currentGeometryType);
-    this.update_timeout = setTimeout(function() {
-      context.activeGeofence.getPath().push(e.latLng);
-      console.log('clicked');
-    }, 200);
+    context.activeGeofence.getPath().push(e.latLng);
+    console.log('clicked');
   }
 
-  private onMapDbClick = (e): void => {
-    clearTimeout(this.update_timeout);
+  private onMapRightClick = (e): void => {
+    // clearTimeout(this.update_timeout);
     if (this.activeGeofence) {
       this.activeGeofence.getPath().push(e.latLng);
     }
     // this._featureTypeService.changeFeature(this.currentGeometryType); -- not needed as using router
-    console.log('Double click');
+    // this.router.navigateByUrl("/select-feature/" + this.currentGeometryType);
+    setTimeout(() => {
+      this.router.navigateByUrl("/select-feature/" + this.currentGeometryType);
+    }, 110);
+    console.log('Right click');
     document.getElementById('saveBtn').click(); // To do: improve this
   }
 
+  onDrawPolygonClick() {
+    this.currentGeometryType = 'area';
+    this.addGeofence();
+  }
+
+  onDrawLineClick() {
+    this.currentGeometryType = 'line';
+    this.addGeofence();
+  }
+
+  onDrawPointClick() {
+    
+  }
+
   addGeofence() {
-    console.log(this.map);
     if (this.activeGeofence == undefined || this.activeGeofence == null) {    
       this._onMapClickListener = this.map.addListener('click', this.onMapClick);
-      this._onMapDbClickListner = this.map.addListener('dblclick', this.onMapDbClick)
+      this._onMapDbClickListner = this.map.addListener('rightclick', this.onMapRightClick)
       this.mapApi.createPolygon({ editable: true, draggable: true }).
-      then(p => { console.log('polygon creaed');
+      then(p => { console.log('polygon created');
         this.activeGeofence = p});
       console.log('adding geofence');
     }

@@ -15,6 +15,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   @ViewChild('sideBarToggleBtn') sideBarToggleBtn: ElementRef;
   @ViewChild('toolbar') toolbar: ElementRef;
   @Input('sidenav') sidenav;
+  sideNavOpened = true;
   gMap: any;
   @Input('mapApi') mapApi: GoogleMapsAPIWrapper;
   // default center and zoom
@@ -40,7 +41,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       mapTypeId: 'roadmap',
       mapTypeControlOptions: {
         mapTypeIds: ['hybrid', 'roadmap', 'satellite'],
-        position: 1
+        position: 9
       },
       center: {
         lat: this.lat,
@@ -53,8 +54,13 @@ export class MapComponent implements OnInit, AfterViewInit {
       var testBeaconControlDiv = document.createElement('div');
       testBeaconControlDiv.appendChild(this.toolbar.nativeElement);
       this.gMap.controls[google.maps.ControlPosition.TOP_LEFT].push(testBeaconControlDiv);
-      this.gMap.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(this.sideBarToggleBtn.nativeElement);
+      this.gMap.controls[google.maps.ControlPosition.LEFT_CENTER].push(this.sideBarToggleBtn.nativeElement);
     }));
+  }
+
+  toggleSideNav() {
+    this.sidenav.toggle();
+    this.sideNavOpened = !this.sideNavOpened;
   }
 
   ngAfterViewInit() {

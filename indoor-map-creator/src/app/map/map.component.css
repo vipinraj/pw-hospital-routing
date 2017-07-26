@@ -1,8 +1,11 @@
 .mapContainer {
     height: 100%;
 }
-
-.toolbar-container {
+.toolbarContainer {
     margin-top: 10px;
-    background-color: white;
+    margin-left: 10px;
+}
+
+.togleBtnContainer {
+    margin-left: 10px;
 }

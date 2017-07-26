@@ -1,7 +1,7 @@
 <div class="toolbar-container">
-  <button md-raised-button (click)="addGeofence()" >Area</button>
-  <button md-raised-button (click)="addGeofence()">Line</button>
-  <button #dummyBtn md-raised-button>Point</button>
-  <button id="saveBtn"  md-raised-button (click)="saveGeofence()">Save</button>
+  <button md-raised-button (click)="onDrawPolygonClick()" name="areaBtn" ><md-icon>format_shapes</md-icon>Area</button>
+  <button md-raised-button (click)="onDrawLineClick()" name="lineBtn"><md-icon>timeline</md-icon>Line</button>
+  <button #dummyBtn md-raised-button name="pointBtn"><md-icon>place</md-icon>Point</button>
+  <button id="saveBtn"  md-raised-button (click)="saveGeofence()"><md-icon>save</md-icon>Save</button>
 </div>
 
