@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit, HostBinding } from '@angular/core';
+import {  Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, 
+          ViewChild, ElementRef, AfterContentInit, HostBinding, NgZone } from '@angular/core';
 import { GoogleMapsAPIWrapper } from '@agm/core';
 import { Polyline } from "@agm/core/services/google-maps-types";
-import { FeatureTypeService }   from '../services/feature-type.service';
+import { FeatureTypeService } from '../services/feature-type.service';
 import { Router } from '@angular/router';
 declare var google: any;
 
@@ -13,7 +14,7 @@ declare var google: any;
   providers: [GoogleMapsAPIWrapper]
 })
 export class ToolBarComponent implements OnInit {
-  @Input() map:any;
+  @Input() map: any;
   @Input('mapApi') mapApi: GoogleMapsAPIWrapper;
   // poligon
   drawButtonsEnabled = true;
@@ -22,11 +23,15 @@ export class ToolBarComponent implements OnInit {
   private activePolyLine?: Polyline;
   private activePoint?: any;
   private highLightedFeature: any;
+  private isDrawingMode = false;
   private _onMapClickListener: any;
   private _onMapRightClickListner: any;
   private currentGeometryType: string = 'none';
-  private featureDefaultProperties = { editable: true, draggable: true, strokeWeight: 1 };
-  constructor(private _featureTypeService: FeatureTypeService, private _chRef: ChangeDetectorRef, private router: Router ) { 
+  private featureOptionsOnDrawing = { editable: true, draggable: true, strokeWeight: 2, strokeColor: "black"};
+  private featureOptionsOnHihglighted = { editable: true, draggable: true, strokeWeight: 2, strokeColor: "red"};
+  private featureOptionsOnNotHighlighted = { editable: false, draggable: false, strokeWeight: 2, strokeColor: "black"};
+  constructor(private _featureTypeService: FeatureTypeService, private _chRef: ChangeDetectorRef, private router: Router, private zone: NgZone) {
+
   }
 
   ngOnInit() {
@@ -35,90 +40,106 @@ export class ToolBarComponent implements OnInit {
   // handle map click
   private onMapClick = (e): void => {
     console.log('clicked');
-    // change route navigation
-    this.router.navigateByUrl("/select-feature/" + this.currentGeometryType);
-    if (this.currentGeometryType == "point") {
-      // document.getElementById('saveBtn').click(); // To do: improve this
-      // draw marker
-      if (!this.activePoint) {
-        var marker = new google.maps.Marker({
-            position: e.latLng,
-            map: this.map,
-            icon: '/assets/images/black_dot.png',
-            draggable: true
-          });
-        marker.addListener('click', (e) => {
-          this.featureClickHandler(marker);
-        });
-        this.activePoint = marker;
-        this.featureCollection.push(marker);
+    if (this.isDrawingMode) {
+      if (this.currentGeometryType == "point") {
+        this.drawPoint(e);
+      } else if (this.currentGeometryType == 'area') {
+        this.activePolygon.getPath().push(e.latLng);
+      } else if (this.currentGeometryType == 'line') {
+        this.activePolyLine.getPath().push(e.latLng);
       }
-    } else if (this.currentGeometryType == 'area') {
-      this.activePolygon.getPath().push(e.latLng);
-    } else if (this.currentGeometryType == 'line') {
-      this.activePolyLine.getPath().push(e.latLng);
+    } else {
+      this.clearHighlighting();
+      // Map events runs out of the Angular 2 zone.
+      // Therefore it is neccessary to use the NgZone.run()
+      // See: https://goo.gl/MzcPwQ
+      this.zone.run(() => {
+        this.router.navigateByUrl("/");
+      });
     }
   }
 
   // handle map right click
   private onMapRightClick = (e): void => {
-    // this._featureTypeService.changeFeature(this.currentGeometryType); -- not needed as using router
-    // this.router.navigateByUrl("/select-feature/" + this.currentGeometryType);
     console.log('Right click');
-    document.getElementById('saveBtn').click(); // To do: improve this
+    this.finishDrawing();
   }
 
   // handle draw area button
   onDrawPolygonClick() {
+    if (!this._onMapClickListener) {
+      this._onMapClickListener = this.map.addListener('click', this.onMapClick);
+    }
     this.currentGeometryType = 'area';
+    this.isDrawingMode = true;
     this.drawPolygon();
     this.makeFeaturesClickable(false);
     this.drawButtonsEnabled = false;
+    this.clearHighlighting();
   }
 
   // handle draw line button
   onDrawLineClick() {
+    if (!this._onMapClickListener) {
+      this._onMapClickListener = this.map.addListener('click', this.onMapClick);
+    }
     this.currentGeometryType = 'line';
+    this.isDrawingMode = true;
     this.drawPolyline();
     this.makeFeaturesClickable(false);
     this.drawButtonsEnabled = false;
+    this.clearHighlighting();
   }
 
   // handle draw point button
   onDrawPointClick() {
+    if (!this._onMapClickListener) {
+      this._onMapClickListener = this.map.addListener('click', this.onMapClick);
+    }
     this.currentGeometryType = 'point';
+    this.isDrawingMode = true;
     this._onMapClickListener = this.map.addListener('click', this.onMapClick);
     this._onMapRightClickListner = this.map.addListener('rightclick', this.onMapRightClick)
     this.makeFeaturesClickable(false);
     this.drawButtonsEnabled = false;
+    this.clearHighlighting();
   }
 
-  onFinishDrawClick() {
-    console.log(this.currentGeometryType);
+  finishDrawing() {
+    var saveResult = true;
     if (this.currentGeometryType == 'line') {
-      this.savePolyline();
+      saveResult = this.savePolyline();
     } else if (this.currentGeometryType == 'area') {
-      this.savePolygon();
+      saveResult = this.savePolygon();
     } else if (this.currentGeometryType == 'point') {
-      this.savePoint();
+      saveResult = this.savePoint();
     }
-    this.makeFeaturesClickable(true);
-    this.drawButtonsEnabled = true;
+    if (saveResult) {
+      this.isDrawingMode = false;
+      this.zone.run(() => {
+        // change route navigation
+        this.router.navigateByUrl("/select-feature/" + this.currentGeometryType);
+      });
+      this.makeFeaturesClickable(true);
+      this.drawButtonsEnabled = true;
+    }
   }
 
   featureClickHandler(feature) {
-    // unhighlight currently highlighted feature
-    if (this.highLightedFeature) {
-      if (this.highLightedFeature.hasOwnProperty('editable')) {
-        this.highLightedFeature.setEditable(false);
-      }
-      this.highLightedFeature.setDraggable(false);
-    }
-    if (feature.hasOwnProperty('editable')) {
-      feature.setEditable(true);
-    }
-    feature.setDraggable(true);
+    this.highlightFeature(feature);    
     this.highLightedFeature = feature;
+  }
+
+  clearHighlighting() {
+    if (this.highLightedFeature) {
+      this.highLightedFeature.setOptions(this.featureOptionsOnNotHighlighted);
+      this.highLightedFeature.set('icon', '/assets/images/point.png'); //for points
+    }
+  }
+
+  highlightFeature(feature) {
+    feature.setOptions(this.featureOptionsOnHihglighted);
+    feature.set('icon', '/assets/images/point-highlighted.png'); //for points
   }
 
   makeFeaturesClickable(flag) {
@@ -129,119 +150,136 @@ export class ToolBarComponent implements OnInit {
 
   // draw polygon
   drawPolygon() {
-    if (this.activePolygon == undefined || this.activePolygon == null) {    
-      this._onMapClickListener = this.map.addListener('click', this.onMapClick);
+    if (this.activePolygon == undefined || this.activePolygon == null) {
       this._onMapRightClickListner = this.map.addListener('rightclick', this.onMapRightClick);
       // create a polygon
-      this.mapApi.createPolygon(this.featureDefaultProperties).
-      then(p => { 
-        console.log('polygon created');
-        this.activePolygon = p;
-        // add click listner for the polygon
-        p.addListener('click', (e) => {
-          this.featureClickHandler(p);
+      this.mapApi.createPolygon(this.featureOptionsOnDrawing).
+        then(p => {
+          console.log('polygon created');
+          this.activePolygon = p;
+          // add click listner for the polygon
+          p.addListener('click', (e) => {
+            this.clearHighlighting();
+            this.featureClickHandler(p);
+          });
         });
-      });
     }
   }
-  
+
   savePolygon() {
-    if (this.activePolygon && this.activePolygon != null && this.activePolygon.getPath().length > 0) {
-      let path: any = this.activePolygon.getPath();
-      
-      //array fore path
-      let points: GeofencePoint[] = []; // polygon points
-      let index: number = 0;
-      
-      //get points from path
-      path.b.forEach(item => {
-        points.push({
-          id: index,
-          latitude: item.lat(),
-          longitude: item.lng()
-        });
-        index++;
-      });
-      
-      // here you can post arry wherever you want
-      
-      //for now just save it in memory
+    if (this.activePolygon && this.activePolygon != null && this.activePolygon.getPath().length > 2) {
+      console.log(this.activePolygon.getPath());
+      // let path: any = this.activePolygon.getPath();
+      // //array fore path
+      // let points: GeofencePoint[] = []; // polygon points
+      // let index: number = 0;
+      // //get points from path
+      // path.b.forEach(item => {
+      //   points.push({
+      //     id: index,
+      //     latitude: item.lat(),
+      //     longitude: item.lng()
+      //   });
+      //   index++;
+      // });
       this.featureCollection.push(this.activePolygon);
-      
       // then you need to dispose used objects
       this.disposeSomeObjects();
+      return true;
     }
+    return false;
   }
-  
-    // draw polygon
+
+  // draw polygon
   drawPolyline() {
-    if (this.activePolygon == undefined || this.activePolygon == null) {    
-      this._onMapClickListener = this.map.addListener('click', this.onMapClick);
+    if (this.activePolyLine == undefined || this.activePolyLine == null) {
       this._onMapRightClickListner = this.map.addListener('rightclick', this.onMapRightClick);
       // create a polyline
-      this.mapApi.createPolyline(this.featureDefaultProperties).
-      then(p => { 
-        console.log('polyline created');
-        this.activePolyLine = p
-        this.activePolygon = p;
-        // add click listner for the polygon
-        p.addListener('click', (e) => {
-          this.featureClickHandler(p);
+      this.mapApi.createPolyline(this.featureOptionsOnDrawing).
+        then(p => {
+          console.log('polyline created');
+          this.activePolyLine = p
+          // add click listner for the polygon
+          p.addListener('click', (e) => {
+            this.clearHighlighting();
+            this.featureClickHandler(p);
+          });
         });
-      });
     }
   }
-  
+
   savePolyline() {
-    if (this.activePolyLine && this.activePolyLine != null && this.activePolyLine.getPath().length > 0) {
+    if (this.activePolyLine && this.activePolyLine != null && this.activePolyLine.getPath().length > 1) {
       let path: any = this.activePolyLine.getPath();
-      
-      //array for path
-      let points: GeofencePoint[] = []; // polygon points
-      let index: number = 0;
-      
-      //get points from path
-      path.b.forEach(item => {
-        points.push({
-          id: index,
-          latitude: item.lat(),
-          longitude: item.lng()
-        });
-        index++;
-      });
-      
-      // here you can post arry wherever you want
-      
+
+      // //array for path
+      // let points: GeofencePoint[] = []; // polygon points
+      // let index: number = 0;
+
+      // //get points from path
+      // path.b.forEach(item => {
+      //   points.push({
+      //     id: index,
+      //     latitude: item.lat(),
+      //     longitude: item.lng()
+      //   });
+      //   index++;
+      // });
       //for now just save it in memory
-      this.featureCollection.push(this.activePolygon);
-      
+      this.featureCollection.push(this.activePolyLine);
       // then you need to dispose used objects
       this.disposeSomeObjects();
+      return true;
     }
+    return false;
+  }
+
+  drawPoint(e) {
+      // draw marker
+      if (!this.activePoint) {
+        var marker = new google.maps.Marker({
+          position: e.latLng,
+          map: this.map,
+          icon: '/assets/images/point-highlighted.png',
+          draggable: true
+        });
+        marker.addListener('click', (e) => {
+          this.clearHighlighting();
+          this.featureClickHandler(marker);
+        });
+        this.activePoint = marker;
+      }
   }
 
   savePoint() {
-
-    this.disposeSomeObjects();
+    if (this.activePoint) {
+      this.featureCollection.push(this.activePoint);
+      this.disposeSomeObjects();
+      return true;
+    } else {
+      return false;
+    }
   }
   private disposeSomeObjects() {
     if (this.activePolygon) {
-        this.activePolygon.setEditable(false);
-        this.activePolygon.setDraggable(false);
-        this.activePolygon = null;
+      this.highLightedFeature = this.activePolygon;
+      this.highLightedFeature.setOptions(this.featureOptionsOnHihglighted);
+      this.activePolygon = null;
     }
     if (this.activePolyLine) {
-        this.activePolyLine.setEditable(false);
-        this.activePolyLine.setDraggable(false);
-        this.activePolyLine = null;
+      this.highLightedFeature = this.activePolyLine;
+      this.highLightedFeature.setOptions(this.featureOptionsOnHihglighted);
+      this.activePolyLine = null;
     }
     if (this.activePoint) {
-        this.activePoint.setDraggable(false);
-        this.activePoint = null;
+      this.highLightedFeature = this.activePoint;
+      this.highLightedFeature.setOptions(this.featureOptionsOnHihglighted);
+      this.highLightedFeature.set('icon', '/assets/images/point.png');
+      this.activePoint = null;
     }
-    if (this._onMapClickListener) {
-      this._onMapClickListener.remove();
-    }
+    // if (this._onMapClickListener) {
+    //   this._onMapClickListener.remove();
+    // }
     if (this._onMapRightClickListner) {
       this._onMapRightClickListner.remove();
     }
