@@ -15,19 +15,21 @@ declare var google: any;
 export class ToolBarComponent implements OnInit {
   @Input() map:any;
   @Input('mapApi') mapApi: GoogleMapsAPIWrapper;
-
   // poligon
-  private geofences: Polyline[] = [];
-  private activeGeofence?: Polyline;
+  drawButtonsEnabled = true;
+  private featureCollection = [];
+  private activePolygon?: Polyline;
+  private activePolyLine?: Polyline;
+  private activePoint?: any;
+  private highLightedFeature: any;
   private _onMapClickListener: any;
-  private _onMapDbClickListner: any;
+  private _onMapRightClickListner: any;
   private currentGeometryType: string = 'none';
-
-  constructor(private _featureTypeService: FeatureTypeService, private _chRef: ChangeDetectorRef, private router: Router ) { }
+  private featureDefaultProperties = { editable: true, draggable: true, strokeWeight: 1 };
+  constructor(private _featureTypeService: FeatureTypeService, private _chRef: ChangeDetectorRef, private router: Router ) { 
+  }
 
   ngOnInit() {
-    console.log(this.map);
-    
   }
 
   // handle map click
@@ -36,14 +38,25 @@ export class ToolBarComponent implements OnInit {
     // change route navigation
     this.router.navigateByUrl("/select-feature/" + this.currentGeometryType);
     if (this.currentGeometryType == "point") {
-      document.getElementById('saveBtn').click(); // To do: improve this
+      // document.getElementById('saveBtn').click(); // To do: improve this
       // draw marker
-      var marker = new google.maps.Marker({
-          position: e.latLng,
-          map: this.map
+      if (!this.activePoint) {
+        var marker = new google.maps.Marker({
+            position: e.latLng,
+            map: this.map,
+            icon: '/assets/images/black_dot.png',
+            draggable: true
+          });
+        marker.addListener('click', (e) => {
+          this.featureClickHandler(marker);
         });
-    } else {
-      this.activeGeofence.getPath().push(e.latLng);
+        this.activePoint = marker;
+        this.featureCollection.push(marker);
+      }
+    } else if (this.currentGeometryType == 'area') {
+      this.activePolygon.getPath().push(e.latLng);
+    } else if (this.currentGeometryType == 'line') {
+      this.activePolyLine.getPath().push(e.latLng);
     }
   }
 
@@ -58,38 +71,83 @@ export class ToolBarComponent implements OnInit {
   // handle draw area button
   onDrawPolygonClick() {
     this.currentGeometryType = 'area';
-    this.addGeofence();
+    this.drawPolygon();
+    this.makeFeaturesClickable(false);
+    this.drawButtonsEnabled = false;
   }
 
   // handle draw line button
   onDrawLineClick() {
     this.currentGeometryType = 'line';
-    this.addGeofence();
+    this.drawPolyline();
+    this.makeFeaturesClickable(false);
+    this.drawButtonsEnabled = false;
   }
 
   // handle draw point button
   onDrawPointClick() {
     this.currentGeometryType = 'point';
     this._onMapClickListener = this.map.addListener('click', this.onMapClick);
-    this._onMapDbClickListner = this.map.addListener('rightclick', this.onMapRightClick)
+    this._onMapRightClickListner = this.map.addListener('rightclick', this.onMapRightClick)
+    this.makeFeaturesClickable(false);
+    this.drawButtonsEnabled = false;
+  }
+
+  onFinishDrawClick() {
+    console.log(this.currentGeometryType);
+    if (this.currentGeometryType == 'line') {
+      this.savePolyline();
+    } else if (this.currentGeometryType == 'area') {
+      this.savePolygon();
+    } else if (this.currentGeometryType == 'point') {
+      this.savePoint();
+    }
+    this.makeFeaturesClickable(true);
+    this.drawButtonsEnabled = true;
+  }
+
+  featureClickHandler(feature) {
+    // unhighlight currently highlighted feature
+    if (this.highLightedFeature) {
+      if (this.highLightedFeature.hasOwnProperty('editable')) {
+        this.highLightedFeature.setEditable(false);
+      }
+      this.highLightedFeature.setDraggable(false);
+    }
+    if (feature.hasOwnProperty('editable')) {
+      feature.setEditable(true);
+    }
+    feature.setDraggable(true);
+    this.highLightedFeature = feature;
+  }
+
+  makeFeaturesClickable(flag) {
+    this.featureCollection.forEach((feature) => {
+      feature.set('clickable', flag);
+    });
   }
 
   // draw polygon
-  addGeofence() {
-    if (this.activeGeofence == undefined || this.activeGeofence == null) {    
+  drawPolygon() {
+    if (this.activePolygon == undefined || this.activePolygon == null) {    
       this._onMapClickListener = this.map.addListener('click', this.onMapClick);
-      this._onMapDbClickListner = this.map.addListener('rightclick', this.onMapRightClick);
+      this._onMapRightClickListner = this.map.addListener('rightclick', this.onMapRightClick);
       // create a polygon
-      this.mapApi.createPolygon({ editable: true, draggable: true }).
-      then(p => { console.log('polygon created');
-        this.activeGeofence = p});
-      console.log('adding geofence');
+      this.mapApi.createPolygon(this.featureDefaultProperties).
+      then(p => { 
+        console.log('polygon created');
+        this.activePolygon = p;
+        // add click listner for the polygon
+        p.addListener('click', (e) => {
+          this.featureClickHandler(p);
+        });
+      });
     }
   }
   
-  saveGeofence() {
-    if (this.activeGeofence && this.activeGeofence != null && this.activeGeofence.getPath().length > 0) {
-      let path: any = this.activeGeofence.getPath();
+  savePolygon() {
+    if (this.activePolygon && this.activePolygon != null && this.activePolygon.getPath().length > 0) {
+      let path: any = this.activePolygon.getPath();
       
       //array fore path
       let points: GeofencePoint[] = []; // polygon points
@@ -108,25 +166,89 @@ export class ToolBarComponent implements OnInit {
       // here you can post arry wherever you want
       
       //for now just save it in memory
-      this.geofences.push(this.activeGeofence);
+      this.featureCollection.push(this.activePolygon);
       
       // then you need to dispose used objects
       this.disposeSomeObjects();
     }
   }
   
-  private disposeSomeObjects() {
-    if (this.activeGeofence) {
-        this.activeGeofence.setEditable(false);
-        this.activeGeofence.setDraggable(false);
-        this.activeGeofence = null;
+    // draw polygon
+  drawPolyline() {
+    if (this.activePolygon == undefined || this.activePolygon == null) {    
+      this._onMapClickListener = this.map.addListener('click', this.onMapClick);
+      this._onMapRightClickListner = this.map.addListener('rightclick', this.onMapRightClick);
+      // create a polyline
+      this.mapApi.createPolyline(this.featureDefaultProperties).
+      then(p => { 
+        console.log('polyline created');
+        this.activePolyLine = p
+        this.activePolygon = p;
+        // add click listner for the polygon
+        p.addListener('click', (e) => {
+          this.featureClickHandler(p);
+        });
+      });
     }
+  }
+  
+  savePolyline() {
+    if (this.activePolyLine && this.activePolyLine != null && this.activePolyLine.getPath().length > 0) {
+      let path: any = this.activePolyLine.getPath();
+      
+      //array for path
+      let points: GeofencePoint[] = []; // polygon points
+      let index: number = 0;
+      
+      //get points from path
+      path.b.forEach(item => {
+        points.push({
+          id: index,
+          latitude: item.lat(),
+          longitude: item.lng()
+        });
+        index++;
+      });
+      
+      // here you can post arry wherever you want
+      
+      //for now just save it in memory
+      this.featureCollection.push(this.activePolygon);
+      
+      // then you need to dispose used objects
+      this.disposeSomeObjects();
+    }
+  }
 
+  savePoint() {
+
+    this.disposeSomeObjects();
+  }
+  private disposeSomeObjects() {
+    if (this.activePolygon) {
+        this.activePolygon.setEditable(false);
+        this.activePolygon.setDraggable(false);
+        this.activePolygon = null;
+    }
+    if (this.activePolyLine) {
+        this.activePolyLine.setEditable(false);
+        this.activePolyLine.setDraggable(false);
+        this.activePolyLine = null;
+    }
+    if (this.activePoint) {
+        this.activePoint.setDraggable(false);
+        this.activePoint = null;
+    }
     if (this._onMapClickListener) {
       this._onMapClickListener.remove();
     }
+    if (this._onMapRightClickListner) {
+      this._onMapRightClickListner.remove();
+    }
   }
 }
+
+
 // represent a point
 interface GeofencePoint {
   id: number;
