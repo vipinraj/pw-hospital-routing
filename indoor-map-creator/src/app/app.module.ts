@@ -4,6 +4,10 @@ import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AgmCoreModule } from '@agm/core';
 import { MaterialModule, MdNativeDateModule } from '@angular/material';
+import {
+  FormsModule,
+  ReactiveFormsModule
+} from '@angular/forms';
 import 'hammerjs';
 
 import { AppComponent } from './app.component';
@@ -13,6 +17,8 @@ import { ToolBarComponent } from './tool-bar/tool-bar.component';
 import { SearchPlacesComponent } from './search-places/search-places.component';
 import { FeatureTypeComponent } from './feature-type/feature-type.component';
 import { FeatureTagEditorComponent } from './feature-tag-editor/feature-tag-editor.component';
+
+import { FeatureService }  from './services/feature.service';
 
 const routes =  [
                   { path: '', redirectTo: 'select-feature', pathMatch: 'full' },
@@ -33,6 +39,8 @@ const routes =  [
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule,
     AgmCoreModule,
     MaterialModule,
     MdNativeDateModule,
@@ -42,7 +50,7 @@ const routes =  [
     }),
     RouterModule.forRoot(routes)
   ],
-  providers: [],
+  providers: [ FeatureService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

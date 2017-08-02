@@ -4,6 +4,9 @@ import { GoogleMapsAPIWrapper } from '@agm/core';
 import { Polyline } from "@agm/core/services/google-maps-types";
 import { FeatureTypeService } from '../services/feature-type.service';
 import { Router } from '@angular/router';
+import { FeatureService } from "../services/feature.service";
+import { Feature } from '../models/feature.model';
+import { Building } from '../models/building.model';
 declare var google: any;
 
 // drawing tools
@@ -30,11 +33,28 @@ export class ToolBarComponent implements OnInit {
   private featureOptionsOnDrawing = { editable: true, draggable: true, strokeWeight: 2, strokeColor: "black"};
   private featureOptionsOnHihglighted = { editable: true, draggable: true, strokeWeight: 2, strokeColor: "red"};
   private featureOptionsOnNotHighlighted = { editable: false, draggable: false, strokeWeight: 2, strokeColor: "black"};
-  constructor(private _featureTypeService: FeatureTypeService, private _chRef: ChangeDetectorRef, private router: Router, private zone: NgZone) {
+  constructor(private _featureTypeService: FeatureTypeService, private _chRef: ChangeDetectorRef, private router: Router, private zone: NgZone, private featureService: FeatureService) {
 
   }
 
   ngOnInit() {
+    var building = new Building();
+    building.name = 'building 1';
+    building.note = "dsd";
+    building.wheelchair = 'yes';
+    var building2 = new Building();
+    building2.name = 'building 1';
+    building2.note = "dsd";
+    building2.wheelchair = 'yes';
+    this.featureService.add(building);
+    this.featureService.add(building2);
+    setTimeout(() => {
+      this.featureService.observableList.subscribe(
+        item => {
+          console.log(item);
+        }
+      );
+    }, 1000*4);
   }
 
   // handle map click
