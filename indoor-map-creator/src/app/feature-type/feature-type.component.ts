@@ -1,7 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FeatureService } from "../services/feature.service";
-import { Building } from '../models/building.model'
+import { Building } from '../models/building.model';
+import { Room } from '../models/room.model';
+
 // This component represent the feature types
 // for a perticular geometry.
 @Component({
@@ -42,13 +44,15 @@ export class FeatureTypeComponent implements OnInit {
 
   onChooseFeatureType(featureType) {
     console.log("featureType: " + featureType);
+    var feature;
     switch (featureType) {
       case "building":
-        var building = new Building();
-        building.ref = this.selectedGeometryRefid;
+        feature = new Building();
+        feature.ref = this.selectedGeometryRefid;
         break;
       case "room":
-        
+        feature = new Room();
+        feature.ref = this.selectedGeometryRefid;
         break;
       case "corridor":
         
@@ -64,7 +68,7 @@ export class FeatureTypeComponent implements OnInit {
         items.forEach((item)=> {
           if (item.refId == this.selectedGeometryRefid) {
             item.geometry.featureType = featureType;
-            item.feature = building;
+            item.feature = feature;
             console.log('Feature set');
             this.router.navigateByUrl("/edit-tags/" + this.selectedGeometryRefid);
           }

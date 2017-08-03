@@ -44,6 +44,12 @@ export class FeatureTagEditorComponent implements OnInit {
   ngOnInit() {
   }
 
+  onSubmit() {
+    var formData = this.tagForm.value;
+    this.selectedFeatureControls.forEach((control) => {
+      control.value = formData[control.key];
+    });
+  }
 }
 
 // https://angular.io/guide/reactive-forms#nested-formgroups

@@ -6,14 +6,8 @@ import { NumericTextBox } from '../ui-controls/numeric-textbox';
 import { UrlTextBox } from '../ui-controls/url-textbox';
 import { SelectBox } from '../ui-controls/selectbox';
 
-export class Building extends Feature {
-    building: string; // == hospital
-    min_level: number;
-    max_level: number;
-    non_existent_levels: string;
-    wheelchair: string;
-    wheelchair_description_en: string;
-    website: string;
+export class Room extends Feature {
+
     formControls: BaseControl<any>[] = [
         new TextBox({
             key: 'ref',
@@ -33,46 +27,27 @@ export class Building extends Feature {
             label: 'Description'
         }),
         new SelectBox({
-            key: 'building',
-            label: 'Building Type',
+            key: 'room',
+            label: 'Room Type',
             options: [
-                { key: 'hospital', value: 'Hospital' },
-                { key: 'building', value: 'Building' }
-            ],
-            value: 'hospital',
-            required: true
-        }),
-        new NumericTextBox({
-            key: 'min_level',
-            label: 'Minimum Level',
-            required: true
-        }),
-        new NumericTextBox({
-            key: 'max_level',
-            label: 'Maximum Level',
-            required: true
-        }),
-        new TextBox({
-            key: 'non_existent_levels',
-            label: 'Non Existent Levels',
+                { key: 'shop', value: 'Shop' },
+                { key: 'restaurant', value: 'Restaurant' },
+                { key: 'office', value: 'Office' },
+                { key: 'entrance', value: 'Entrance' },
+                { key: 'stairs', value: 'Stairs' },
+                { key: 'toilets', value: 'Toilets' },
+                { key: 'toilet', value: 'Toilet' }
+            ]
         }),
         new SelectBox({
-            key: 'wheelchair',
-            label: 'Wheelchair Allowed',
+            key: 'amenity',
+            label: 'Amenity',
             options: [
-                { key: 'yes', value: 'Yes' },
-                { key: 'no', value: 'No' }
-            ],
-            value: 'yes'
-        }),
-        new TextBox({
-            key: 'wheelchair_description_en',
-            label: 'Wheelchair Description',
-        }),
-        new UrlTextBox({
-            key: 'website',
-            label: 'Website'
-        }),
+                { key: 'clinic', value: 'Clinic' },
+                { key: 'dentist', value: 'Dentist' },
+                { key: 'doctor', value: 'Doctor' }
+            ]
+        })
     ];
     // formControls = {
     //     "ref": 1,

@@ -150,9 +150,19 @@ export class ToolBarComponent implements OnInit {
     }
   }
 
-  featureClickHandler(feature) {
+  featureClickHandler(feature, geomType) {
     this.highlightFeature(feature);
     this.highLightedFeature = feature;
+    var refId = feature.refId;
+    if (feature.hasOwnProperty('featureType') && feature.featureType != null) {
+      this.zone.run(() => {
+        this.router.navigateByUrl("/edit-tags/" + refId);
+      });
+    } else {
+      this.zone.run(() => {
+        this.router.navigateByUrl("/select-feature/" + geomType + "/" + refId );
+      });
+    }
   }
 
   clearHighlighting() {
@@ -186,7 +196,7 @@ export class ToolBarComponent implements OnInit {
           // add click listner for the polygon
           p.addListener('click', (e) => {
             this.clearHighlighting();
-            this.featureClickHandler(p);
+            this.featureClickHandler(p, 'area');
           });
         });
     }
@@ -232,7 +242,7 @@ export class ToolBarComponent implements OnInit {
           // add click listner for the polygon
           p.addListener('click', (e) => {
             this.clearHighlighting();
-            this.featureClickHandler(p);
+            this.featureClickHandler(p, 'line');
           });
         });
     }
@@ -275,7 +285,7 @@ export class ToolBarComponent implements OnInit {
       });
       marker.addListener('click', (e) => {
         this.clearHighlighting();
-        this.featureClickHandler(marker);
+        this.featureClickHandler(marker, 'point');
       });
       this.activePoint = marker;
     }
