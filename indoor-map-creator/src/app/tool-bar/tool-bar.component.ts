@@ -1,5 +1,7 @@
-import {  Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, 
-          ViewChild, ElementRef, AfterContentInit, HostBinding, NgZone } from '@angular/core';
+import {
+  Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef,
+  ViewChild, ElementRef, AfterContentInit, HostBinding, NgZone
+} from '@angular/core';
 import { GoogleMapsAPIWrapper } from '@agm/core';
 import { Polyline } from "@agm/core/services/google-maps-types";
 import { FeatureTypeService } from '../services/feature-type.service';
@@ -7,6 +9,7 @@ import { Router } from '@angular/router';
 import { FeatureService } from "../services/feature.service";
 import { Feature } from '../models/feature.model';
 import { Building } from '../models/building.model';
+import { UUID } from 'angular2-uuid';
 declare var google: any;
 
 // drawing tools
@@ -22,7 +25,7 @@ export class ToolBarComponent implements OnInit {
   // poligon
   drawButtonsEnabled = true;
   private featureCollection = [];
-  private activePolygon?: Polyline;
+  private activePolygon?: any;
   private activePolyLine?: Polyline;
   private activePoint?: any;
   private highLightedFeature: any;
@@ -30,9 +33,9 @@ export class ToolBarComponent implements OnInit {
   private _onMapClickListener: any;
   private _onMapRightClickListner: any;
   private currentGeometryType: string = 'none';
-  private featureOptionsOnDrawing = { editable: true, draggable: true, strokeWeight: 2, strokeColor: "black"};
-  private featureOptionsOnHihglighted = { editable: true, draggable: true, strokeWeight: 2, strokeColor: "red"};
-  private featureOptionsOnNotHighlighted = { editable: false, draggable: false, strokeWeight: 2, strokeColor: "black"};
+  private featureOptionsOnDrawing = { editable: true, draggable: true, strokeWeight: 2, strokeColor: "black" };
+  private featureOptionsOnHihglighted = { editable: true, draggable: true, strokeWeight: 2, strokeColor: "red" };
+  private featureOptionsOnNotHighlighted = { editable: false, draggable: false, strokeWeight: 2, strokeColor: "black" };
   constructor(private _featureTypeService: FeatureTypeService, private _chRef: ChangeDetectorRef, private router: Router, private zone: NgZone, private featureService: FeatureService) {
 
   }
@@ -46,15 +49,15 @@ export class ToolBarComponent implements OnInit {
     building2.name = 'building 1';
     building2.note = "dsd";
     building2.wheelchair = 'yes';
-    this.featureService.add(building);
-    this.featureService.add(building2);
+    // this.featureService.add(building);
+    // this.featureService.add(building2);
     setTimeout(() => {
       this.featureService.observableList.subscribe(
         item => {
           console.log(item);
         }
       );
-    }, 1000*4);
+    }, 1000 * 20);
   }
 
   // handle map click
@@ -127,9 +130,11 @@ export class ToolBarComponent implements OnInit {
 
   finishDrawing() {
     var saveResult = true;
+    var refId;
     if (this.currentGeometryType == 'line') {
       saveResult = this.savePolyline();
     } else if (this.currentGeometryType == 'area') {
+      refId = this.activePolygon.refId;
       saveResult = this.savePolygon();
     } else if (this.currentGeometryType == 'point') {
       saveResult = this.savePoint();
@@ -138,7 +143,7 @@ export class ToolBarComponent implements OnInit {
       this.isDrawingMode = false;
       this.zone.run(() => {
         // change route navigation
-        this.router.navigateByUrl("/select-feature/" + this.currentGeometryType);
+        this.router.navigateByUrl("/select-feature/" + this.currentGeometryType + "/" + refId );
       });
       this.makeFeaturesClickable(true);
       this.drawButtonsEnabled = true;
@@ -146,7 +151,7 @@ export class ToolBarComponent implements OnInit {
   }
 
   featureClickHandler(feature) {
-    this.highlightFeature(feature);    
+    this.highlightFeature(feature);
     this.highLightedFeature = feature;
   }
 
@@ -163,8 +168,8 @@ export class ToolBarComponent implements OnInit {
   }
 
   makeFeaturesClickable(flag) {
-    this.featureCollection.forEach((feature) => {
-      feature.set('clickable', flag);
+    this.featureCollection.forEach((item) => {
+      item.feature.set('clickable', flag);
     });
   }
 
@@ -177,6 +182,7 @@ export class ToolBarComponent implements OnInit {
         then(p => {
           console.log('polygon created');
           this.activePolygon = p;
+          this.activePolygon.refId = UUID.UUID();
           // add click listner for the polygon
           p.addListener('click', (e) => {
             this.clearHighlighting();
@@ -202,7 +208,11 @@ export class ToolBarComponent implements OnInit {
       //   });
       //   index++;
       // });
-      this.featureCollection.push(this.activePolygon);
+      this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePolygon });
+      this.featureService.add({ 
+                                refId: this.activePolygon.refId, geomType: 'polygon',
+                                geometry: this.activePolygon, feature: null
+                              });
       // then you need to dispose used objects
       this.disposeSomeObjects();
       return true;
@@ -246,7 +256,7 @@ export class ToolBarComponent implements OnInit {
       //   index++;
       // });
       //for now just save it in memory
-      this.featureCollection.push(this.activePolyLine);
+      this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePolyLine });
       // then you need to dispose used objects
       this.disposeSomeObjects();
       return true;
@@ -255,25 +265,25 @@ export class ToolBarComponent implements OnInit {
   }
 
   drawPoint(e) {
-      // draw marker
-      if (!this.activePoint) {
-        var marker = new google.maps.Marker({
-          position: e.latLng,
-          map: this.map,
-          icon: '/assets/images/point-highlighted.png',
-          draggable: true
-        });
-        marker.addListener('click', (e) => {
-          this.clearHighlighting();
-          this.featureClickHandler(marker);
-        });
-        this.activePoint = marker;
-      }
+    // draw marker
+    if (!this.activePoint) {
+      var marker = new google.maps.Marker({
+        position: e.latLng,
+        map: this.map,
+        icon: '/assets/images/point-highlighted.png',
+        draggable: true
+      });
+      marker.addListener('click', (e) => {
+        this.clearHighlighting();
+        this.featureClickHandler(marker);
+      });
+      this.activePoint = marker;
+    }
   }
 
   savePoint() {
     if (this.activePoint) {
-      this.featureCollection.push(this.activePoint);
+      this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePoint });
       this.disposeSomeObjects();
       return true;
     } else {

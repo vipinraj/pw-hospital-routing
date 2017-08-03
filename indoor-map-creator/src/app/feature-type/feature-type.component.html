@@ -1,4 +1,4 @@
-<md-card *ngFor="let feature of geometryFeatureMapping[selectedGeometry]" class="featureType" [routerLink]="['/edit-tags']">
+<md-card *ngFor="let feature of geometryFeatureMapping[selectedGeometry]" class="featureType" (click)='onChooseFeatureType(feature.name)' >
   <div>
     <md-icon >{{feature.icon}}</md-icon>
   </div>
@@ -6,3 +6,5 @@
     <span>{{feature.label}}</span>
   </div>
 </md-card>
+
+<!-- [routerLink]="['/edit-tags']" -->

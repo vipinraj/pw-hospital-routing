@@ -5,14 +5,15 @@ import { Feature } from "../models/feature.model";
 
 @Injectable()
 export class FeatureService {
-    private _list: Feature[] = [];
-    private _observableList: BehaviorSubject<Feature[]> = new BehaviorSubject([]);
+    private _list: { refId: string, geomType: string, geometry: any, feature: any }[] = [];
+    private _observableList: 
+    BehaviorSubject<{ refId: string, geomType: string, geometry: any, feature: any }[]> = new BehaviorSubject([]);
 
-    get observableList(): Observable<Feature[]> {
+    get observableList(): Observable<{ refId: string, geomType: string, geometry: any, feature: any }[]> {
         return this._observableList.asObservable()
     };
 
-    add(feature: Feature) {
+    add(feature: { refId: string, geomType: string, geometry: any, feature: any }) {
         this._list.push(feature);
         this._observableList.next(this._list);
     }

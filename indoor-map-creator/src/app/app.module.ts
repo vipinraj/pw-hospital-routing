@@ -19,11 +19,12 @@ import { FeatureTypeComponent } from './feature-type/feature-type.component';
 import { FeatureTagEditorComponent } from './feature-tag-editor/feature-tag-editor.component';
 
 import { FeatureService }  from './services/feature.service';
+import { DynamicFormFieldComponent } from './dynamic-form-field/dynamic-form-field.component';
 
 const routes =  [
                   { path: '', redirectTo: 'select-feature', pathMatch: 'full' },
-                  { path: 'select-feature/:selectedGeomType', component: FeatureTypeComponent },
-                  { path: 'edit-tags', component: FeatureTagEditorComponent }
+                  { path: 'select-feature/:selectedGeomType/:refId', component: FeatureTypeComponent },
+                  { path: 'edit-tags/:refId', component: FeatureTagEditorComponent }
                 ];
 
 @NgModule({
@@ -34,7 +35,8 @@ const routes =  [
     ToolBarComponent,
     SearchPlacesComponent,
     FeatureTypeComponent,
-    FeatureTagEditorComponent
+    FeatureTagEditorComponent,
+    DynamicFormFieldComponent
   ],
   imports: [
     BrowserModule,

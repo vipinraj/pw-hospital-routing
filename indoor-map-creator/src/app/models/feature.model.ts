@@ -1,6 +1,6 @@
 export class Feature {
-    ref: number;
-    ref_beacon: number;
+    ref: string;
+    ref_beacon: string;
     feature: any;
     note: string;
     name: string;

@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-
+import { ActivatedRoute, Router } from '@angular/router';
+import { FeatureService } from "../services/feature.service";
+import { Building } from '../models/building.model'
 // This component represent the feature types
 // for a perticular geometry.
 @Component({
@@ -10,7 +11,8 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class FeatureTypeComponent implements OnInit {
   // type of selected geometry
-  @Input("selectedGeometryType") selectedGeometry: string;
+  selectedGeometry: string;
+  selectedGeometryRefid: string;
   geometryFeatureMapping = {
     'area': [
       { name: "building", label: "Building", icon: "home" },
@@ -28,9 +30,47 @@ export class FeatureTypeComponent implements OnInit {
       { name: "elevators", label: "Elevators", icon: "import_export" },
     ]
   };
-  constructor(private route: ActivatedRoute) { 
+  constructor(private route: ActivatedRoute, private featureService: FeatureService, private router: Router) { 
     // get parmeter from url
-    route.params.subscribe(params => { this.selectedGeometry = params['selectedGeomType']; });
+    route.params.subscribe(params => { 
+      this.selectedGeometry = params['selectedGeomType'];
+      this.selectedGeometryRefid = params['refId'];
+    });
+    console.log(this.selectedGeometry);
+    console.log(this.selectedGeometryRefid);
+  }
+
+  onChooseFeatureType(featureType) {
+    console.log("featureType: " + featureType);
+    switch (featureType) {
+      case "building":
+        var building = new Building();
+        building.ref = this.selectedGeometryRefid;
+        break;
+      case "room":
+        
+        break;
+      case "corridor":
+        
+        break;
+      case "area":
+        
+        break;
+      default:
+        break;
+    }
+    this.featureService.observableList.subscribe(
+      items => {
+        items.forEach((item)=> {
+          if (item.refId == this.selectedGeometryRefid) {
+            item.geometry.featureType = featureType;
+            item.feature = building;
+            console.log('Feature set');
+            this.router.navigateByUrl("/edit-tags/" + this.selectedGeometryRefid);
+          }
+        });
+      }
+    );
   }
 
   ngOnInit() {

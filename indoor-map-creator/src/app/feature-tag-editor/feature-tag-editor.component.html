@@ -1,4 +1,22 @@
-<form class="example-form">
+<div>
+  <form (ngSubmit)="onSubmit()" [formGroup]="tagForm" class="example-form">
+
+    <div *ngFor="let control of selectedFeatureControls" class="form-row">
+      <dynamic-form-field [field]="control" [form]="tagForm"></dynamic-form-field>
+    </div>
+
+     <div class="form-row">
+      <button type="submit" [disabled]="!tagForm.valid">Save</button>
+    </div> 
+  </form>
+
+  <!-- <div *ngIf="payLoad" class="form-row">
+    <strong>Saved the following values</strong><br>{{payLoad}}
+  </div> -->
+</div>
+
+
+<!-- <form class="example-form">
   <md-input-container class="example-full-width">
     <input mdInput placeholder="Reference" disabled value="1">
   </md-input-container>
@@ -51,4 +69,4 @@
     </md-input-container></td>
   </tr></table>
   <button md-raised-button style="float: right">Add</button>
-</form>
+</form> -->
