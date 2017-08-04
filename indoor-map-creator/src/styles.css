@@ -10,3 +10,23 @@ body, html {
     margin: 0px;
     height: 100%;
 }
+
+.mat-input-infix {
+    font-family: 'Roboto' !important;
+}
+
+.mat-input-placeholder, .mat-select-placeholder {
+  color: rgb(111, 110, 110);
+}
+
+.sideNavTitle {
+  margin: 5px 15px;
+  font-family: 'Roboto';
+  border-bottom: 1px solid lightgrey;
+  margin-bottom: 20px;
+}
+
+.sideNavTitle h3 {
+  margin-bottom: 10px;
+  color: #673ab7;
+}

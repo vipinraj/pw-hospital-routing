@@ -1,32 +1,36 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { GoogleMapsAPIWrapper } from '@agm/core';
+import { MapApiService } from '../services/map-api.service';
 declare var google: any;
 
 // takes care of location search
 @Component({
   selector: 'app-search-places',
   templateUrl: './search-places.component.html',
-  styleUrls: ['./search-places.component.css'],
-  providers: []
+  styleUrls: ['./search-places.component.css']
 })
 export class SearchPlacesComponent implements OnInit, AfterViewInit {
   map: any;
-  @Input() mapApi: GoogleMapsAPIWrapper;
+  mapApi: GoogleMapsAPIWrapper;
   @ViewChild('searchBox') searchBox: ElementRef;
 
-  constructor() { 
+  constructor(private _mapApiService: MapApiService) {
   }
 
   ngOnInit() {
-    console.log(this.searchBox);
+    this._mapApiService.mapApiSource.subscribe(
+      (mapApi) => {
+        this.mapApi = mapApi;
+      });
     this.mapApi.getNativeMap().then((map: any) => {
       this.map = map;
+      console.log(map);
       var searchBox = new google.maps.places.SearchBox(this.searchBox.nativeElement);
       // Bias the SearchBox results towards current map's viewport.
-      map.addListener('bounds_changed', function() {
+      map.addListener('bounds_changed', function () {
         searchBox.setBounds(map.getBounds());
       });
-      searchBox.addListener('places_changed', function() {
+      searchBox.addListener('places_changed', function () {
         var places = searchBox.getPlaces();
 
         if (places.length == 0) {
@@ -35,7 +39,7 @@ export class SearchPlacesComponent implements OnInit, AfterViewInit {
 
         // For each place, get the icon, name and location.
         var bounds = new google.maps.LatLngBounds();
-        places.forEach(function(place) {
+        places.forEach(function (place) {
           if (!place.geometry) {
             console.log("Returned place contains no geometry");
             return;

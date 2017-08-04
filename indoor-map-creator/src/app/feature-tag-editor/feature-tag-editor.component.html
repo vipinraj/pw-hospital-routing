@@ -1,13 +1,16 @@
+<div class="sideNavTitle">
+  <h3>Edit feature tags</h3>
+</div>
 <div>
-  <form (ngSubmit)="onSubmit()" [formGroup]="tagForm" class="example-form">
+  <form (ngSubmit)="onSubmit()" [formGroup]="tagForm" class="tag-edit-form">
 
     <div *ngFor="let control of selectedFeatureControls" class="form-row">
       <dynamic-form-field [field]="control" [form]="tagForm"></dynamic-form-field>
     </div>
 
-     <div class="form-row">
+    <!-- <div class="form-row">
       <button type="submit" [disabled]="!tagForm.valid">Save</button>
-    </div> 
+    </div> -->
   </form>
 
   <!-- <div *ngIf="payLoad" class="form-row">

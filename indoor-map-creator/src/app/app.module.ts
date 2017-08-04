@@ -18,14 +18,15 @@ import { SearchPlacesComponent } from './search-places/search-places.component';
 import { FeatureTypeComponent } from './feature-type/feature-type.component';
 import { FeatureTagEditorComponent } from './feature-tag-editor/feature-tag-editor.component';
 
-import { FeatureService }  from './services/feature.service';
+import { FeatureService } from './services/feature.service';
 import { DynamicFormFieldComponent } from './dynamic-form-field/dynamic-form-field.component';
+import { TagEditorConfirmDeactivateGuard } from './services/TagEditorConfirmDeactivateGuard';
 
-const routes =  [
-                  { path: '', redirectTo: 'select-feature', pathMatch: 'full' },
-                  { path: 'select-feature/:selectedGeomType/:refId', component: FeatureTypeComponent },
-                  { path: 'edit-tags/:refId', component: FeatureTagEditorComponent }
-                ];
+const routes = [
+  { path: '', component: SearchPlacesComponent },
+  { path: 'select-feature/:selectedGeomType/:refId', component: FeatureTypeComponent },
+  { path: 'edit-tags/:refId', component: FeatureTagEditorComponent, canDeactivate: [TagEditorConfirmDeactivateGuard] }
+];
 
 @NgModule({
   declarations: [
@@ -52,7 +53,7 @@ const routes =  [
     }),
     RouterModule.forRoot(routes)
   ],
-  providers: [ FeatureService ],
+  providers: [FeatureService, TagEditorConfirmDeactivateGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

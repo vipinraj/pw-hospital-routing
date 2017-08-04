@@ -28,12 +28,11 @@ export class FeatureTagEditorComponent implements OnInit {
         items => {
           items.forEach((item) => {
             if (item.refId == this.selectedFeatureRefId) {
-              var building = item.feature;
               // populating the reference textbox
               item.feature.formControls[0].value = this.selectedFeatureRefId;
               this.tagForm = ffs.toFormGroup(item.feature.formControls);
               this.selectedFeatureControls = item.feature.formControls;
-              console.log(this.tagForm);
+              // console.log(this.tagForm);
             }
           });
         }
@@ -44,11 +43,20 @@ export class FeatureTagEditorComponent implements OnInit {
   ngOnInit() {
   }
 
+  get isFormValid() {
+    if (this.tagForm.valid) {
+      // save form data
+      var formData = this.tagForm.value;
+      this.selectedFeatureControls.forEach((control) => {
+        control.value = formData[control.key];
+      });
+      return true;
+    }
+    return false;
+  }
+
   onSubmit() {
-    var formData = this.tagForm.value;
-    this.selectedFeatureControls.forEach((control) => {
-      control.value = formData[control.key];
-    });
+
   }
 }
 

@@ -36,28 +36,12 @@ export class ToolBarComponent implements OnInit {
   private featureOptionsOnDrawing = { editable: true, draggable: true, strokeWeight: 2, strokeColor: "black" };
   private featureOptionsOnHihglighted = { editable: true, draggable: true, strokeWeight: 2, strokeColor: "red" };
   private featureOptionsOnNotHighlighted = { editable: false, draggable: false, strokeWeight: 2, strokeColor: "black" };
-  constructor(private _featureTypeService: FeatureTypeService, private _chRef: ChangeDetectorRef, private router: Router, private zone: NgZone, private featureService: FeatureService) {
+
+  constructor(private _chRef: ChangeDetectorRef, private router: Router, private zone: NgZone, private featureService: FeatureService) {
 
   }
 
   ngOnInit() {
-    var building = new Building();
-    building.name = 'building 1';
-    building.note = "dsd";
-    building.wheelchair = 'yes';
-    var building2 = new Building();
-    building2.name = 'building 1';
-    building2.note = "dsd";
-    building2.wheelchair = 'yes';
-    // this.featureService.add(building);
-    // this.featureService.add(building2);
-    setTimeout(() => {
-      this.featureService.observableList.subscribe(
-        item => {
-          console.log(item);
-        }
-      );
-    }, 1000 * 20);
   }
 
   // handle map click
@@ -72,12 +56,18 @@ export class ToolBarComponent implements OnInit {
         this.activePolyLine.getPath().push(e.latLng);
       }
     } else {
-      this.clearHighlighting();
       // Map events runs out of the Angular 2 zone.
       // Therefore it is neccessary to use the NgZone.run()
       // See: https://goo.gl/MzcPwQ
+
       this.zone.run(() => {
-        this.router.navigateByUrl("/");
+        this.router.navigateByUrl("/").then(
+          (success) => {
+            if (success || success == null) {
+              this.clearHighlighting();
+            }
+          }
+        );
       });
     }
   }
@@ -90,42 +80,58 @@ export class ToolBarComponent implements OnInit {
 
   // handle draw area button
   onDrawPolygonClick() {
-    if (!this._onMapClickListener) {
-      this._onMapClickListener = this.map.addListener('click', this.onMapClick);
-    }
-    this.currentGeometryType = 'area';
-    this.isDrawingMode = true;
-    this.drawPolygon();
-    this.makeFeaturesClickable(false);
-    this.drawButtonsEnabled = false;
-    this.clearHighlighting();
+    // navigate and check if navigation success
+    this.router.navigateByUrl("/").then(
+      (success) => {
+        if (success || success == null) {
+          if (!this._onMapClickListener) {
+            this._onMapClickListener = this.map.addListener('click', this.onMapClick);
+          }
+          this.currentGeometryType = 'area';
+          this.isDrawingMode = true;
+          this.drawPolygon();
+          this.makeFeaturesClickable(false);
+          this.drawButtonsEnabled = false;
+          this.clearHighlighting();
+        }
+      });
   }
 
   // handle draw line button
   onDrawLineClick() {
-    if (!this._onMapClickListener) {
-      this._onMapClickListener = this.map.addListener('click', this.onMapClick);
-    }
-    this.currentGeometryType = 'line';
-    this.isDrawingMode = true;
-    this.drawPolyline();
-    this.makeFeaturesClickable(false);
-    this.drawButtonsEnabled = false;
-    this.clearHighlighting();
+    this.router.navigateByUrl("/").then(
+      (success) => {
+        if (success || success == null) {
+          if (!this._onMapClickListener) {
+            this._onMapClickListener = this.map.addListener('click', this.onMapClick);
+          }
+          this.currentGeometryType = 'line';
+          this.isDrawingMode = true;
+          this.drawPolyline();
+          this.makeFeaturesClickable(false);
+          this.drawButtonsEnabled = false;
+          this.clearHighlighting();
+        }
+      });
   }
 
   // handle draw point button
   onDrawPointClick() {
-    if (!this._onMapClickListener) {
-      this._onMapClickListener = this.map.addListener('click', this.onMapClick);
-    }
-    this.currentGeometryType = 'point';
-    this.isDrawingMode = true;
-    this._onMapClickListener = this.map.addListener('click', this.onMapClick);
-    this._onMapRightClickListner = this.map.addListener('rightclick', this.onMapRightClick)
-    this.makeFeaturesClickable(false);
-    this.drawButtonsEnabled = false;
-    this.clearHighlighting();
+    this.router.navigateByUrl("/").then(
+      (success) => {
+        if (success || success == null) {
+          if (!this._onMapClickListener) {
+            this._onMapClickListener = this.map.addListener('click', this.onMapClick);
+          }
+          this.currentGeometryType = 'point';
+          this.isDrawingMode = true;
+          this._onMapClickListener = this.map.addListener('click', this.onMapClick);
+          this._onMapRightClickListner = this.map.addListener('rightclick', this.onMapRightClick)
+          this.makeFeaturesClickable(false);
+          this.drawButtonsEnabled = false;
+          this.clearHighlighting();
+        }
+      });
   }
 
   finishDrawing() {
@@ -143,7 +149,7 @@ export class ToolBarComponent implements OnInit {
       this.isDrawingMode = false;
       this.zone.run(() => {
         // change route navigation
-        this.router.navigateByUrl("/select-feature/" + this.currentGeometryType + "/" + refId );
+        this.router.navigateByUrl("/select-feature/" + this.currentGeometryType + "/" + refId);
       });
       this.makeFeaturesClickable(true);
       this.drawButtonsEnabled = true;
@@ -160,7 +166,7 @@ export class ToolBarComponent implements OnInit {
       });
     } else {
       this.zone.run(() => {
-        this.router.navigateByUrl("/select-feature/" + geomType + "/" + refId );
+        this.router.navigateByUrl("/select-feature/" + geomType + "/" + refId);
       });
     }
   }
@@ -195,8 +201,10 @@ export class ToolBarComponent implements OnInit {
           this.activePolygon.refId = UUID.UUID();
           // add click listner for the polygon
           p.addListener('click', (e) => {
-            this.clearHighlighting();
-            this.featureClickHandler(p, 'area');
+            if (!this.isDrawingMode) {
+              this.clearHighlighting();
+              this.featureClickHandler(p, 'area');
+            }
           });
         });
     }
@@ -219,10 +227,10 @@ export class ToolBarComponent implements OnInit {
       //   index++;
       // });
       this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePolygon });
-      this.featureService.add({ 
-                                refId: this.activePolygon.refId, geomType: 'polygon',
-                                geometry: this.activePolygon, feature: null
-                              });
+      this.featureService.add({
+        refId: this.activePolygon.refId, geomType: 'polygon',
+        geometry: this.activePolygon, feature: null
+      });
       // then you need to dispose used objects
       this.disposeSomeObjects();
       return true;
@@ -241,8 +249,10 @@ export class ToolBarComponent implements OnInit {
           this.activePolyLine = p
           // add click listner for the polygon
           p.addListener('click', (e) => {
-            this.clearHighlighting();
-            this.featureClickHandler(p, 'line');
+            if (!this.isDrawingMode) {
+              this.clearHighlighting();
+              this.featureClickHandler(p, 'line');
+            }
           });
         });
     }
@@ -284,8 +294,10 @@ export class ToolBarComponent implements OnInit {
         draggable: true
       });
       marker.addListener('click', (e) => {
-        this.clearHighlighting();
-        this.featureClickHandler(marker, 'point');
+        if (!this.isDrawingMode) {
+          this.clearHighlighting();
+          this.featureClickHandler(marker, 'point');
+        }
       });
       this.activePoint = marker;
     }

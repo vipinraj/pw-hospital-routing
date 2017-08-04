@@ -10,7 +10,7 @@ export class FeatureService {
     BehaviorSubject<{ refId: string, geomType: string, geometry: any, feature: any }[]> = new BehaviorSubject([]);
 
     get observableList(): Observable<{ refId: string, geomType: string, geometry: any, feature: any }[]> {
-        return this._observableList.asObservable()
+        return this._observableList.asObservable();
     };
 
     add(feature: { refId: string, geomType: string, geometry: any, feature: any }) {

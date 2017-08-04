@@ -1,7 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { GoogleMapsAPIWrapper } from '@agm/core';
 import { Subscription } from 'rxjs/Subscription';
-import { FeatureTypeService }   from '../services/feature-type.service';
 
 // parent component for side navigation
 @Component({
@@ -13,11 +12,10 @@ export class SidePaneComponent implements OnInit {
   @Input() mapApi: GoogleMapsAPIWrapper;
   subscription: Subscription;
   selectedGeometryType: string;
-  constructor(private _featureTypeService: FeatureTypeService) { }
+  constructor() { }
 
   ngOnInit() {
-       this.subscription = this._featureTypeService.featureItem$
-       .subscribe(item => this.selectedGeometryType = item)
+
   }
 
   ngOnDestroy() {
