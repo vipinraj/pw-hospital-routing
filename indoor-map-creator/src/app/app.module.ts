@@ -15,7 +15,7 @@ import { MapComponent } from './map/map.component';
 import { SidePaneComponent } from './side-pane/side-pane.component';
 import { ToolBarComponent } from './tool-bar/tool-bar.component';
 import { SearchPlacesComponent } from './search-places/search-places.component';
-import { FeatureTypeComponent } from './feature-type/feature-type.component';
+import { FeatureTypeComponent } from './feature-type-selector/feature-type.component';
 import { FeatureTagEditorComponent } from './feature-tag-editor/feature-tag-editor.component';
 
 import { FeatureService } from './services/feature.service';

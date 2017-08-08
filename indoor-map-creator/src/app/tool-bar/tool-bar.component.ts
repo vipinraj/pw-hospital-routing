@@ -4,7 +4,6 @@ import {
 } from '@angular/core';
 import { GoogleMapsAPIWrapper } from '@agm/core';
 import { Polyline } from "@agm/core/services/google-maps-types";
-import { FeatureTypeService } from '../services/feature-type.service';
 import { Router } from '@angular/router';
 import { FeatureService } from "../services/feature.service";
 import { Feature } from '../models/feature.model';

@@ -3,33 +3,44 @@ import { GoogleMapsAPIWrapper } from '@agm/core';
 import { MapApiService } from '../services/map-api.service';
 declare var google: any;
 
-// takes care of location search
+/*
+ * This component corresponds to the location (places)
+ * search box. It uses Google Map's Places API to get
+ * the search done.
+ */
+
 @Component({
   selector: 'app-search-places',
   templateUrl: './search-places.component.html',
   styleUrls: ['./search-places.component.css']
 })
 export class SearchPlacesComponent implements OnInit, AfterViewInit {
+  // map instance
   map: any;
+  // map api instance
   mapApi: GoogleMapsAPIWrapper;
+  // reference to search box HTML element
   @ViewChild('searchBox') searchBox: ElementRef;
 
   constructor(private _mapApiService: MapApiService) {
   }
 
   ngOnInit() {
+    // get the map API instance from mapAPIService
     this._mapApiService.mapApiSource.subscribe(
       (mapApi) => {
         this.mapApi = mapApi;
       });
+    // get the map instance from map api instance
     this.mapApi.getNativeMap().then((map: any) => {
       this.map = map;
-      console.log(map);
+      // initialize and bind places' search box to HTML text box
       var searchBox = new google.maps.places.SearchBox(this.searchBox.nativeElement);
       // Bias the SearchBox results towards current map's viewport.
       map.addListener('bounds_changed', function () {
         searchBox.setBounds(map.getBounds());
       });
+
       searchBox.addListener('places_changed', function () {
         var places = searchBox.getPlaces();
 
@@ -37,20 +48,13 @@ export class SearchPlacesComponent implements OnInit, AfterViewInit {
           return;
         }
 
-        // For each place, get the icon, name and location.
+        // For each place, get the  name and location.
         var bounds = new google.maps.LatLngBounds();
         places.forEach(function (place) {
           if (!place.geometry) {
             console.log("Returned place contains no geometry");
             return;
           }
-          // var icon = {
-          //   url: place.icon,
-          //   size: new google.maps.Size(71, 71),
-          //   origin: new google.maps.Point(0, 0),
-          //   anchor: new google.maps.Point(17, 34),
-          //   scaledSize: new google.maps.Size(25, 25)
-          // };
 
           if (place.geometry.viewport) {
             // Only geocodes have viewport.

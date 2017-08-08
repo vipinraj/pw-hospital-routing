@@ -20,7 +20,8 @@ export class MapComponent implements OnInit, AfterViewInit {
   @ViewChild('toolbar') toolbar: ElementRef;
   // reference to sidebar 
   @Input('sidenav') sidenav;
-  // if side bar opened or not
+  // if side bar opened or not - use this variable for
+  // switching the toggle button arrow.
   sideNavOpened = true;
   gMap: any;
   @Input('mapApi') mapApi: GoogleMapsAPIWrapper;
@@ -65,12 +66,12 @@ export class MapComponent implements OnInit, AfterViewInit {
     }));
   }
 
+  // show or hide side pane
   toggleSideNav() {
     this.sidenav.toggle();
     this.sideNavOpened = !this.sideNavOpened;
   }
 
   ngAfterViewInit() {
-    console.log(this.toolbar);
   }
 }

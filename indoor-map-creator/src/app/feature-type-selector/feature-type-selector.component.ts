@@ -11,7 +11,7 @@ import { Room } from '../models/room.model';
   templateUrl: './feature-type.component.html',
   styleUrls: ['./feature-type.component.css']
 })
-export class FeatureTypeComponent implements OnInit {
+export class FeatureTypeSelectorComponent implements OnInit {
   // type of selected geometry
   selectedGeometry: string;
   selectedGeometryRefid: string;
