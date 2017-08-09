@@ -19,7 +19,9 @@ import {
 export class FeatureTagEditorComponent implements OnInit {
   tagForm: FormGroup;
   selectedFeatureRefId: string;
-  selectedFeatureControls: BaseControl<any>[] = [];
+  // selectedFeatureControls: BaseControl<any>[] = [];
+  selectedItem: any;
+
   constructor(fb: FormBuilder, private route: ActivatedRoute, private featureService: FeatureService, private ffs: FormFieldService) {
     route.params.subscribe(params => {
       this.selectedFeatureRefId = params['refId'];
@@ -31,8 +33,8 @@ export class FeatureTagEditorComponent implements OnInit {
               // populating the reference textbox
               item.feature.formControls[0].value = this.selectedFeatureRefId;
               this.tagForm = ffs.toFormGroup(item.feature.formControls);
-              this.selectedFeatureControls = item.feature.formControls;
-              // console.log(this.tagForm);
+              // this.selectedFeatureControls = item.feature.formControls;
+              this.selectedItem = item;
             }
           });
         }
@@ -47,9 +49,13 @@ export class FeatureTagEditorComponent implements OnInit {
     if (this.tagForm.valid) {
       // save form data
       var formData = this.tagForm.value;
-      this.selectedFeatureControls.forEach((control) => {
+      this.selectedItem.feature.formControls.forEach((control) => {
         control.value = formData[control.key];
+        if (control.tag == 'level') {
+          this.selectedItem.geometry.level = formData[control.key];
+        }
       });
+      console.log(this.selectedItem.geometry);
       return true;
     }
     return false;

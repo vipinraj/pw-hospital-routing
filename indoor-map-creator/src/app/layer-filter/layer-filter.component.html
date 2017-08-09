@@ -1,5 +1,5 @@
 <md-icon class="layerFilterIcon">filter_list</md-icon>
-<md-select placeholder="Filter" name="level" [multiple]="true" floatPlaceholder="never">
+<md-select placeholder="Filter" name="level" [multiple]="true" floatPlaceholder="never" (change)="onFilterChange($event)">
   <md-option value="1">
     1
   </md-option>

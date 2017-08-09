@@ -328,4 +328,19 @@ export class ToolBarComponent implements OnInit {
       this._onMapRightClickListner.remove();
     }
   }
+
+  hideFeatures(levels: any[]) {
+    this.featureCollection.forEach((item) => {
+      var level = item.feature.level;
+      if (level) {
+        if (levels && levels.length > 0) {
+          if (!levels.includes(level)) {
+            console.log('hide');
+          }
+        } else {
+          console.log('show');
+        }
+      }
+    });
+  }
 }
