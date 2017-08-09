@@ -2,6 +2,7 @@ export class BaseControl<T>{
   value: T;
   key: string;
   label: string;
+  tag: string;
   required: boolean;
   disabled: boolean;
   pattern: string;
@@ -16,11 +17,13 @@ export class BaseControl<T>{
       disabled?: boolean,
       pattern?: string,
       order?: number,
-      controlType?: string
+      controlType?: string,
+      tag?: string
     } = {}) {
     this.value = options.value;
     this.key = options.key || '';
     this.label = options.label || '';
+    this.tag = options.tag || '';
     this.required = !!options.required;
     this.disabled = !!options.disabled;
     this.pattern = options.pattern || '';

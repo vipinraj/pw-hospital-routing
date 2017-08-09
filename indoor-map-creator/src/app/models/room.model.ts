@@ -7,62 +7,54 @@ import { UrlTextBox } from '../ui-controls/url-textbox';
 import { SelectBox } from '../ui-controls/selectbox';
 
 export class Room extends Feature {
-
-    formControls: BaseControl<any>[] = [
-        new TextBox({
-            key: 'ref',
-            label: 'Reference',
-            disabled: true
+    _formControls: BaseControl<any>[] = [
+        new SelectBox({
+            key: 'indoor',
+            label: 'Indoor type',
+            tag: 'indoor',
+            options: [
+                { key: 'room', value: 'Room' }
+            ],
+            value: 'room',
+            disabled: true,
+            required: true
         }),
         new NumericTextBox({
-            key: 'ref_beacon',
-            label: 'Beacon Reference',
-        }),
-        new TextBox({
-            key: 'name',
-            label: 'Name'
-        }),
-        new TextArea({
-            key: 'note',
-            label: 'Description'
-        }),
-        new SelectBox({
-            key: 'room',
-            label: 'Room Type',
-            options: [
-                { key: 'shop', value: 'Shop' },
-                { key: 'restaurant', value: 'Restaurant' },
-                { key: 'office', value: 'Office' },
-                { key: 'entrance', value: 'Entrance' },
-                { key: 'stairs', value: 'Stairs' },
-                { key: 'toilets', value: 'Toilets' },
-                { key: 'toilet', value: 'Toilet' }
-            ]
+            key: 'level',
+            label: 'Level',
+            tag: 'level',
+            required: true
         }),
         new SelectBox({
             key: 'amenity',
             label: 'Amenity',
+            tag: 'amenity',
             options: [
+                { key: 'doctor', value: 'Doctor' },
+                { key: 'pharmacy', value: 'Pharmacy' },
                 { key: 'clinic', value: 'Clinic' },
                 { key: 'dentist', value: 'Dentist' },
-                { key: 'doctor', value: 'Doctor' }
-            ]
+                { key: 'gynecologist', value: 'Gynecologist' },
+                { key: 'hand surgeon', value: 'Hand surgeon' },
+                { key: 'neurologist', value: 'Neurologist' },
+                { key: 'oncologist', value: 'Oncologist' },
+                { key: 'pediatrician', value: 'Pediatrician' },
+                { key: 'psychiatrist', value: 'Psychiatrist' },
+                { key: 'plastic surgeon', value: 'Plastic surgeon' },
+                { key: 'surgeon', value: 'Surgeon' }
+            ],
+            value: 'doctor',
+            required: true
+        }),
+        new TextBox({
+            key: 'opening_hours',
+            label: 'Opening Hours',
+            tag: 'opening_hours'
         })
     ];
-    // formControls = {
-    //     "ref": 1,
-    //     "ref_beacon": "",
-    //     "note": "",
-    //     "name": "",
-    //     "building": "",
-    //     "min_level": "",
-    //     "max_level": "",
-    //     "non_existent_levels": "",
-    //     "wheelchair": "",
-    //     "wheelchair_description_en": "",
-    //     "website": ""
-    // };
+
     constructor() {
         super();
+        super.appendFormControls(this._formControls);
     }
 }

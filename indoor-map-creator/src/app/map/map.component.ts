@@ -18,6 +18,8 @@ export class MapComponent implements OnInit, AfterViewInit {
   @ViewChild('sideBarToggleBtn') sideBarToggleBtn: ElementRef;
   // reference to toolbar container
   @ViewChild('toolbar') toolbar: ElementRef;
+  // reference to toolbar layer filter container
+  @ViewChild('layerFilter') layerFilter: ElementRef;
   // reference to sidebar 
   @Input('sidenav') sidenav;
   // if side bar opened or not - use this variable for
@@ -42,13 +44,13 @@ export class MapComponent implements OnInit, AfterViewInit {
       streetViewControl: false,
       zoomControl: true,
       zoomControlOptions: {
-        position: 7
+        position: 9
       },
       mapTypeControl: true,
       mapTypeId: 'roadmap',
       mapTypeControlOptions: {
         mapTypeIds: ['hybrid', 'roadmap', 'satellite'],
-        position: 9
+        position: 10
       },
       center: {
         lat: this.lat,
@@ -63,6 +65,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       testBeaconControlDiv.appendChild(this.toolbar.nativeElement);
       this.gMap.controls[google.maps.ControlPosition.TOP_LEFT].push(testBeaconControlDiv);
       this.gMap.controls[google.maps.ControlPosition.LEFT_CENTER].push(this.sideBarToggleBtn.nativeElement);
+      this.gMap.controls[google.maps.ControlPosition.TOP_RIGHT].push(this.layerFilter.nativeElement);
     }));
   }
 

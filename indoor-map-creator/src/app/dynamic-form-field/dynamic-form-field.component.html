@@ -4,22 +4,22 @@
   <div [ngSwitch]="field.controlType">
 
     <md-input-container *ngSwitchCase="'textbox'" class="input-control-container">
-      <input mdInput [formControlName]="field.key" [id]="field.key" type="text" [placeholder]="field.label">
+      <input mdInput [formControlName]="field.key" [id]="field.key" type="text" [placeholder]="field.label + (field.required ? ' *':'')">
     </md-input-container>
 
     <md-input-container *ngSwitchCase="'textarea'" class="input-control-container">
-      <textarea mdInput [formControlName]="field.key" [placeholder]="field.label" [id]="field.key"></textarea>
+      <textarea mdInput [formControlName]="field.key" [placeholder]="field.label + (field.required ? ' *':'')" [id]="field.key"></textarea>
     </md-input-container>
 
     <md-input-container *ngSwitchCase="'number'" class="input-control-container">
-      <input mdInput [formControlName]="field.key" [id]="field.key" type="number" [placeholder]="field.label">
+      <input mdInput [formControlName]="field.key" [id]="field.key" type="number" [placeholder]="field.label + (field.required ? ' *':'')">
     </md-input-container>
 
     <md-input-container *ngSwitchCase="'url'" class="input-control-container">
-      <input mdInput [formControlName]="field.key" [id]="field.key" type="url" [placeholder]="field.label">
+      <input mdInput [formControlName]="field.key" [id]="field.key" type="url" [placeholder]="field.label + (field.required ? ' *':'')">
     </md-input-container>
 
-    <md-select *ngSwitchCase="'select'" [placeholder]="field.label" [id]="field.key">
+    <md-select *ngSwitchCase="'select'" [placeholder]="field.label" [id]="field.key" [required]="field.required" [formControlName]="field.key">
       <md-option *ngFor="let opt of field.options" [value]="opt.key">
         {{opt.value}}
       </md-option>

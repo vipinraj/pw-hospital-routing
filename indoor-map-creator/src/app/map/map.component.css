@@ -6,6 +6,12 @@
     margin-left: 10px;
 }
 
+.layerFilterContainer {
+    margin-top: 10px;
+    margin-right: 10px;
+    background: white;
+}
+
 .togleBtnContainer {
     margin-left: 10px;
 }

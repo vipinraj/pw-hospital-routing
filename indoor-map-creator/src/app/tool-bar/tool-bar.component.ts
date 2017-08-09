@@ -21,11 +21,12 @@ declare var google: any;
 export class ToolBarComponent implements OnInit {
   @Input() map: any;
   @Input('mapApi') mapApi: GoogleMapsAPIWrapper;
-  // poligon
+  // polygon
   drawButtonsEnabled = true;
+  canChangeFeatureSelection = true;
   private featureCollection = [];
   private activePolygon?: any;
-  private activePolyLine?: Polyline;
+  private activePolyLine?: any;
   private activePoint?: any;
   private highLightedFeature: any;
   private isDrawingMode = false;
@@ -137,11 +138,13 @@ export class ToolBarComponent implements OnInit {
     var saveResult = true;
     var refId;
     if (this.currentGeometryType == 'line') {
+      refId = this.activePolyLine.refId;
       saveResult = this.savePolyline();
     } else if (this.currentGeometryType == 'area') {
       refId = this.activePolygon.refId;
       saveResult = this.savePolygon();
     } else if (this.currentGeometryType == 'point') {
+      refId = this.activePoint.refId;
       saveResult = this.savePoint();
     }
     if (saveResult) {
@@ -156,16 +159,30 @@ export class ToolBarComponent implements OnInit {
   }
 
   featureClickHandler(feature, geomType) {
-    this.highlightFeature(feature);
-    this.highLightedFeature = feature;
     var refId = feature.refId;
     if (feature.hasOwnProperty('featureType') && feature.featureType != null) {
       this.zone.run(() => {
-        this.router.navigateByUrl("/edit-tags/" + refId);
+        this.router.navigateByUrl("/edit-tags/" + refId).then(
+          (success) => {
+            if (success || success == null) {
+              this.clearHighlighting();
+              this.highlightFeature(feature);
+              this.highLightedFeature = feature;
+            }
+          }
+        );
       });
     } else {
       this.zone.run(() => {
-        this.router.navigateByUrl("/select-feature/" + geomType + "/" + refId);
+        this.router.navigateByUrl("/select-feature/" + geomType + "/" + refId).then(
+          (success) => {
+            if (success || success == null) {
+              this.clearHighlighting();
+              this.highlightFeature(feature);
+              this.highLightedFeature = feature;
+            }
+          }
+        );
       });
     }
   }
@@ -201,7 +218,6 @@ export class ToolBarComponent implements OnInit {
           // add click listner for the polygon
           p.addListener('click', (e) => {
             if (!this.isDrawingMode) {
-              this.clearHighlighting();
               this.featureClickHandler(p, 'area');
             }
           });
@@ -211,20 +227,6 @@ export class ToolBarComponent implements OnInit {
 
   savePolygon() {
     if (this.activePolygon && this.activePolygon != null && this.activePolygon.getPath().length > 2) {
-      console.log(this.activePolygon.getPath());
-      // let path: any = this.activePolygon.getPath();
-      // //array fore path
-      // let points: GeofencePoint[] = []; // polygon points
-      // let index: number = 0;
-      // //get points from path
-      // path.b.forEach(item => {
-      //   points.push({
-      //     id: index,
-      //     latitude: item.lat(),
-      //     longitude: item.lng()
-      //   });
-      //   index++;
-      // });
       this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePolygon });
       this.featureService.add({
         refId: this.activePolygon.refId, geomType: 'polygon',
@@ -245,7 +247,8 @@ export class ToolBarComponent implements OnInit {
       this.mapApi.createPolyline(this.featureOptionsOnDrawing).
         then(p => {
           console.log('polyline created');
-          this.activePolyLine = p
+          this.activePolyLine = p;
+          this.activePolyLine.refId = UUID.UUID();
           // add click listner for the polygon
           p.addListener('click', (e) => {
             if (!this.isDrawingMode) {
@@ -259,23 +262,11 @@ export class ToolBarComponent implements OnInit {
 
   savePolyline() {
     if (this.activePolyLine && this.activePolyLine != null && this.activePolyLine.getPath().length > 1) {
-      let path: any = this.activePolyLine.getPath();
-
-      // //array for path
-      // let points: GeofencePoint[] = []; // polygon points
-      // let index: number = 0;
-
-      // //get points from path
-      // path.b.forEach(item => {
-      //   points.push({
-      //     id: index,
-      //     latitude: item.lat(),
-      //     longitude: item.lng()
-      //   });
-      //   index++;
-      // });
-      //for now just save it in memory
       this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePolyLine });
+      this.featureService.add({
+        refId: this.activePolyLine.refId, geomType: 'line',
+        geometry: this.activePolyLine, feature: null
+      });
       // then you need to dispose used objects
       this.disposeSomeObjects();
       return true;
@@ -299,12 +290,17 @@ export class ToolBarComponent implements OnInit {
         }
       });
       this.activePoint = marker;
+      this.activePoint.refId = UUID.UUID();
     }
   }
 
   savePoint() {
     if (this.activePoint) {
       this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePoint });
+      this.featureService.add({
+        refId: this.activePoint.refId, geomType: 'line',
+        geometry: this.activePoint, feature: null
+      });
       this.disposeSomeObjects();
       return true;
     } else {
@@ -328,19 +324,8 @@ export class ToolBarComponent implements OnInit {
       this.highLightedFeature.set('icon', '/assets/images/point.png');
       this.activePoint = null;
     }
-    // if (this._onMapClickListener) {
-    //   this._onMapClickListener.remove();
-    // }
     if (this._onMapRightClickListner) {
       this._onMapRightClickListner.remove();
     }
   }
-}
-
-
-// represent a point
-interface GeofencePoint {
-  id: number;
-  latitude: number;
-  longitude: number;
 }

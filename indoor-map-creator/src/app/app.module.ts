@@ -15,16 +15,17 @@ import { MapComponent } from './map/map.component';
 import { SidePaneComponent } from './side-pane/side-pane.component';
 import { ToolBarComponent } from './tool-bar/tool-bar.component';
 import { SearchPlacesComponent } from './search-places/search-places.component';
-import { FeatureTypeComponent } from './feature-type-selector/feature-type.component';
+import { FeatureTypeSelectorComponent } from './feature-type-selector/feature-type-selector.component';
 import { FeatureTagEditorComponent } from './feature-tag-editor/feature-tag-editor.component';
 
 import { FeatureService } from './services/feature.service';
 import { DynamicFormFieldComponent } from './dynamic-form-field/dynamic-form-field.component';
 import { TagEditorConfirmDeactivateGuard } from './services/TagEditorConfirmDeactivateGuard';
+import { LayerFilterComponent } from './layer-filter/layer-filter.component';
 
 const routes = [
   { path: '', component: SearchPlacesComponent },
-  { path: 'select-feature/:selectedGeomType/:refId', component: FeatureTypeComponent },
+  { path: 'select-feature/:selectedGeomType/:refId', component: FeatureTypeSelectorComponent },
   { path: 'edit-tags/:refId', component: FeatureTagEditorComponent, canDeactivate: [TagEditorConfirmDeactivateGuard] }
 ];
 
@@ -35,9 +36,10 @@ const routes = [
     SidePaneComponent,
     ToolBarComponent,
     SearchPlacesComponent,
-    FeatureTypeComponent,
+    FeatureTypeSelectorComponent,
     FeatureTagEditorComponent,
-    DynamicFormFieldComponent
+    DynamicFormFieldComponent,
+    LayerFilterComponent
   ],
   imports: [
     BrowserModule,
