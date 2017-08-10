@@ -10,6 +10,8 @@ import { Door } from '../models/door.model';
 import { Stairs } from '../models/stairs.model';
 import { Escalator } from '../models/escalator.model';
 import { Elevator } from '../models/elevator.model';
+import { MdDialog, MdDialogRef } from '@angular/material';
+import { DeleteFeatureDialogComponent } from '../delete-feature-dialog/delete-feature-dialog.component';
 
 // This component represent the feature types
 // for a perticular geometry.
@@ -39,7 +41,7 @@ export class FeatureTypeSelectorComponent implements OnInit {
       { name: "elevator", label: "Elevator", icon: "import_export" },
     ]
   };
-  constructor(private route: ActivatedRoute, private featureService: FeatureService, private router: Router) {
+  constructor(private route: ActivatedRoute, private featureService: FeatureService, private router: Router, public dialog: MdDialog) {
     // get parmeter from url
     route.params.subscribe(params => {
       this.selectedGeometry = params['selectedGeomType'];
@@ -90,6 +92,7 @@ export class FeatureTypeSelectorComponent implements OnInit {
     }
     this.featureService.observableList.subscribe(
       items => {
+        console.log(items);
         items.forEach((item) => {
           if (item.refId == this.selectedGeometryRefid) {
             item.geometry.featureType = featureType;
@@ -105,5 +108,29 @@ export class FeatureTypeSelectorComponent implements OnInit {
   ngOnInit() {
   }
 
+  onDeleteFeature() {
+    let dialogRef = this.dialog.open(DeleteFeatureDialogComponent);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result == 'yes') {
+
+        var index: number;
+        var selectedItem: any;
+        // 
+        this.featureService.observableList.subscribe(
+          items => {
+            items.forEach((item, idx) => {
+              if (item.refId == this.selectedGeometryRefid) {
+                index = idx;
+                selectedItem = item;
+              }
+            })
+          });
+
+        selectedItem.geometry.setMap(null);
+        this.featureService.delete(index);
+        this.router.navigateByUrl("/");
+      }
+    });
+  }
 }
 

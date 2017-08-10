@@ -27,6 +27,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   sideNavOpened = true;
   gMap: any;
   @Input('mapApi') mapApi: GoogleMapsAPIWrapper;
+  selectedLevels = [];
   // default center and zoom
   lat: number = 12.992634899999999;
   lng: number = 77.71721695;
@@ -73,6 +74,11 @@ export class MapComponent implements OnInit, AfterViewInit {
   toggleSideNav() {
     this.sidenav.toggle();
     this.sideNavOpened = !this.sideNavOpened;
+  }
+
+  onLayerFilterChanged(levels) {
+    console.log(levels);
+    this.selectedLevels = levels;
   }
 
   ngAfterViewInit() {

@@ -1,10 +1,10 @@
 <div #map class="mapContainer">
 </div>
 <div class="toolbarContainer" #toolbar>
-  <app-tool-bar *ngIf="map" [map]='gMap' [mapApi]="mapApi"></app-tool-bar>
+  <app-tool-bar *ngIf="map" [map]='gMap' [mapApi]="mapApi" [selectedLevels]="selectedLevels"></app-tool-bar>
 </div>
 <div class="layerFilterContainer" #layerFilter>
-  <app-layer-filter></app-layer-filter>
+  <app-level-filter (onFilterChanged)="onLayerFilterChanged($event)"></app-level-filter>
 </div>
 <div #sideBarToggleBtn class="togleBtnContainer">
   <button md-mini-fab (click)="toggleSideNav()" style="float:right" color="none">

@@ -29,4 +29,16 @@ body, html {
 .sideNavTitle h3 {
   margin-bottom: 10px;
   color: #673ab7;
+  display: inline-block;
+}
+
+.deleteButton {
+  margin-top: 18px;
+  float: right;
+  color: lightgrey;
+  cursor: pointer;
+}
+
+.deleteButton:hover {
+  color: red;
 }

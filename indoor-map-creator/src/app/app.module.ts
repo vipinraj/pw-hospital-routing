@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AgmCoreModule } from '@agm/core';
-import { MaterialModule, MdNativeDateModule } from '@angular/material';
+import { MaterialModule, MdNativeDateModule, MdDialogModule } from '@angular/material';
 import {
   FormsModule,
   ReactiveFormsModule
@@ -19,9 +19,11 @@ import { FeatureTypeSelectorComponent } from './feature-type-selector/feature-ty
 import { FeatureTagEditorComponent } from './feature-tag-editor/feature-tag-editor.component';
 
 import { FeatureService } from './services/feature.service';
+import { LevelFilterService } from './services/level-filter.service';
 import { DynamicFormFieldComponent } from './dynamic-form-field/dynamic-form-field.component';
 import { TagEditorConfirmDeactivateGuard } from './services/TagEditorConfirmDeactivateGuard';
-import { LayerFilterComponent } from './layer-filter/layer-filter.component';
+import { LevelFilterComponent } from './level-filter/level-filter.component';
+import { DeleteFeatureDialogComponent } from './delete-feature-dialog/delete-feature-dialog.component';
 
 const routes = [
   { path: '', component: SearchPlacesComponent },
@@ -39,12 +41,17 @@ const routes = [
     FeatureTypeSelectorComponent,
     FeatureTagEditorComponent,
     DynamicFormFieldComponent,
-    LayerFilterComponent
+    LevelFilterComponent,
+    DeleteFeatureDialogComponent
+  ],
+  entryComponents : [
+    DeleteFeatureDialogComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    MdDialogModule,
     ReactiveFormsModule,
     AgmCoreModule,
     MaterialModule,
@@ -55,7 +62,7 @@ const routes = [
     }),
     RouterModule.forRoot(routes)
   ],
-  providers: [FeatureService, TagEditorConfirmDeactivateGuard],
+  providers: [FeatureService, TagEditorConfirmDeactivateGuard, LevelFilterService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

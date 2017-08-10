@@ -21,6 +21,14 @@ declare var google: any;
 export class ToolBarComponent implements OnInit {
   @Input() map: any;
   @Input('mapApi') mapApi: GoogleMapsAPIWrapper;
+  _selectedLevels = [];
+  @Input() set selectedLevels(value) {
+    this._selectedLevels = value;
+    this.hideFeatures(this.selectedLevels);
+  }
+  get selectedLevels() {
+    return this._selectedLevels;
+  }
   // polygon
   drawButtonsEnabled = true;
   canChangeFeatureSelection = true;
@@ -65,6 +73,7 @@ export class ToolBarComponent implements OnInit {
           (success) => {
             if (success || success == null) {
               this.clearHighlighting();
+              this.hideFeatures(this.selectedLevels);
             }
           }
         );
@@ -151,7 +160,10 @@ export class ToolBarComponent implements OnInit {
       this.isDrawingMode = false;
       this.zone.run(() => {
         // change route navigation
-        this.router.navigateByUrl("/select-feature/" + this.currentGeometryType + "/" + refId);
+        this.router.navigateByUrl("/select-feature/" + this.currentGeometryType + "/" + refId).then(
+          (success) => {
+            //
+          });
       });
       this.makeFeaturesClickable(true);
       this.drawButtonsEnabled = true;
@@ -200,9 +212,15 @@ export class ToolBarComponent implements OnInit {
   }
 
   makeFeaturesClickable(flag) {
-    this.featureCollection.forEach((item) => {
-      item.feature.set('clickable', flag);
-    });
+    this.featureService.observableList.subscribe(
+      items => {
+        items.forEach((item) => {
+          item.geometry.set('clickable', flag);
+        });
+      });
+    // this.featureCollection.forEach((item) => {
+    //   item.feature.set('clickable', flag);
+    // });
   }
 
   // draw polygon
@@ -227,7 +245,7 @@ export class ToolBarComponent implements OnInit {
 
   savePolygon() {
     if (this.activePolygon && this.activePolygon != null && this.activePolygon.getPath().length > 2) {
-      this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePolygon });
+      // this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePolygon });
       this.featureService.add({
         refId: this.activePolygon.refId, geomType: 'polygon',
         geometry: this.activePolygon, feature: null
@@ -262,7 +280,7 @@ export class ToolBarComponent implements OnInit {
 
   savePolyline() {
     if (this.activePolyLine && this.activePolyLine != null && this.activePolyLine.getPath().length > 1) {
-      this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePolyLine });
+      // this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePolyLine });
       this.featureService.add({
         refId: this.activePolyLine.refId, geomType: 'line',
         geometry: this.activePolyLine, feature: null
@@ -296,7 +314,7 @@ export class ToolBarComponent implements OnInit {
 
   savePoint() {
     if (this.activePoint) {
-      this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePoint });
+      // this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePoint });
       this.featureService.add({
         refId: this.activePoint.refId, geomType: 'line',
         geometry: this.activePoint, feature: null
@@ -330,17 +348,24 @@ export class ToolBarComponent implements OnInit {
   }
 
   hideFeatures(levels: any[]) {
-    this.featureCollection.forEach((item) => {
-      var level = item.feature.level;
-      if (level) {
-        if (levels && levels.length > 0) {
-          if (!levels.includes(level)) {
-            console.log('hide');
+    this.featureService.observableList.subscribe(
+      items => {
+        items.forEach((item) => {
+          if (item.geometry.level) {
+            var level = item.geometry.level.toString();
+            if (level) {
+              if (levels && levels.length > 0) {
+                if (!levels.includes(level)) {
+                  item.geometry.setOptions({ visible: false });
+                } else {
+                  item.geometry.setOptions({ visible: true });
+                }
+              } else {
+                item.geometry.setOptions({ visible: true });
+              }
+            }
           }
-        } else {
-          console.log('show');
-        }
-      }
-    });
+        });
+      });
   }
 }

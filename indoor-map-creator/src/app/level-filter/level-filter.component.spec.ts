@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LayerFilterComponent } from './layer-filter.component';
+import { LevelFilterComponent } from './level-filter.component';
 
 describe('LayerFilterComponent', () => {
-  let component: LayerFilterComponent;
-  let fixture: ComponentFixture<LayerFilterComponent>;
+  let component: LevelFilterComponent;
+  let fixture: ComponentFixture<LevelFilterComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LayerFilterComponent ]
+      declarations: [ LevelFilterComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LayerFilterComponent);
+    fixture = TestBed.createComponent(LevelFilterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
