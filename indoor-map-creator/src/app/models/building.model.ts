@@ -19,13 +19,13 @@ export class Building extends Feature {
             value: 'hospital',
             required: true
         }),
-        new NumericTextBox({
+        new TextBox({
             key: 'min_level',
             label: 'Minimum Level',
             tag: 'min_level',
             required: true
         }),
-        new NumericTextBox({
+        new TextBox({
             key: 'max_level',
             label: 'Maximum Level',
             tag: 'max_level',

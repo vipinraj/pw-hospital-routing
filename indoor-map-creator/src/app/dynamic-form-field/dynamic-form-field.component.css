@@ -2,11 +2,21 @@ md-select * {
     font-family: 'Roboto';
 }
 
-md-select {
+.md-select-container {
     margin-top: 15px;
     margin-bottom: 20px;
+    display: inline-block;
 }
 
 .input-control-container {
     width: 90%;
+}
+
+.input-error-msg, .input-error-msg-select {
+    font-family: 'Roboto';
+}
+
+.input-error-msg-select {
+    font-size: 75%;
+    margin-top: .60417em;
 }

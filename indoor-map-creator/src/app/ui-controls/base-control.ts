@@ -8,6 +8,7 @@ export class BaseControl<T>{
   pattern: string;
   order: number;
   controlType: string;
+  isUniqueBeaconRef: boolean;
 
   constructor(options: {
       value?: T,
@@ -18,7 +19,8 @@ export class BaseControl<T>{
       pattern?: string,
       order?: number,
       controlType?: string,
-      tag?: string
+      tag?: string,
+      isUniqueBeaconRef?: boolean
     } = {}) {
     this.value = options.value;
     this.key = options.key || '';
@@ -29,5 +31,6 @@ export class BaseControl<T>{
     this.pattern = options.pattern || '';
     this.order = options.order === undefined ? 1 : options.order;
     this.controlType = options.controlType || '';
+    this.isUniqueBeaconRef = !!options.isUniqueBeaconRef;
   }
 }

@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { FeatureService } from "../services/feature.service";
 import { FormFieldService } from '../services/form-field.service';
 import { LevelFilterService } from '../services/level-filter.service';
+import { BeaconReferenceService } from '../services/beacon-reference.service';
 import { Building } from '../models/building.model';
 import { BaseControl } from '../ui-controls/base-control';
 import { Router } from '@angular/router';
@@ -28,7 +29,7 @@ export class FeatureTagEditorComponent implements OnInit {
   selectedItemIndex: number;
   featureDeleted: boolean;
 
-  constructor(fb: FormBuilder, private route: ActivatedRoute, private featureService: FeatureService, private ffs: FormFieldService, private levelFilterService: LevelFilterService, public dialog: MdDialog,  private router: Router) {
+  constructor(fb: FormBuilder, private route: ActivatedRoute, private featureService: FeatureService, private ffs: FormFieldService, private levelFilterService: LevelFilterService, private beaconReferenceService: BeaconReferenceService, public dialog: MdDialog, private router: Router) {
     this.featureDeleted = false;
     route.params.subscribe(params => {
       this.selectedFeatureRefId = params['refId'];
@@ -67,6 +68,13 @@ export class FeatureTagEditorComponent implements OnInit {
           this.selectedItem.geometry.level = level;
           this.levelFilterService.newLevel = level;
         }
+        if (control.tag == 'ref:beacon') {
+          var ref = formData[control.key];
+          console.log(ref);
+          if (ref) {
+            this.beaconReferenceService.add(ref);
+          }
+        }
       });
       console.log(this.selectedItem.geometry);
       return true;
@@ -84,6 +92,20 @@ export class FeatureTagEditorComponent implements OnInit {
       if (result == 'yes') {
         // delete feature
         this.featureDeleted = true;
+        // delete level if present
+        if (this.selectedItem.geometry.level) {
+          this.levelFilterService.deleteLevel = this.selectedItem.geometry.level;
+        }
+        // delete beaconreference
+        this.selectedItem.feature.formControls.forEach(control => {
+          if (control.tag == 'ref:beacon') {
+            var ref = control.value;
+            console.log(ref);
+            if (ref) {
+              this.beaconReferenceService.delete(ref);
+            }
+          }
+        });
         this.selectedItem.geometry.setMap(null);
         this.featureService.delete(this.selectedItemIndex);
         this.router.navigateByUrl("/");

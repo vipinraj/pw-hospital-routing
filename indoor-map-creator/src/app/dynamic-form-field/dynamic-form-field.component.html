@@ -5,26 +5,48 @@
 
     <md-input-container *ngSwitchCase="'textbox'" class="input-control-container">
       <input mdInput [formControlName]="field.key" [id]="field.key" type="text" [placeholder]="field.label + (field.required ? ' *':'')">
+      <md-error *ngIf="form.controls[field.key].hasError('required')" class="input-error-msg">
+        This field is required
+      </md-error>
     </md-input-container>
 
     <md-input-container *ngSwitchCase="'textarea'" class="input-control-container">
       <textarea mdInput [formControlName]="field.key" [placeholder]="field.label + (field.required ? ' *':'')" [id]="field.key"></textarea>
+      <md-error *ngIf="form.controls[field.key].hasError('required')" class="input-error-msg">
+        This field is required
+      </md-error>
     </md-input-container>
 
     <md-input-container *ngSwitchCase="'number'" class="input-control-container">
       <input mdInput [formControlName]="field.key" [id]="field.key" type="number" [placeholder]="field.label + (field.required ? ' *':'')">
+      <md-error *ngIf="form.controls[field.key].hasError('required')" class="input-error-msg">
+        This field is required
+      </md-error>
+      <md-error *ngIf="form.controls[field.key].hasError('nonUniqueReference')" class="input-error-msg">
+        Beacon already mapped
+      </md-error>
     </md-input-container>
 
     <md-input-container *ngSwitchCase="'url'" class="input-control-container">
       <input mdInput [formControlName]="field.key" [id]="field.key" type="url" [placeholder]="field.label + (field.required ? ' *':'')">
+      <md-error *ngIf="form.controls[field.key].hasError('required')" class="input-error-msg">
+        This field is required
+      </md-error>
+      <md-error *ngIf="form.controls[field.key].hasError('pattern')" class="input-error-msg">
+        Invalid url
+      </md-error>
     </md-input-container>
 
-    <md-select *ngSwitchCase="'select'" [placeholder]="field.label" [id]="field.key" [required]="field.required" [formControlName]="field.key">
-      <md-option *ngFor="let opt of field.options" [value]="opt.key">
-        {{opt.value}}
-      </md-option>
-    </md-select>
-
+    <div *ngSwitchCase="'select'" class="md-select-container">
+      <md-select [placeholder]="field.label" [id]="field.key" [required]="field.required" [formControlName]="field.key">
+        <md-option *ngFor="let opt of field.options" [value]="opt.key">
+          {{opt.value}}
+        </md-option>
+      </md-select>
+      <md-error *ngIf="form.controls[field.key].invalid && (form.controls[field.key].dirty || form.controls[field.key].touched)"  class="input-error-msg-select">
+        This field is required
+      </md-error>
+    </div>
   </div>
   <!-- <div class="errorMessage" *ngIf="!isValid">{{field.label}} is required</div> -->
 </div>

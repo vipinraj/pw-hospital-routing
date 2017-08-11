@@ -20,6 +20,8 @@ import { FeatureTagEditorComponent } from './feature-tag-editor/feature-tag-edit
 
 import { FeatureService } from './services/feature.service';
 import { LevelFilterService } from './services/level-filter.service';
+import { BeaconReferenceService } from './services/beacon-reference.service';
+import { CustomValidatorService } from './services/custom-validators.service';
 import { DynamicFormFieldComponent } from './dynamic-form-field/dynamic-form-field.component';
 import { TagEditorConfirmDeactivateGuard } from './services/TagEditorConfirmDeactivateGuard';
 import { LevelFilterComponent } from './level-filter/level-filter.component';
@@ -62,7 +64,7 @@ const routes = [
     }),
     RouterModule.forRoot(routes)
   ],
-  providers: [FeatureService, TagEditorConfirmDeactivateGuard, LevelFilterService],
+  providers: [FeatureService, TagEditorConfirmDeactivateGuard, LevelFilterService, BeaconReferenceService, CustomValidatorService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

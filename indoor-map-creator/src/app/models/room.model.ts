@@ -19,7 +19,7 @@ export class Room extends Feature {
             disabled: true,
             required: true
         }),
-        new NumericTextBox({
+        new TextBox({
             key: 'level',
             label: 'Level',
             tag: 'level',

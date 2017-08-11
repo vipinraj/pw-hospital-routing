@@ -15,7 +15,8 @@ export class Feature {
         new NumericTextBox({
             key: 'ref_beacon',
             label: 'Beacon Reference',
-            tag: 'ref:beacon'
+            tag: 'ref:beacon',
+            isUniqueBeaconRef: true
         }),
         new TextBox({
             key: 'name',
@@ -31,7 +32,8 @@ export class Feature {
         new UrlTextBox({
             key: 'image_url',
             label: 'Image URL',
-            tag: 'image_url'
+            tag: 'image_url',
+            pattern: 'https?://.+'
         }),
     ];
 

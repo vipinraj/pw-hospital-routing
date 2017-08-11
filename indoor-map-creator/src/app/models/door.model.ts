@@ -50,7 +50,7 @@ export class Door extends Feature {
                 { key: 'limited', value: 'Limited' }
             ]
         }),
-        new NumericTextBox({
+        new TextBox({
             key: 'level',
             label: 'Level',
             tag: 'level',

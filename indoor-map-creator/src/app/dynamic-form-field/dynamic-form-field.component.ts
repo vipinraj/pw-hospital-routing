@@ -13,6 +13,7 @@ export class DynamicFormFieldComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    console.log(this.form);
   }
   
   get isValid() {
