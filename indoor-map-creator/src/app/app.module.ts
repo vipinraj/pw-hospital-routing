@@ -24,11 +24,15 @@ import { BeaconReferenceService } from './services/beacon-reference.service';
 import { CustomValidatorService } from './services/custom-validators.service';
 import { DynamicFormFieldComponent } from './dynamic-form-field/dynamic-form-field.component';
 import { TagEditorConfirmDeactivateGuard } from './services/TagEditorConfirmDeactivateGuard';
+import { LoginActivateGuard } from './services/LoginActivateGuard';
 import { LevelFilterComponent } from './level-filter/level-filter.component';
 import { DeleteFeatureDialogComponent } from './delete-feature-dialog/delete-feature-dialog.component';
+import { LoginDialogComponent } from './login-dialog/login-dialog.component';
+import { LoginPageComponent } from './login-page/login-page.component';
 
 const routes = [
-  { path: '', component: SearchPlacesComponent },
+  { path: 'login', component: LoginPageComponent },
+  { path: '', component: SearchPlacesComponent, canActivate: [LoginActivateGuard] },
   { path: 'select-feature/:selectedGeomType/:refId', component: FeatureTypeSelectorComponent },
   { path: 'edit-tags/:refId', component: FeatureTagEditorComponent, canDeactivate: [TagEditorConfirmDeactivateGuard] }
 ];
@@ -44,10 +48,13 @@ const routes = [
     FeatureTagEditorComponent,
     DynamicFormFieldComponent,
     LevelFilterComponent,
-    DeleteFeatureDialogComponent
+    DeleteFeatureDialogComponent,
+    LoginDialogComponent,
+    LoginPageComponent
   ],
-  entryComponents : [
-    DeleteFeatureDialogComponent
+  entryComponents: [
+    DeleteFeatureDialogComponent,
+    LoginDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -64,7 +71,7 @@ const routes = [
     }),
     RouterModule.forRoot(routes)
   ],
-  providers: [FeatureService, TagEditorConfirmDeactivateGuard, LevelFilterService, BeaconReferenceService, CustomValidatorService],
+  providers: [FeatureService, TagEditorConfirmDeactivateGuard, LoginActivateGuard, LevelFilterService, BeaconReferenceService, CustomValidatorService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
