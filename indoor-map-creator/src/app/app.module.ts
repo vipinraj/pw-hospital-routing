@@ -9,6 +9,7 @@ import {
   ReactiveFormsModule
 } from '@angular/forms';
 import 'hammerjs';
+import {CdkTableModule} from '@angular/cdk';
 
 import { AppComponent } from './app.component';
 import { MapComponent } from './map/map.component';
@@ -29,6 +30,7 @@ import { LevelFilterComponent } from './level-filter/level-filter.component';
 import { DeleteFeatureDialogComponent } from './delete-feature-dialog/delete-feature-dialog.component';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { LoginPageComponent } from './login-page/login-page.component';
+import { UserAccountComponent } from './user-account/user-account.component';
 
 const routes = [
   { path: 'login', component: LoginPageComponent },
@@ -50,13 +52,16 @@ const routes = [
     LevelFilterComponent,
     DeleteFeatureDialogComponent,
     LoginDialogComponent,
-    LoginPageComponent
+    LoginPageComponent,
+    UserAccountComponent
   ],
   entryComponents: [
     DeleteFeatureDialogComponent,
-    LoginDialogComponent
+    LoginDialogComponent,
+    UserAccountComponent
   ],
   imports: [
+    CdkTableModule,
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,

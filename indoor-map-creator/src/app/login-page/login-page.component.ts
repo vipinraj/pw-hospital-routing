@@ -13,7 +13,7 @@ export class LoginPageComponent implements OnInit {
 
   ngOnInit() {
     setTimeout(() => {
-      this.dialog.open(LoginDialogComponent);
+      this.dialog.open(LoginDialogComponent, { disableClose: true, width: '300px', height: '160px'});
     }, 500);
 
   }

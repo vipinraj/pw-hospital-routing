@@ -2,6 +2,8 @@ import { Injectable, Inject } from '@angular/core';
 import { CanActivate } from '@angular/router';
 import { SearchPlacesComponent } from '../search-places/search-places.component';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class LoginActivateGuard implements CanActivate {
@@ -9,8 +11,13 @@ export class LoginActivateGuard implements CanActivate {
 
     }
     canActivate() {
-        this.router.navigate(['login']);
-        return false;
+        
+        if (localStorage.getItem('isLogined') == 'true') {
+            return true;
+        } else {
+            this.router.navigate(['login']);
+            return false;
+        }
     }
 
 }

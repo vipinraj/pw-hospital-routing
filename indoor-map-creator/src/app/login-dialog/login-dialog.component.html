@@ -1,9 +1,4 @@
-<md-dialog-content>
-  
-  signin button
+<h2 md-dialog-title class="dialog-title">Sign in to your account</h2>
+<md-dialog-content class="dialog-content"> 
+  <div id="my-signin2" (data-onsuccess)="onSignIn"></div>
 </md-dialog-content>
-<md-dialog-actions>
-  <button md-button md-dialog-close>No</button>
-  <!-- Can optionally provide a result for the closing dialog. -->
-  <button md-button [md-dialog-close]="true">Yes</button>
-</md-dialog-actions>
