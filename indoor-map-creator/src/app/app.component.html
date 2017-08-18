@@ -3,8 +3,17 @@
     <md-icon class="logo-icon">map</md-icon>
     <span>Indoor Map Creator</span>
     <span class="toolbar-spacer"></span>
-    <button md-button (click)="onMyAccountClick()">My Account</button>
-
+    <button md-button [mdMenuTriggerFor]="menu">My Account</button>
+    <md-menu #menu="mdMenu">
+      <button md-menu-item  (click)="onMyAccountClick()">
+        <md-icon>settings</md-icon>
+        <span>Settings</span>
+      </button>
+      <button md-menu-item (click)="onLogoutClick()">
+        <md-icon>power_settings_new</md-icon>
+        <span>Logout</span>
+      </button>
+    </md-menu>
 </md-toolbar>
 
 <md-sidenav-container class="example-sidenav-fab-container">
