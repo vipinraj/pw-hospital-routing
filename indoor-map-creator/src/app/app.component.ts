@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, NgZone } from '@angular/core';
 import { MapComponent } from './map/map.component';
 import { SidePaneComponent } from './side-pane/side-pane.component';
 import { GoogleMapsAPIWrapper } from '@agm/core';
@@ -15,7 +15,7 @@ declare var gapi: any;
 })
 export class AppComponent implements AfterViewInit {
   mapApi: GoogleMapsAPIWrapper;
-  constructor(private _mapApi: GoogleMapsAPIWrapper, private _internalMapApiService: MapApiService, public dialog: MdDialog) {
+  constructor(private _mapApi: GoogleMapsAPIWrapper, private _internalMapApiService: MapApiService, public dialog: MdDialog, private zone: NgZone) {
     this.mapApi = _mapApi;
     _internalMapApiService.setApi(_mapApi);
   }
@@ -25,10 +25,24 @@ export class AppComponent implements AfterViewInit {
   }
 
   onLogoutClick() {
-    var auth2 = gapi.auth2.getAuthInstance();
-    auth2.signOut();
+    gapi.load('auth2', function () {
+      gapi.auth2.init();
+      var auth2 = gapi.auth2.getAuthInstance();
+      auth2.disconnect();
+      auth2.signOut().then(function () {
+        console.log('User signed out.');
+        localStorage.removeItem('isLogined');
+      });
+    });
+
   }
   ngAfterViewInit() {
-    var auth2 = gapi.auth2.getAuthInstance();
+    setTimeout(function() {
+      gapi.signin2.render('my-signin', {
+        'onsuccess': null,
+        'scope': 'profile email',
+        'theme': 'light'
+      });
+    }, 1000);
   }
 }

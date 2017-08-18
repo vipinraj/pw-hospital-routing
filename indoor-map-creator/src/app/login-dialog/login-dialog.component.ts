@@ -22,6 +22,7 @@ export class LoginDialogComponent implements OnInit, AfterViewInit {
       'scope': 'profile email',
       'theme': 'light'
     });
+    console.log(gapi);
   }
   onSignIn(googleUser) {
 
