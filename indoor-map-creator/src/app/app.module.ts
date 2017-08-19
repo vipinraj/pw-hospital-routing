@@ -3,13 +3,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AgmCoreModule } from '@agm/core';
+import { HttpModule } from '@angular/http';
 import { MaterialModule, MdNativeDateModule, MdDialogModule } from '@angular/material';
 import {
   FormsModule,
   ReactiveFormsModule
 } from '@angular/forms';
 import 'hammerjs';
-import {CdkTableModule} from '@angular/cdk';
 
 import { AppComponent } from './app.component';
 import { MapComponent } from './map/map.component';
@@ -61,7 +61,7 @@ const routes = [
     UserAccountComponent
   ],
   imports: [
-    CdkTableModule,
+    HttpModule,
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,

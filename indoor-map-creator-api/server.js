@@ -3,6 +3,10 @@ var express = require('express'),
   port = process.env.PORT || 3000,
   mongoose = require('mongoose'),
   bodyParser = require('body-parser');
+var cors = require('cors');
+var User = require('./api/models/userModel');
+var Project = require('./api/models/projectModel');
+var authenticator = require('./api/controllers/authenticater');
 
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost/indoorMapDb');
@@ -10,9 +14,10 @@ mongoose.connect('mongodb://localhost/indoorMapDb');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
+app.use(authenticator.authenticate);
 
-
-var routes = require('./api/routes/todoListRoutes');
+var routes = require('./api/routes/routes');
 routes(app);
 
 app.use(function (req, res) {

@@ -1,6 +1,8 @@
 import { Component, OnInit, NgZone, AfterViewInit } from '@angular/core';
 import { MdDialog, MdDialogRef } from '@angular/material';
 import { LoginActivateGuard } from '../services/LoginActivateGuard'
+import { Http, Response, RequestOptions, Headers } from '@angular/http';
+import { UserAccountComponent } from '../user-account/user-account.component';
 declare var gapi: any;
 
 @Component({
@@ -10,7 +12,7 @@ declare var gapi: any;
 })
 export class LoginDialogComponent implements OnInit, AfterViewInit {
 
-  constructor(public dialogRef: MdDialogRef<LoginDialogComponent>, private zone: NgZone, private loginActivateGuard: LoginActivateGuard) { }
+  constructor(public dialogRef: MdDialogRef<LoginDialogComponent>, private zone: NgZone, private loginActivateGuard: LoginActivateGuard, private http: Http, public dialog: MdDialog) { }
 
   ngOnInit() {
   }
@@ -33,6 +35,7 @@ export class LoginDialogComponent implements OnInit, AfterViewInit {
     console.log('Family Name: ' + profile.getFamilyName());
     console.log("Image URL: " + profile.getImageUrl());
     console.log("Email: " + profile.getEmail());
+    console.log("Token: " + googleUser.getAuthResponse().id_token);
     //  this.zone.run(() => { this.infoProfile.name = profile.getName(),
     //                        this.infoProfile.email = profile.getEmail(),
     //                        console.log(profile)
@@ -40,9 +43,43 @@ export class LoginDialogComponent implements OnInit, AfterViewInit {
     //                      })
     localStorage.setItem('isLogined', 'true');
     localStorage.setItem('accountId', profile.getId());
+    this.getOrCreateUser(googleUser.getAuthResponse().id_token);
   };
-  signOut() {
-    var auth2 = gapi.auth2.getAuthInstance();
-    auth2.signOut();
+
+  getOrCreateUser(token) {
+    // get the user from server
+    this.http.request('http://localhost:3000/users?token=' + token)
+      .subscribe((res: Response) => {
+        var user = res.json();
+        if (user) {
+          console.log(user);
+          this.zone.run(() => {
+            this.dialogRef.close();
+            // open project dialog
+            this.dialog.open(UserAccountComponent, { disableClose: false, width: '60vw', height: '57vh' });
+          });
+        } else {
+          // create user (for new users)
+          let headers = new Headers({ 'Content-Type': 'application/json' });
+          let options = new RequestOptions({ headers: headers });
+          this.http.post('http://localhost:3000/users', {
+            token: token
+          }, options).subscribe((res: Response) => {
+            var user = res.json();
+            console.log(user);
+            this.zone.run(() => {
+              this.dialogRef.close();
+              // open project dialog
+              this.dialog.open(UserAccountComponent, { disableClose: false, width: '60vw', height: '57vh' });
+            });
+          });
+        }
+      });
+
   }
+
+  // signOut() {
+  //   var auth2 = gapi.auth2.getAuthInstance();
+  //   auth2.signOut();
+  // }
 }

@@ -1,17 +1,22 @@
 'use strict';
 module.exports = function (app) {
-    var userController = require('../controllers/todoListController');
-    var projectController = require('../controllers/todoListController');
+    var userController = require('../controllers/userController');
+    var projectController = require('../controllers/projectController');
 
-    app.route('/users/:userId')
+    // app.route('/users/:userId')
+    //     .get(userController.getUserById)
+    //     .delete(userController.deleteUserById);
+
+    // userId (google id) for get and delete command are appended by 
+    // "autheticator" middleware.
+    app.route('/users')
+        .post(userController.createUser)
         .get(userController.getUserById)
         .delete(userController.deleteUserById);
 
-    app.route('/users')
-        .post(userController.createUser);
-
+    // userId here is the object id (_id)
     app.route('/users/:userId/projects')
-        .get(projectController.getAllProjectsByUserById);
+        .get(userController.getAllProjectsByUserById);
 
     app.route('/projects')
         .post(projectController.createProject);
