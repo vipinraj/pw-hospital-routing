@@ -20,6 +20,9 @@ var ProjectSchema = new Schema(
         geoJson: {
             type: String
         },
+        geoJsonUrl: {
+        	type: String
+        },
         _user: {
             type: Schema.Types.ObjectId,
             ref: 'User'

@@ -78,6 +78,13 @@ export class LoginDialogComponent implements OnInit, AfterViewInit {
 
   }
 
+  updateUserSevice(user) {
+    // create user object
+    // get projects from server
+    // create project objects
+    // set
+  }
+
   // signOut() {
   //   var auth2 = gapi.auth2.getAuthInstance();
   //   auth2.signOut();
