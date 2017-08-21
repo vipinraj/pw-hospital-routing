@@ -10,7 +10,8 @@ export class Project {
     constructor(
         params: {
             projectId: string;
-            name: string, centerLat: string,
+            name: string,
+            centerLat?: string,
             centerLong?: string,
             zoomLevel?: string,
             geoJson?: {},

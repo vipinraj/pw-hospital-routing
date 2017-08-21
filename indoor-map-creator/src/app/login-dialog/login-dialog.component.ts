@@ -3,6 +3,9 @@ import { MdDialog, MdDialogRef } from '@angular/material';
 import { LoginActivateGuard } from '../services/LoginActivateGuard'
 import { Http, Response, RequestOptions, Headers } from '@angular/http';
 import { UserAccountComponent } from '../user-account/user-account.component';
+import { User } from '../models/user.model';
+import { Project } from '../models/project.model';
+import { environment } from '../../environments/environment';
 declare var gapi: any;
 
 @Component({
@@ -11,7 +14,7 @@ declare var gapi: any;
   styleUrls: ['./login-dialog.component.css']
 })
 export class LoginDialogComponent implements OnInit, AfterViewInit {
-
+  token: any;
   constructor(public dialogRef: MdDialogRef<LoginDialogComponent>, private zone: NgZone, private loginActivateGuard: LoginActivateGuard, private http: Http, public dialog: MdDialog) { }
 
   ngOnInit() {
@@ -43,12 +46,13 @@ export class LoginDialogComponent implements OnInit, AfterViewInit {
     //                      })
     localStorage.setItem('isLogined', 'true');
     localStorage.setItem('accountId', profile.getId());
-    this.getOrCreateUser(googleUser.getAuthResponse().id_token);
+    this.token = googleUser.getAuthResponse().id_token;
+    this.getOrCreateUser();
   };
 
-  getOrCreateUser(token) {
+  getOrCreateUser() {
     // get the user from server
-    this.http.request('http://localhost:3000/users?token=' + token)
+    this.http.request(environment.apiBaseUrl + '/users?token=' + this.token)
       .subscribe((res: Response) => {
         var user = res.json();
         if (user) {
@@ -57,13 +61,14 @@ export class LoginDialogComponent implements OnInit, AfterViewInit {
             this.dialogRef.close();
             // open project dialog
             this.dialog.open(UserAccountComponent, { disableClose: false, width: '60vw', height: '57vh' });
+            this.updateUserSevice(user);
           });
         } else {
           // create user (for new users)
           let headers = new Headers({ 'Content-Type': 'application/json' });
           let options = new RequestOptions({ headers: headers });
-          this.http.post('http://localhost:3000/users', {
-            token: token
+          this.http.post(environment.apiBaseUrl + '/users', {
+            token: this.token
           }, options).subscribe((res: Response) => {
             var user = res.json();
             console.log(user);
@@ -71,6 +76,7 @@ export class LoginDialogComponent implements OnInit, AfterViewInit {
               this.dialogRef.close();
               // open project dialog
               this.dialog.open(UserAccountComponent, { disableClose: false, width: '60vw', height: '57vh' });
+              this.updateUserSevice(user);
             });
           });
         }
@@ -80,7 +86,31 @@ export class LoginDialogComponent implements OnInit, AfterViewInit {
 
   updateUserSevice(user) {
     // create user object
+    var userObj: User = new User({ userId: user._id, googleAccountId: user.userId });
     // get projects from server
+    var projectObjs: Project[] = [];
+    if (user.projects) {
+      user.projects.forEach(project => {
+        this.http.request(environment.apiBaseUrl + '/users/' +  + '?token=' + this.token)
+          .subscribe((res: Response) => {
+
+          });
+
+
+        var projectObj = new Project(
+          {
+            projectId: <string>project._id,
+            name: <string>project.name,
+            centerLat: project.centerLat ? <string>project.centerLat : null,
+            centerLong: project.centerLong ? <string>project.centerLong : null,
+            zoomLevel: project.zoomLevel ? <string>project.zoomLevel : null,
+            geoJson: project.geoJson ? <{}>project.geoJson : null,
+            geoJsonUrl: project.geoJsonUrl ? <string>project.geoJsonUrl : null
+          }
+        );
+
+      });
+    }
     // create project objects
     // set
   }

@@ -23,6 +23,7 @@ import { FeatureService } from './services/feature.service';
 import { LevelFilterService } from './services/level-filter.service';
 import { BeaconReferenceService } from './services/beacon-reference.service';
 import { CustomValidatorService } from './services/custom-validators.service';
+import { UserService } from './services/user.service';
 import { DynamicFormFieldComponent } from './dynamic-form-field/dynamic-form-field.component';
 import { TagEditorConfirmDeactivateGuard } from './services/TagEditorConfirmDeactivateGuard';
 import { LoginActivateGuard } from './services/LoginActivateGuard';
@@ -76,7 +77,7 @@ const routes = [
     }),
     RouterModule.forRoot(routes)
   ],
-  providers: [FeatureService, TagEditorConfirmDeactivateGuard, LoginActivateGuard, LevelFilterService, BeaconReferenceService, CustomValidatorService],
+  providers: [FeatureService, TagEditorConfirmDeactivateGuard, LoginActivateGuard, LevelFilterService, BeaconReferenceService, CustomValidatorService, UserService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
