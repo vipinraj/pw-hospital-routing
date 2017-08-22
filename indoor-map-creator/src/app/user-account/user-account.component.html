@@ -10,23 +10,27 @@
       <div class="content-row-table">
         <md-list>
           <label md-subheader md-line>Active Project</label>
-          <md-list-item>
+          <md-list-item *ngIf="activeProject; else elseBlockActiveProj">
             <md-icon md-list-icon>insert_drive_file</md-icon>
-            <h4 md-line><strong>{{projects[0].name}}</strong></h4>
-            <p md-line> Center: {{projects[0].center}}</p>
-            <p md-line>Zoom level: {{projects[0].zoom}} </p>
+            <h4 md-line><strong>{{activeProject.name}}</strong></h4>
+            <p md-line *ngIf="activeProject.centerLat"> <strong>Center: </strong> {{activeProject.centerLat + activeProject.centerLong }}
+            </p>
+            <p md-line *ngIf="activeProject.zoomLevel"><strong>Zoom level: </strong>{{activeProject.zoomLevel ? activeProject.zoomLevel : '--'}} </p>
           </md-list-item>
+          <ng-template #elseBlockActiveProj>
+            <md-list-item>
+              No active project. Select a project from below or create a new project.
+            </md-list-item>
+          </ng-template>
         </md-list>
         <md-list>
           <label md-subheader md-line>Projects</label>
-          <button md-raised-button class="new-project-btn">New project</button>
+          <button md-raised-button class="new-project-btn" (click)="createProject()">New project</button>
           <md-list-item *ngFor="let project of projects" class="list-item">
             <md-icon md-list-icon>insert_drive_file</md-icon>
             <h4 md-line>{{project.name}}</h4>
-            <p md-line> <strong>Center: </strong>{{project.center}}</p>
-            <p md-line><strong>Zoom level: </strong>{{project.zoom}} </p>
-            <button md-button>Edit</button>
-            <button md-button>Delete</button>
+            <button md-button>Select</button>
+            <button md-button (click)="deleteProject(project)">Delete</button>
           </md-list-item>
         </md-list>
       </div>

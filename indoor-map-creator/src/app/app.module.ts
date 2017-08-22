@@ -19,6 +19,7 @@ import { SearchPlacesComponent } from './search-places/search-places.component';
 import { FeatureTypeSelectorComponent } from './feature-type-selector/feature-type-selector.component';
 import { FeatureTagEditorComponent } from './feature-tag-editor/feature-tag-editor.component';
 
+import { FormFieldService } from './services/form-field.service';
 import { FeatureService } from './services/feature.service';
 import { LevelFilterService } from './services/level-filter.service';
 import { BeaconReferenceService } from './services/beacon-reference.service';
@@ -28,10 +29,11 @@ import { DynamicFormFieldComponent } from './dynamic-form-field/dynamic-form-fie
 import { TagEditorConfirmDeactivateGuard } from './services/TagEditorConfirmDeactivateGuard';
 import { LoginActivateGuard } from './services/LoginActivateGuard';
 import { LevelFilterComponent } from './level-filter/level-filter.component';
-import { DeleteFeatureDialogComponent } from './delete-feature-dialog/delete-feature-dialog.component';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { UserAccountComponent } from './user-account/user-account.component';
+import { CreateProjectDialogComponent } from './create-project-dialog/create-project-dialog.component';
 
 const routes = [
   { path: 'login', component: LoginPageComponent },
@@ -51,15 +53,17 @@ const routes = [
     FeatureTagEditorComponent,
     DynamicFormFieldComponent,
     LevelFilterComponent,
-    DeleteFeatureDialogComponent,
+    ConfirmationDialogComponent,
     LoginDialogComponent,
     LoginPageComponent,
-    UserAccountComponent
+    UserAccountComponent,
+    CreateProjectDialogComponent
   ],
   entryComponents: [
-    DeleteFeatureDialogComponent,
+    ConfirmationDialogComponent,
     LoginDialogComponent,
-    UserAccountComponent
+    UserAccountComponent,
+    CreateProjectDialogComponent
   ],
   imports: [
     HttpModule,
@@ -77,7 +81,7 @@ const routes = [
     }),
     RouterModule.forRoot(routes)
   ],
-  providers: [FeatureService, TagEditorConfirmDeactivateGuard, LoginActivateGuard, LevelFilterService, BeaconReferenceService, CustomValidatorService, UserService],
+  providers: [FeatureService, TagEditorConfirmDeactivateGuard, LoginActivateGuard, LevelFilterService, BeaconReferenceService, CustomValidatorService, UserService, FormFieldService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -35,7 +35,7 @@ exports.createUser = function (req, res) {
 exports.getAllProjectsByUserById = function (req, res) {
   console.log(req.params.userId);
   User.findOne({ _id: req.params.userId })
-    .populate('_projects')
+    .populate({ path: '_projects', options: { sort: { 'updatedAt': -1 } } })
     .exec(function (err, user) {
       if (err)
         res.send(err);

@@ -12,7 +12,6 @@ export class FormFieldService {
         let group: any = {};
 
         controls.forEach(item => {
-
             var validators = [];
             if (item.required) {
                 validators.push(Validators.required);

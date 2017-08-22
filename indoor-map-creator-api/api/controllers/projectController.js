@@ -10,12 +10,13 @@ exports.createProject = function (req, res) {
         if (err) {
             res.send(err);
         } else {
-            User.findById(req.body._user, function (err, user) {
+            User.findOne({ userId: req.body.userId }, function (err, user) {
                 if (err) {
                     res.send(err);
                 } else {
+                    console.log(user);
                     user._projects.push(project);
-                    user.save(function(err, user) {
+                    user.save(function (err, user) {
                         if (err) {
                             res.send(err);
                         } else {

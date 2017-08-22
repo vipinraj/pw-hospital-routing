@@ -1,0 +1,11 @@
+<md-dialog-content>
+  <form (ngSubmit)="onSubmit()" [formGroup]="tagForm" class="tag-edit-form" id="ngForm">
+    <div *ngFor="let control of formControls" class="form-row">
+      <dynamic-form-field [field]="control" [form]="tagForm"></dynamic-form-field>
+    </div>
+  </form>
+</md-dialog-content>
+<md-dialog-actions>
+  <button type="submit" md-raised-button form="ngForm" [disabled]="!tagForm.valid">Create</button>
+  <button md-button md-dialog-close>Close</button>
+</md-dialog-actions>

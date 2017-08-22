@@ -2,6 +2,6 @@
   <button md-raised-button [disabled]="!drawButtonsEnabled" (click)="onDrawPolygonClick()" name="areaBtn" ><md-icon>format_shapes</md-icon>Area</button>
   <button md-raised-button [disabled]="!drawButtonsEnabled" (click)="onDrawLineClick()" name="lineBtn"><md-icon>timeline</md-icon>Line</button>
   <button #dummyBtn md-raised-button [disabled]="!drawButtonsEnabled" name="pointBtn" (click)="onDrawPointClick()"><md-icon>place</md-icon>Point</button>
-  <button id="saveBtn" md-raised-button (click)="onFinishDrawClick()"><md-icon>save</md-icon>Save</button>
+  <button id="saveBtn" md-raised-button (click)="saveMapToServer()"><md-icon>save</md-icon>Save</button>
 </div>
 

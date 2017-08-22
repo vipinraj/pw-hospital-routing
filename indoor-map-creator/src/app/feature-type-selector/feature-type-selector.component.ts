@@ -11,7 +11,7 @@ import { Stairs } from '../models/stairs.model';
 import { Escalator } from '../models/escalator.model';
 import { Elevator } from '../models/elevator.model';
 import { MdDialog, MdDialogRef } from '@angular/material';
-import { DeleteFeatureDialogComponent } from '../delete-feature-dialog/delete-feature-dialog.component';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 // This component represent the feature types
 // for a perticular geometry.
@@ -109,7 +109,7 @@ export class FeatureTypeSelectorComponent implements OnInit {
   }
 
   onDeleteFeature() {
-    let dialogRef = this.dialog.open(DeleteFeatureDialogComponent);
+    let dialogRef = this.dialog.open(ConfirmationDialogComponent, { data: { message: 'Are you sure you want to delete<br/> this feature permanently ?' } });
     dialogRef.afterClosed().subscribe(result => {
       if (result == 'yes') {
 

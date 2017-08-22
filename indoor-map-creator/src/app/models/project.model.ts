@@ -9,7 +9,7 @@ export class Project {
 
     constructor(
         params: {
-            projectId: string;
+            projectId?: string;
             name: string,
             centerLat?: string,
             centerLong?: string,

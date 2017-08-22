@@ -43,4 +43,13 @@ export class Feature {
 
     constructor() {
     }
+    getProperties() {
+        var properties = {};
+        this.formControls.forEach((control) => {
+            if (control['value'] && control['value'].toString().length > 0) {
+                properties[control['tag']] = control['value'].toString();
+            }
+        });
+        return properties;
+    }
 }

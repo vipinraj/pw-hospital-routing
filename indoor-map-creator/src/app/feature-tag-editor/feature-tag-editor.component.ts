@@ -12,14 +12,14 @@ import {
   FormGroup
 } from '@angular/forms';
 import { MdDialog, MdDialogRef } from '@angular/material';
-import { DeleteFeatureDialogComponent } from '../delete-feature-dialog/delete-feature-dialog.component';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 // this component take care of the tag editor form
 @Component({
   selector: 'app-feature-tag-editor',
   templateUrl: './feature-tag-editor.component.html',
   styleUrls: ['./feature-tag-editor.component.css'],
-  providers: [FormFieldService]
+  providers: []
 })
 export class FeatureTagEditorComponent implements OnInit {
   tagForm: FormGroup;
@@ -40,6 +40,7 @@ export class FeatureTagEditorComponent implements OnInit {
             if (item.refId == this.selectedFeatureRefId) {
               // populating the reference textbox
               item.feature.formControls[0].value = this.selectedFeatureRefId;
+              console.log(item.feature.formControls[0]);
               this.tagForm = ffs.toFormGroup(item.feature.formControls);
               // this.selectedFeatureControls = item.feature.formControls;
               this.selectedItem = item;
@@ -62,17 +63,19 @@ export class FeatureTagEditorComponent implements OnInit {
       // save form data
       var formData = this.tagForm.value;
       this.selectedItem.feature.formControls.forEach((control) => {
-        control.value = formData[control.key];
-        if (control.tag == 'level' || control.tag == 'building') {
-          var level: string = formData[control.key].toString();
-          this.selectedItem.geometry.level = level;
-          this.levelFilterService.newLevel = level;
-        }
-        if (control.tag == 'ref:beacon') {
-          var ref = formData[control.key];
-          console.log(ref);
-          if (ref) {
-            this.beaconReferenceService.add(ref);
+        if (!control.disabled) {
+          control.value = formData[control.key];
+          if (control.tag == 'level' || control.tag == 'building') {
+            var level: string = formData[control.key].toString();
+            this.selectedItem.geometry.level = level;
+            this.levelFilterService.newLevel = level;
+          }
+          if (control.tag == 'ref:beacon') {
+            var ref = formData[control.key];
+            console.log(ref);
+            if (ref) {
+              this.beaconReferenceService.add(ref);
+            }
           }
         }
       });
@@ -87,7 +90,9 @@ export class FeatureTagEditorComponent implements OnInit {
   }
 
   onDeleteFeature() {
-    let dialogRef = this.dialog.open(DeleteFeatureDialogComponent);
+    let dialogRef = this.dialog.open(ConfirmationDialogComponent,
+      { data: { message: 'Are you sure you want to delete<br/> this feature permanently ?' } }
+    );
     dialogRef.afterClosed().subscribe(result => {
       if (result == 'yes') {
         // delete feature

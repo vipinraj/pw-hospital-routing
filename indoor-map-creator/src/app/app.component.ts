@@ -5,6 +5,7 @@ import { GoogleMapsAPIWrapper } from '@agm/core';
 import { MapApiService } from './services/map-api.service';
 import { MdDialog } from '@angular/material';
 import { UserAccountComponent } from './user-account/user-account.component';
+import { UserService } from './services/user.service';
 declare var gapi: any;
 
 @Component({
@@ -15,7 +16,7 @@ declare var gapi: any;
 })
 export class AppComponent implements AfterViewInit {
   mapApi: GoogleMapsAPIWrapper;
-  constructor(private _mapApi: GoogleMapsAPIWrapper, private _internalMapApiService: MapApiService, public dialog: MdDialog, private zone: NgZone) {
+  constructor(private _mapApi: GoogleMapsAPIWrapper, private _internalMapApiService: MapApiService, public dialog: MdDialog, private zone: NgZone, private userService: UserService) {
     this.mapApi = _mapApi;
     _internalMapApiService.setApi(_mapApi);
   }
@@ -37,12 +38,23 @@ export class AppComponent implements AfterViewInit {
 
   }
   ngAfterViewInit() {
-    setTimeout(function() {
+    setTimeout(() => {
       gapi.signin2.render('my-signin', {
-        'onsuccess': null,
+        'onsuccess': param => this.onSignIn(param),
         'scope': 'profile email',
         'theme': 'light'
       });
     }, 1000);
+  }
+
+  onSignIn(googleUser) {
+    console.log('Signing in . . .');
+    this.userService.signIn(googleUser, function(err, isSuccess){
+      if (isSuccess) {
+        console.log('Login success');
+      } else {
+        console.error('Login failed');
+      }
+    })
   }
 }

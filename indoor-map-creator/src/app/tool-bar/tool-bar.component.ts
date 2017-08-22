@@ -6,6 +6,7 @@ import { GoogleMapsAPIWrapper } from '@agm/core';
 import { Polyline } from "@agm/core/services/google-maps-types";
 import { Router } from '@angular/router';
 import { FeatureService } from "../services/feature.service";
+import { UserService } from '../services/user.service';
 import { Feature } from '../models/feature.model';
 import { Building } from '../models/building.model';
 import { UUID } from 'angular2-uuid';
@@ -45,7 +46,7 @@ export class ToolBarComponent implements OnInit {
   private featureOptionsOnHihglighted = { editable: true, draggable: true, strokeWeight: 2, strokeColor: "red" };
   private featureOptionsOnNotHighlighted = { editable: false, draggable: false, strokeWeight: 2, strokeColor: "black" };
 
-  constructor(private _chRef: ChangeDetectorRef, private router: Router, private zone: NgZone, private featureService: FeatureService) {
+  constructor(private _chRef: ChangeDetectorRef, private router: Router, private zone: NgZone, private featureService: FeatureService, private userService: UserService) {
 
   }
 
@@ -316,7 +317,7 @@ export class ToolBarComponent implements OnInit {
     if (this.activePoint) {
       // this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePoint });
       this.featureService.add({
-        refId: this.activePoint.refId, geomType: 'line',
+        refId: this.activePoint.refId, geomType: 'point',
         geometry: this.activePoint, feature: null
       });
       this.disposeSomeObjects();
@@ -367,5 +368,11 @@ export class ToolBarComponent implements OnInit {
           }
         });
       });
+  }
+
+  saveMapToServer() {
+    // set center, zoom
+    // save
+    this.userService.updateProject();
   }
 }
