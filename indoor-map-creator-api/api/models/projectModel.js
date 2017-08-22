@@ -17,6 +17,9 @@ var ProjectSchema = new Schema(
         zoomLevel: {
             type: Number
         },
+        featureTypes: { // stores the type of each feature (room, door, etc) in the same order as geoJson
+            type: [] 
+        },
         geoJson: {
             type: String
         },
