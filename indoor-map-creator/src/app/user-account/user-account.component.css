@@ -26,7 +26,8 @@
 .content-row-table {
     display: flex;
     flex-direction: column;
-    max-height: 40vh;
+    min-height: 36vh;
+    max-height: 36vh;
     min-width: 300px;
 }
 
@@ -53,4 +54,8 @@
 
 .list-item:hover {
     background-color:rgba(230, 230, 230, 0.7);
+}
+
+.close-btn-container {
+    flex-flow: row-reverse !important;
 }

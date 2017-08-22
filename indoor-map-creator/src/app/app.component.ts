@@ -22,7 +22,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   onMyAccountClick() {
-    this.dialog.open(UserAccountComponent, { disableClose: false, width: '60vw', height: '57vh' });
+    this.dialog.open(UserAccountComponent, { disableClose: true, width: '60vw', height: '57vh' });
   }
 
   onLogoutClick() {

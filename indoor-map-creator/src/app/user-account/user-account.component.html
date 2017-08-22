@@ -29,7 +29,7 @@
           <md-list-item *ngFor="let project of projects" class="list-item">
             <md-icon md-list-icon>insert_drive_file</md-icon>
             <h4 md-line>{{project.name}}</h4>
-            <button md-button>Select</button>
+            <button md-button (click)="changeActiveProject(project)">Select</button>
             <button md-button (click)="deleteProject(project)">Delete</button>
           </md-list-item>
         </md-list>
@@ -38,3 +38,8 @@
     <md-tab label="Account">Content 2</md-tab>
   </md-tab-group>
 </md-dialog-content>
+<md-dialog-actions class="close-btn-container">
+  <button md-raised-button md-dialog-close [disabled]="!activeProject" [mdTooltipDisabled]="activeProject" mdTooltip="Please select a project" mdTooltipPosition="above">
+    Close
+  </button>
+</md-dialog-actions> 

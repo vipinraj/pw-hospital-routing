@@ -6,6 +6,7 @@ export class Project {
     zoomLevel: string;
     geoJson: {};
     geoJsonUrl: string;
+    featureTypes: string[];
 
     constructor(
         params: {
@@ -15,7 +16,8 @@ export class Project {
             centerLong?: string,
             zoomLevel?: string,
             geoJson?: {},
-            geoJsonUrl?: string
+            geoJsonUrl?: string,
+            featureTypes?: string[]
         }) {
         this.projectId = params.projectId;
         this.name = params.name;
@@ -24,5 +26,6 @@ export class Project {
         this.zoomLevel = params.zoomLevel;
         this.geoJson = params.geoJson;
         this.geoJsonUrl = params.geoJsonUrl;
+        this.featureTypes = params.featureTypes;
     }
 }

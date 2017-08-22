@@ -46,5 +46,9 @@ export class UserAccountComponent implements OnInit {
       }
     });
   }
+
+  changeActiveProject(project: Project) {
+    this.userService.setActiveProject(project);
+  }
 }
 

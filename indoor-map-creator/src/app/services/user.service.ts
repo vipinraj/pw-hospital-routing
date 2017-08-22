@@ -124,9 +124,11 @@ export class UserService {
                     if (projectObjs.length > 0) {
                         this.setProjects(projectObjs);
                         console.log('project set');
-                    }
+                    } else 
+                        this.setProjects([]);
                 } else {
                     console.error('No projects');
+                    this.setProjects([]);
                 }
             });
     }
@@ -165,12 +167,22 @@ export class UserService {
 
     // convert GeoJSON to feature collection
     convertToFeatureCollection(geoJson) {
-
     }
 
     // update Project
     updateProject() {
-        this.featureService.convertToGeoJson();
+        var result = this.featureService.convertToGeoJson();
+        this.activeProject.geoJson = JSON.stringify(result.geoJson);
+        this.activeProject.featureTypes =  result.featureTypes;
+        // create project
+        let headers = new Headers({ 'Content-Type': 'application/json' });
+        let options = new RequestOptions({ headers: headers });
+        let body = JSON.parse(JSON.stringify(this.activeProject));
+        body.token = this.loginToken;
+        this.http.put(environment.apiBaseUrl + '/projects/' + this.activeProject.projectId, body, options).subscribe((res: Response) => {
+            console.log('project updated');
+            console.log(res.json());
+        });
     }
 
     setZoomAndCenter(lat, long, zoomLevel) {

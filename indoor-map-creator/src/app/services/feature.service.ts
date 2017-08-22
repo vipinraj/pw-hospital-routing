@@ -24,16 +24,17 @@ export class FeatureService {
     }
 
     // convert features to GeoJSON
-    convertToGeoJson() {
+    convertToGeoJson() : {geoJson: {}, featureTypes: string[] } {
         var geo = { "type": "FeatureCollection", "features": [] };
+        var featureTypes = [];
         console.log(this._list);
         this._list.forEach(function (item) {
             if (item.geometry) {
+                featureTypes.push(item.geometry.featureType);
                 var feature = {};
                 feature['type'] = 'Feature';
                 feature['properties'] = item.feature.getProperties();
                 geo.features.push(feature);
-
                 feature['geometry'] = { type: null, coordinates: null };
                 // get coordinates
                 var coordinates;
@@ -67,7 +68,6 @@ export class FeatureService {
         });
 
         console.log(geo);
-
-        return geo;
+        return {geoJson: geo,  featureTypes: featureTypes};
     }
 }
