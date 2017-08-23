@@ -22,7 +22,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   onMyAccountClick() {
-    this.dialog.open(UserAccountComponent, { disableClose: true, width: '60vw', height: '57vh' });
+    this.dialog.open(UserAccountComponent, { disableClose: true, width: '60vw', height: 'auto' });
   }
 
   onLogoutClick() {
@@ -49,9 +49,13 @@ export class AppComponent implements AfterViewInit {
 
   onSignIn(googleUser) {
     console.log('Signing in . . .');
-    this.userService.signIn(googleUser, function(err, isSuccess){
+    this.userService.signIn(googleUser, (err, isSuccess) => {
       if (isSuccess) {
         console.log('Login success');
+        this.zone.run(() => {
+          // open project dialog
+          this.dialog.open(UserAccountComponent, { disableClose: false, width: '60vw', height: 'auto' });
+        });
       } else {
         console.error('Login failed');
       }

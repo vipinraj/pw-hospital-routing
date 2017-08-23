@@ -81,24 +81,6 @@ export class AppComponent implements OnInit {
   capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
-  // styleFunc(feature) {
-  //   // get level - 0/1
-  //   var level = feature.getProperty('level');
-  //   var color = 'green';
-  //   // only show level one features
-  //   var visibility = level == 1 ? true : false;
-  //   return {
-  //     // icon for point geometry(in this case - doors)
-  //     icon: 'assets/images/door.png',
-  //     // set fill color for polygon features
-  //     fillColor: color,
-  //     // stroke color for polygons
-  //     strokeColor: color,
-  //     strokeWeight: 1,
-  //     // make layer 1 features visible
-  //     visible: visibility
-  //   };
-  // }
   private initMap() {
     // create a new map instance
     this.mapApi.createMap(this.m.nativeElement, <MapOptions>{
@@ -404,7 +386,7 @@ export class AppComponent implements OnInit {
   // For polygon: find "pole of inaccessibility"
   getCenter(feature, callback) {
     // find bound of the feature
-    if (feature.getGeometry().getType() === 'Polygon') {
+    if (feature.getGeometry().getType() === 'Polygon' || feature.getGeometry().getType() === 'LineString') {
       feature.toGeoJson(function(geoJson) {
         var pointArray = [];
         pointArray[0] = [];

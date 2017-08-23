@@ -50,6 +50,9 @@ export class UserService {
     }
 
     setActiveProject(project: Project) {
+        // create features
+        this.featureService.clearCurrentFeatures();
+        this.featureService.geoJsonToFeatureCollection(JSON.parse(project.geoJson), project.featureTypes);
         this.activeProject = project;
         this.activeProjectObservable.next(project);
     }
@@ -115,8 +118,9 @@ export class UserService {
                                 centerLat: project.centerLat ? <string>project.centerLat : null,
                                 centerLong: project.centerLong ? <string>project.centerLong : null,
                                 zoomLevel: project.zoomLevel ? <string>project.zoomLevel : null,
-                                geoJson: project.geoJson ? <{}>project.geoJson : null,
-                                geoJsonUrl: project.geoJsonUrl ? <string>project.geoJsonUrl : null
+                                geoJson: project.geoJson ? <string>project.geoJson : null,
+                                geoJsonUrl: project.geoJsonUrl ? <string>project.geoJsonUrl : null,
+                                featureTypes:  project.featureTypes ? <string[]>project.featureTypes : null,
                             }
                         );
                         projectObjs.push(projectObj);
@@ -186,6 +190,8 @@ export class UserService {
     }
 
     setZoomAndCenter(lat, long, zoomLevel) {
-
+        this.activeProject.centerLat = lat;
+        this.activeProject.centerLong = long;
+        this.activeProject.zoomLevel = zoomLevel;
     }
 }

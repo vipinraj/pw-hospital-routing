@@ -4,7 +4,7 @@ export class Project {
     centerLat: string;
     centerLong: string;
     zoomLevel: string;
-    geoJson: {};
+    geoJson: string;
     geoJsonUrl: string;
     featureTypes: string[];
 
@@ -15,7 +15,7 @@ export class Project {
             centerLat?: string,
             centerLong?: string,
             zoomLevel?: string,
-            geoJson?: {},
+            geoJson?: string,
             geoJsonUrl?: string,
             featureTypes?: string[]
         }) {

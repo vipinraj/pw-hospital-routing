@@ -13,7 +13,7 @@
           <md-list-item *ngIf="activeProject; else elseBlockActiveProj">
             <md-icon md-list-icon>insert_drive_file</md-icon>
             <h4 md-line><strong>{{activeProject.name}}</strong></h4>
-            <p md-line *ngIf="activeProject.centerLat"> <strong>Center: </strong> {{activeProject.centerLat + activeProject.centerLong }}
+            <p md-line *ngIf="activeProject.centerLat"> <strong>Center: </strong> {{activeProject.centerLat.substring(0, 10) + ', ' + activeProject.centerLong.substring(0, 10) }}
             </p>
             <p md-line *ngIf="activeProject.zoomLevel"><strong>Zoom level: </strong>{{activeProject.zoomLevel ? activeProject.zoomLevel : '--'}} </p>
           </md-list-item>
@@ -35,7 +35,11 @@
         </md-list>
       </div>
     </md-tab>
-    <md-tab label="Account">Content 2</md-tab>
+    <md-tab label="Account">
+        <div class="content-row-table">
+          content
+        </div>
+    </md-tab>
   </md-tab-group>
 </md-dialog-content>
 <md-dialog-actions class="close-btn-container">

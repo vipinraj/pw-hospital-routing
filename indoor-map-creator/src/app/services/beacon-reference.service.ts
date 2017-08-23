@@ -32,4 +32,9 @@ export class BeaconReferenceService {
         this._list.splice(index, 1);
         this._observableList.next(this._list);
     }
+
+    clearCurrentReference() {
+        this._list = [];
+        this._observableList.next(this._list);
+    }
 }

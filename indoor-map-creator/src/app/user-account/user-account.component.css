@@ -58,4 +58,5 @@
 
 .close-btn-container {
     flex-flow: row-reverse !important;
+    padding-top: 10px;
 }

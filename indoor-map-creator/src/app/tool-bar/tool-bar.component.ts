@@ -3,6 +3,7 @@ import {
   ViewChild, ElementRef, AfterContentInit, HostBinding, NgZone
 } from '@angular/core';
 import { GoogleMapsAPIWrapper } from '@agm/core';
+import { LatLng } from '@agm/core/services/google-maps-types';
 import { Polyline } from "@agm/core/services/google-maps-types";
 import { Router } from '@angular/router';
 import { FeatureService } from "../services/feature.service";
@@ -47,7 +48,30 @@ export class ToolBarComponent implements OnInit {
   private featureOptionsOnNotHighlighted = { editable: false, draggable: false, strokeWeight: 2, strokeColor: "black" };
 
   constructor(private _chRef: ChangeDetectorRef, private router: Router, private zone: NgZone, private featureService: FeatureService, private userService: UserService) {
-
+    // create geometry objects when loding a new project
+    userService.activeProjectAsObservable.subscribe(
+      (activeProject) => {
+        if (activeProject) {
+          this.featureService.observableList.subscribe(
+            items => {
+              if (!this._onMapClickListener) {
+                this._onMapClickListener = this.map.addListener('click', this.onMapClick);
+              }
+              if (items && items.length > 0) {
+                items.forEach(item => {
+                  if (!item.geometry) {
+                    this.createGeometry(item.feature.featureJson, item.feature.featureType, (err, geometry) => {
+                      item.geometry = geometry;
+                      geometry.newProperty = 'nwww';
+                      console.log(geometry);
+                    });
+                  }
+                });
+              }
+            });
+        }
+      }
+    );
   }
 
   ngOnInit() {
@@ -216,12 +240,11 @@ export class ToolBarComponent implements OnInit {
     this.featureService.observableList.subscribe(
       items => {
         items.forEach((item) => {
-          item.geometry.set('clickable', flag);
+          if (item.geometry) {
+            item.geometry.set('clickable', flag);
+          }
         });
       });
-    // this.featureCollection.forEach((item) => {
-    //   item.feature.set('clickable', flag);
-    // });
   }
 
   // draw polygon
@@ -352,7 +375,7 @@ export class ToolBarComponent implements OnInit {
     this.featureService.observableList.subscribe(
       items => {
         items.forEach((item) => {
-          if (item.geometry.level) {
+          if (item.geometry && item.geometry.level) {
             var level = item.geometry.level.toString();
             if (level) {
               if (levels && levels.length > 0) {
@@ -372,7 +395,109 @@ export class ToolBarComponent implements OnInit {
 
   saveMapToServer() {
     // set center, zoom
+    var center = this.map.getCenter();
+    this.userService.setZoomAndCenter(center.lat().toString(), center.lng().toString(), this.map.getZoom());
     // save
     this.userService.updateProject();
+  }
+
+  // Create and return gemetry objects.
+  // Used for building gemometries from
+  // GeoJSON.
+  createGeometry(featureJson, featureType, callback) {
+    var geometry;
+    switch (featureJson.geometry.type) {
+      case 'Polygon': {
+        var path: LatLng[] = [];
+        // construct path
+        featureJson.geometry.coordinates[0].forEach((point, i) => {
+          if (i < featureJson.geometry.coordinates[0].length - 1) {
+            var latLng: LatLng = new google.maps.LatLng({ lat: point[1], lng: point[0] });
+            path.push(latLng);
+          }
+        });
+        this.mapApi.createPolygon(this.featureOptionsOnNotHighlighted).
+          then(p => {
+            p['refId'] = featureJson.properties.ref;
+            p['featureType'] = featureType;
+            // add click listner for the polygon
+            p.addListener('click', (e) => {
+              console.log(p);
+              console.log(geometry);
+              if (!this.isDrawingMode) {
+                this.featureClickHandler(p, 'area');
+              }
+            });
+            geometry = p;
+            path.forEach((latLng) => {
+              geometry.getPath().push(latLng);
+            });
+            if (featureJson.properties.level) {
+              geometry['level'] = featureJson.properties.level;
+            }
+            console.log(geometry);
+            callback(null, geometry);
+          });
+        break;
+      }
+      case 'LineString': {
+        var path: LatLng[] = [];
+        // construct path
+        featureJson.geometry.coordinates.forEach((point, i) => {
+          var latLng: LatLng = new google.maps.LatLng({ lat: point[1], lng: point[0] });
+          path.push(latLng);
+        });
+        this.mapApi.createPolyline(this.featureOptionsOnNotHighlighted).
+          then(p => {
+            console.log('polyline created');
+            // add click listner for the polygon
+            p['refId'] = featureJson.properties.ref;
+            p['featureType'] = featureType;
+            p.addListener('click', (e) => {
+              if (!this.isDrawingMode) {
+                this.clearHighlighting();
+                this.featureClickHandler(p, 'line');
+              }
+            });
+            geometry = p;
+            path.forEach((latLng) => {
+              geometry.getPath().push(latLng);
+            });
+            if (featureJson.properties.level) {
+              geometry['level'] = featureJson.properties.level;
+            }
+            callback(null, geometry);
+          });
+        break;
+      }
+      case 'Point': {
+        var position = new google.maps.LatLng(
+          {
+            lat: featureJson.geometry.coordinates[1],
+            lng: featureJson.geometry.coordinates[0]
+          }
+        );
+        var marker = new google.maps.Marker({
+          position: position,
+          map: this.map,
+          icon: '/assets/images/point.png',
+          draggable: false
+        });
+        marker.addListener('click', (e) => {
+          if (!this.isDrawingMode) {
+            this.clearHighlighting();
+            this.featureClickHandler(marker, 'point');
+          }
+        });
+        marker['refId'] = featureJson.properties.ref;
+        marker['featureType'] = featureType;
+        geometry = marker;
+        if (featureJson.properties.level) {
+          geometry['level'] = featureJson.properties.level;
+        }
+        callback(null, geometry);
+        break;
+      }
+    }
   }
 }
