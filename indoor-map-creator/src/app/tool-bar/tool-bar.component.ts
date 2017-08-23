@@ -11,6 +11,9 @@ import { UserService } from '../services/user.service';
 import { Feature } from '../models/feature.model';
 import { Building } from '../models/building.model';
 import { UUID } from 'angular2-uuid';
+import { Subscription } from 'rxjs/Subscription';
+import { MdSnackBar } from '@angular/material';
+
 declare var google: any;
 
 // drawing tools
@@ -47,12 +50,13 @@ export class ToolBarComponent implements OnInit {
   private featureOptionsOnHihglighted = { editable: true, draggable: true, strokeWeight: 2, strokeColor: "red" };
   private featureOptionsOnNotHighlighted = { editable: false, draggable: false, strokeWeight: 2, strokeColor: "black" };
 
-  constructor(private _chRef: ChangeDetectorRef, private router: Router, private zone: NgZone, private featureService: FeatureService, private userService: UserService) {
+  constructor(private _chRef: ChangeDetectorRef, private router: Router, private zone: NgZone, private featureService: FeatureService, private userService: UserService, public snackBar: MdSnackBar) {
     // create geometry objects when loding a new project
+    console.log("Constructor");
     userService.activeProjectAsObservable.subscribe(
       (activeProject) => {
         if (activeProject) {
-          this.featureService.observableList.subscribe(
+          var subscription = this.featureService.observableList.subscribe(
             items => {
               if (!this._onMapClickListener) {
                 this._onMapClickListener = this.map.addListener('click', this.onMapClick);
@@ -62,13 +66,13 @@ export class ToolBarComponent implements OnInit {
                   if (!item.geometry) {
                     this.createGeometry(item.feature.featureJson, item.feature.featureType, (err, geometry) => {
                       item.geometry = geometry;
-                      geometry.newProperty = 'nwww';
                       console.log(geometry);
                     });
                   }
                 });
               }
             });
+          subscription.unsubscribe();
         }
       }
     );
@@ -237,7 +241,7 @@ export class ToolBarComponent implements OnInit {
   }
 
   makeFeaturesClickable(flag) {
-    this.featureService.observableList.subscribe(
+    var subscription = this.featureService.observableList.subscribe(
       items => {
         items.forEach((item) => {
           if (item.geometry) {
@@ -245,6 +249,7 @@ export class ToolBarComponent implements OnInit {
           }
         });
       });
+    subscription.unsubscribe();
   }
 
   // draw polygon
@@ -372,7 +377,7 @@ export class ToolBarComponent implements OnInit {
   }
 
   hideFeatures(levels: any[]) {
-    this.featureService.observableList.subscribe(
+    var subscription = this.featureService.observableList.subscribe(
       items => {
         items.forEach((item) => {
           if (item.geometry && item.geometry.level) {
@@ -391,6 +396,7 @@ export class ToolBarComponent implements OnInit {
           }
         });
       });
+    subscription.unsubscribe();
   }
 
   saveMapToServer() {
@@ -399,6 +405,9 @@ export class ToolBarComponent implements OnInit {
     this.userService.setZoomAndCenter(center.lat().toString(), center.lng().toString(), this.map.getZoom());
     // save
     this.userService.updateProject();
+    this.snackBar.open("Project saved successfully",'Dismiss', {
+      duration: 1000,
+    });
   }
 
   // Create and return gemetry objects.

@@ -37,7 +37,25 @@ exports.getProjectById = function (req, res) {
     });
 };
 
+exports.getGeoJson = function (req, res) {
+    Project.findById(req.params.projectId, function (err, project) {
+        if (err)
+            res.send(err);
+        var output = {
+            center: {
+                lat: project.centerLat,
+                lng: project.centerLong
+            },
+            geoJson: JSON.parse(project.geoJson)
+        };
+        res.json(output);
+    });
+};
+
 exports.updateProject = function (req, res) {
+    var geoJsonUrl = 'http://localhost:3000/hospital/' + req.params.projectId;
+    req.body.geoJsonUrl = geoJsonUrl;
+    console.log(req.body);
     Project.findOneAndUpdate({ _id: req.params.projectId }, req.body, { new: true }, function (err, project) {
         if (err)
             res.send(err);

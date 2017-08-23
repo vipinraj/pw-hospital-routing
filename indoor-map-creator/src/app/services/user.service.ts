@@ -7,6 +7,8 @@ import { Project } from "../models/project.model";
 import { environment } from '../../environments/environment';
 import { Http, Response, RequestOptions, Headers } from '@angular/http';
 import { FeatureService } from "../services/feature.service";
+import { LevelFilterService } from "../services/level-filter.service";
+declare var gapi: any;
 
 @Injectable()
 export class UserService {
@@ -18,7 +20,7 @@ export class UserService {
     private currentUserObservable: BehaviorSubject<User> = new BehaviorSubject(null);
     private projectsObservable: BehaviorSubject<Project[]> = new BehaviorSubject(null);
     private activeProjectObservable: BehaviorSubject<Project> = new BehaviorSubject(null);
-    constructor(private http: Http, private featureService: FeatureService) { }
+    constructor(private http: Http, private featureService: FeatureService, private levelFilterService: LevelFilterService) { }
     get curentUserAsObsevable(): Observable<User> {
         return this.currentUserObservable.asObservable();
     }
@@ -50,11 +52,20 @@ export class UserService {
     }
 
     setActiveProject(project: Project) {
-        // create features
+        if (this.activeProject) {
+            this.projects.push(this.activeProject);
+        }
+        this.levelFilterService.clearCurrentLevels();
         this.featureService.clearCurrentFeatures();
         this.featureService.geoJsonToFeatureCollection(JSON.parse(project.geoJson), project.featureTypes);
         this.activeProject = project;
         this.activeProjectObservable.next(project);
+        for (var index = 0; index < this.projects.length; index++) {
+            if (this.projects[index].projectId == this.activeProject.projectId) {
+                this.projects.splice(index, 1);
+            }
+        }
+        this.projectsObservable.next(this.projects);
     }
 
     createProject(project: Project) {
@@ -73,7 +84,7 @@ export class UserService {
 
     // Get the user object from server, if new user, create user
     // and get.
-    fetchUser(googleAccountId, callback) {
+    fetchUser(googleAccountId, email: string, callback) {
         // get the user from server
         this.http.request(environment.apiBaseUrl + '/users?token=' + this.loginToken)
             .subscribe((res: Response) => {
@@ -81,7 +92,7 @@ export class UserService {
                 if (user) {
                     console.log(user);
                     // create user object
-                    var userObj: User = new User({ userId: user._id, googleAccountId: user.userId });
+                    var userObj: User = new User({ userId: user._id, email: email, googleAccountId: user.userId });
                     this.setUser(userObj);
                     callback(null, true);
                 } else {
@@ -94,7 +105,7 @@ export class UserService {
                         var user = res.json();
                         console.log(user);
                         // create user object
-                        var userObj: User = new User({ userId: user._id, googleAccountId: user.userId });
+                        var userObj: User = new User({ userId: user._id, email: email, googleAccountId: user.userId });
                         this.setUser(userObj);
                         callback(null, true);
                     });
@@ -111,24 +122,26 @@ export class UserService {
                 if (projects) {
                     // create project objects
                     projects.forEach(project => {
-                        var projectObj = new Project(
-                            {
-                                projectId: <string>project._id,
-                                name: <string>project.name,
-                                centerLat: project.centerLat ? <string>project.centerLat : null,
-                                centerLong: project.centerLong ? <string>project.centerLong : null,
-                                zoomLevel: project.zoomLevel ? <string>project.zoomLevel : null,
-                                geoJson: project.geoJson ? <string>project.geoJson : null,
-                                geoJsonUrl: project.geoJsonUrl ? <string>project.geoJsonUrl : null,
-                                featureTypes:  project.featureTypes ? <string[]>project.featureTypes : null,
-                            }
-                        );
-                        projectObjs.push(projectObj);
+                        if (!this.activeProject || this.activeProject.projectId != project._id) {
+                            var projectObj = new Project(
+                                {
+                                    projectId: <string>project._id,
+                                    name: <string>project.name,
+                                    centerLat: project.centerLat ? <string>project.centerLat : null,
+                                    centerLong: project.centerLong ? <string>project.centerLong : null,
+                                    zoomLevel: project.zoomLevel ? <string>project.zoomLevel : null,
+                                    geoJson: project.geoJson ? <string>project.geoJson : null,
+                                    geoJsonUrl: project.geoJsonUrl ? <string>project.geoJsonUrl : null,
+                                    featureTypes: project.featureTypes ? <string[]>project.featureTypes : null,
+                                }
+                            );
+                            projectObjs.push(projectObj);
+                        }
                     });
                     if (projectObjs.length > 0) {
                         this.setProjects(projectObjs);
                         console.log('project set');
-                    } else 
+                    } else
                         this.setProjects([]);
                 } else {
                     console.error('No projects');
@@ -142,10 +155,26 @@ export class UserService {
         this.http.delete(environment.apiBaseUrl + '/projects/' + project.projectId + '?token=' + this.loginToken).subscribe((res: Response) => {
             var result = res.json();
             console.log(result);
+            if (this.activeProject && this.activeProject.projectId == project.projectId) {
+                this.activeProject = null;
+                this.activeProjectObservable.next(this.activeProject);
+            }
             // fetch projects
             this.fetchProjects();
         });
     }
+
+    deleteUser() {
+        this.http.delete(environment.apiBaseUrl + '/users?token=' + this.loginToken).subscribe((res: Response) => {
+            var result = res.json();
+            console.log(result);
+            this.signOut();
+            setTimeout(function() {
+                location.reload();
+            }, 200);
+        });
+    }
+
     // function to run after loging in
     signIn(googleUser, callback) {
         var profile = googleUser.getBasicProfile();
@@ -158,7 +187,7 @@ export class UserService {
         localStorage.setItem('isLogined', 'true');
         localStorage.setItem('accountId', profile.getId());
         this.setLoginToken(googleUser.getAuthResponse().id_token);
-        this.fetchUser(profile.getId(), (err, result) => {
+        this.fetchUser(profile.getId(), profile.getEmail(), (err, result) => {
             if (!err) {
                 this.fetchProjects();
                 callback(null, true);
@@ -166,6 +195,18 @@ export class UserService {
                 console.error('Error fetching user');
                 callback(new Error('Error fetching user'), false);
             }
+        });
+    }
+
+    signOut() {
+        gapi.load('auth2', function () {
+            gapi.auth2.init();
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.disconnect();
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+                localStorage.removeItem('isLogined');
+            });
         });
     }
 
@@ -177,7 +218,7 @@ export class UserService {
     updateProject() {
         var result = this.featureService.convertToGeoJson();
         this.activeProject.geoJson = JSON.stringify(result.geoJson);
-        this.activeProject.featureTypes =  result.featureTypes;
+        this.activeProject.featureTypes = result.featureTypes;
         // create project
         let headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
@@ -186,6 +227,21 @@ export class UserService {
         this.http.put(environment.apiBaseUrl + '/projects/' + this.activeProject.projectId, body, options).subscribe((res: Response) => {
             console.log('project updated');
             console.log(res.json());
+            var project = res.json();
+            // create object of updated project
+            var projectObj = new Project(
+                {
+                    projectId: <string>project._id,
+                    name: <string>project.name,
+                    centerLat: project.centerLat ? <string>project.centerLat : null,
+                    centerLong: project.centerLong ? <string>project.centerLong : null,
+                    zoomLevel: project.zoomLevel ? <string>project.zoomLevel : null,
+                    geoJson: project.geoJson ? <string>project.geoJson : null,
+                    geoJsonUrl: project.geoJsonUrl ? <string>project.geoJsonUrl : null,
+                    featureTypes: project.featureTypes ? <string[]>project.featureTypes : null,
+                }
+            );
+            this.setActiveProject(projectObj);
         });
     }
 

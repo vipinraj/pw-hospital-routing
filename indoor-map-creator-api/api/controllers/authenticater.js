@@ -5,7 +5,8 @@ var client = new auth.OAuth2(CLIENT_ID, '', '');
 
 exports.authenticate = function (req, res, next) {
     console.log('Middleware...');
-    if (req.method == 'OPTIONS' || req.method == 'PATCH') {
+    console.log();
+    if (req.method == 'OPTIONS' || req.method == 'PATCH' || req.url.indexOf('hospital') > -1) {
         next();
     } else {
         var token = req.body.token;

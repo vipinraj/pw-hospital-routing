@@ -13,12 +13,21 @@ exports.getUserById = function (req, res) {
 };
 
 exports.deleteUserById = function (req, res) {
-  User.remove({
-    userId: req.body.userId
-  }, function (err, user) {
+
+  User.findOne({ userId: req.body.userId })
+  .populate({ path: '_projects', options: { sort: { 'updatedAt': -1 } } })
+  .exec(function (err, user) {
     if (err)
       res.send(err);
-    res.json({ message: 'User successfully deleted' });
+    // remove projects
+    user._projects.forEach(function(project) {
+      project.remove();
+    });
+    user.remove(function(err, user) {
+      if (err)
+        res.send(err);
+      res.json({ message: 'User successfully deleted' });
+    });
   });
 };
 

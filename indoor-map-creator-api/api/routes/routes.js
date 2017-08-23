@@ -25,4 +25,7 @@ module.exports = function (app) {
         .get(projectController.getProjectById)
         .put(projectController.updateProject)
         .delete(projectController.deleteProject);
+
+    app.route('/hospital/:projectId')
+        .get(projectController.getGeoJson);
 };

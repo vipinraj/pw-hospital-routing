@@ -36,5 +36,9 @@ export class LevelFilterService {
         this._list = Array.from(new Set(this._list));
         this._observableList.next(this._list);
     }
-
+    
+    clearCurrentLevels() {
+        this._list = [];
+        this._observableList.next(this._list);
+    }
 }

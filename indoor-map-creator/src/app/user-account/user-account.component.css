@@ -60,3 +60,16 @@
     flex-flow: row-reverse !important;
     padding-top: 10px;
 }
+
+.account-details {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(36vh - 40px);
+    max-height: calc(36vh - 40px);
+    min-width: 300px;
+}
+
+.account-details div {
+    padding-bottom: 20px;
+}

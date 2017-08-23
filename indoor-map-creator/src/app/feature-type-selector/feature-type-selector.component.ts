@@ -90,7 +90,7 @@ export class FeatureTypeSelectorComponent implements OnInit {
         feature.ref = this.selectedGeometryRefid;
         break;
     }
-    this.featureService.observableList.subscribe(
+    var sub = this.featureService.observableList.subscribe(
       items => {
         console.log(items);
         items.forEach((item) => {
@@ -103,6 +103,7 @@ export class FeatureTypeSelectorComponent implements OnInit {
         });
       }
     );
+    sub.unsubscribe();
   }
 
   ngOnInit() {
@@ -110,13 +111,13 @@ export class FeatureTypeSelectorComponent implements OnInit {
 
   onDeleteFeature() {
     let dialogRef = this.dialog.open(ConfirmationDialogComponent, { data: { message: 'Are you sure you want to delete<br/> this feature permanently ?' } });
-    dialogRef.afterClosed().subscribe(result => {
+    var sub = dialogRef.afterClosed().subscribe(result => {
       if (result == 'yes') {
 
         var index: number;
         var selectedItem: any;
         // 
-        this.featureService.observableList.subscribe(
+        var sub2 = this.featureService.observableList.subscribe(
           items => {
             items.forEach((item, idx) => {
               if (item.refId == this.selectedGeometryRefid) {
@@ -125,12 +126,13 @@ export class FeatureTypeSelectorComponent implements OnInit {
               }
             })
           });
-
+        sub2.unsubscribe();
         selectedItem.geometry.setMap(null);
         this.featureService.delete(index);
         this.router.navigateByUrl("/");
       }
     });
+    sub.unsubscribe();
   }
 }
 
