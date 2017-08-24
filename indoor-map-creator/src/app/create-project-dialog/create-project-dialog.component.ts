@@ -23,11 +23,11 @@ export class CreateProjectDialogComponent implements OnInit {
       label: 'Name',
       required: true
     }),
-    new TextBox({
+    new NumericTextBox({
       key: 'center_latitude',
       label: 'Center Latitude'
     }),
-    new TextBox({
+    new NumericTextBox({
       key: 'center_longitude',
       label: 'Center Longitude'
     }),

@@ -26,12 +26,12 @@
           </ng-template>
         </md-list>
         <md-list>
-          <label md-subheader md-line>Projects</label>
+          <label md-subheader md-line>Other Projects</label>
           <button md-raised-button class="new-project-btn" (click)="createProject()">New project</button>
           <md-list-item *ngFor="let project of projects" class="list-item">
             <md-icon md-list-icon>insert_drive_file</md-icon>
-            <h4 md-line>{{project.name}}</h4>
-            <p md-line *ngIf="project.geoJsonUrl"><strong>GeoJSON URL: </strong> <a target="_blank" [href]="project.geoJsonUrl" >  {{project.geoJsonUrl ? project.geoJsonUrl : '--'}} </a> </p>
+            <h4 md-line><strong>{{project.name}}</strong></h4>
+            <p md-line *ngIf="project.geoJsonUrl">GeoJSON URL: <a target="_blank" [href]="project.geoJsonUrl" >  {{project.geoJsonUrl ? project.geoJsonUrl : '--'}} </a> </p>
             <button md-button (click)="changeActiveProject(project)">Select</button>
             <button md-button (click)="deleteProject(project)">Delete</button>
           </md-list-item>

@@ -12,7 +12,7 @@ export class Feature {
             tag: 'ref',
             disabled: true
         }),
-        new NumericTextBox({
+        new TextBox({
             key: 'ref_beacon',
             label: 'Beacon Reference',
             tag: 'ref:beacon',
