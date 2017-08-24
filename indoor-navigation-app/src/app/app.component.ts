@@ -34,12 +34,12 @@ export class AppComponent implements OnInit {
   mapStrokeColor: string = '#CFA992';
   // Holds the information about currently 
   // selected feature's data.
-  selectedFeatureData = { 
-                          ref: null, title: null, subtitle: null,
-                          description: null, beaconAttached: null,
-                          beaconRef: null, website: null,
-                          openTime: null, imageUrl: null
-                        };
+  selectedFeatureData = {
+    ref: null, title: null, subtitle: null,
+    description: null, beaconAttached: null,
+    beaconRef: null, website: null,
+    openTime: null, imageUrl: null
+  };
 
   // to make the select box enable/disable
   isDisabled = false;
@@ -54,15 +54,20 @@ export class AppComponent implements OnInit {
   // The currently active beacon marker (represents
   // users current location)
   activeBeaconMarker;
-  pathCovered = [];
-  pathPolyLine;
+  pathCovered = {};
+  pathPolyLine = {};
 
   constructor(private _indoorDataService: IndoorDataService, private mapApi: GoogleMapsAPIWrapper, private _chRef: ChangeDetectorRef) { }
 
   // function to consume IndoorDataService observable
   getGeoJSON(): void {
     this._indoorDataService.getGeoJson()
-      .subscribe(resGeoJsonData => this.geoJsonObject = resGeoJsonData);
+      .subscribe(resGeoJsonData => {
+        this.geoJsonObject = resGeoJsonData.geoJson;
+        this.lat = resGeoJsonData.center.lat;
+        this.lng = resGeoJsonData.center.lng;
+        this.zoom = resGeoJsonData.zoomLevel;
+      });
   }
   // on init lifecycle hook
   // We get the GeoJSON here
@@ -70,8 +75,8 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     // set the width of infoBar control
     var windowWidth = window.innerWidth
-        || document.documentElement.clientWidth
-        || document.body.clientWidth;
+      || document.documentElement.clientWidth
+      || document.body.clientWidth;
     this.infoBarWidth = (windowWidth / 2) + 'px';
     this.getGeoJSON();
     this.initMap();
@@ -115,17 +120,18 @@ export class AppComponent implements OnInit {
           // on load of the application.
           that.selectedFeatureData = that.extractFeatureData(feature);
         }
-        
+
         if (feature.getProperty('ref:beacon')) {
           // create a "point" for the beacon
           this.addBeaconMarker(feature);
         }
 
         // extract level information
-        if (!feature.getProperty('stairs') && !feature.getProperty('highway') 
-            && !feature.getProperty('building')) {
-          
+        if (!feature.getProperty('stairs') && !feature.getProperty('highway')
+          && !feature.getProperty('building')) {
+
           var level = feature.getProperty('level');
+          this.selectedLevel = level;
           if (!addedLevels[level]) {
             addedLevels[level] = true;
             that.indoorLevels.push(level);
@@ -135,7 +141,7 @@ export class AppComponent implements OnInit {
       console.log(that.indoorLevels.sort().reverse());
       // apply style and show ground (default) floor
       // (setTimeOut to give time for beacon and labels to be placed)
-      setTimeout(function() {
+      setTimeout(function () {
         that.switchLevel();
       }, 300);
       // custom control for showing feature properties/tags
@@ -149,7 +155,7 @@ export class AppComponent implements OnInit {
       var layerSwitchControl = document.getElementById('layerSwitcher');
       layerSwitchControlDiv.appendChild(layerSwitchControl);
       map.controls[google.maps.ControlPosition.RIGHT_TOP].push(layerSwitchControlDiv);
-      
+
       // test beacon control div beaconTester
       var testBeaconControlDiv = document.createElement('div');
       var testBeaconControl = document.getElementById('beaconTester');
@@ -164,15 +170,20 @@ export class AppComponent implements OnInit {
         that._chRef.detectChanges();
       });
 
-      // initialize path polyline 
-      that.pathPolyLine = new google.maps.Polyline({
-          path: that.pathCovered,
+      this.indoorLevels.forEach((level) => {
+        that.pathCovered[level] = [];
+        console.log(level);
+        that.pathPolyLine[level] = new google.maps.Polyline({
+          path: that.pathCovered[level],
           geodesic: true,
           strokeColor: 'gray',
           strokeOpacity: 1.0,
           strokeWeight: 1,
           map: that._map
+        });
       });
+
+      // initialize path polyline 
     }));
   }
 
@@ -182,7 +193,7 @@ export class AppComponent implements OnInit {
     this._map.data.overrideStyle(feature,
       { strokeWeight: 2, strokeColor: this.mapStrokeColor, fillColor: 'yellow' });
     var that = this;
-    var center = this.getCenter(feature, function(center) {
+    var center = this.getCenter(feature, function (center) {
       if (doPan) {
         that._map.panTo(center);
       }
@@ -201,10 +212,12 @@ export class AppComponent implements OnInit {
    * 
    */
   extractFeatureData(feature) {
-    var featureData = { ref: null, title: null, subtitle: null,
-                        description: null, beaconAttached:null,
-                        beaconRef: null, website: null,
-                        openTime: null, imageUrl: null };
+    var featureData = {
+      ref: null, title: null, subtitle: null,
+      description: null, beaconAttached: null,
+      beaconRef: null, website: null,
+      openTime: null, imageUrl: null
+    };
 
     var ref = feature.getProperty('ref');
     var refBeacon = feature.getProperty('ref:beacon');
@@ -230,7 +243,7 @@ export class AppComponent implements OnInit {
       if (indoorType = 'room') {
         if (feature.getProperty('room')) {
           var roomType = feature.getProperty('room');
-          if (['stairs','toilets','toilet'].indexOf(roomType.toLowerCase()) >= 0) {
+          if (['stairs', 'toilets', 'toilet'].indexOf(roomType.toLowerCase()) >= 0) {
             subtitle.push('has ' + roomType.toLowerCase());
           } else {
             subtitle.pop();
@@ -248,7 +261,7 @@ export class AppComponent implements OnInit {
       if (doorType.toLowerCase() == 'yes') {
         subtitle.push('Door');
       } else {
-        subtitle.push(this.capitalizeFirstLetter(doorType) + " door" );
+        subtitle.push(this.capitalizeFirstLetter(doorType) + " door");
       }
       if (feature.getProperty('entrance')) {
         subtitle.push(feature.getProperty('entrance').toLowerCase());
@@ -335,9 +348,8 @@ export class AppComponent implements OnInit {
     // update infobar
     that.updateInfoBar(selectedFeature);
     // add marker point to path covered
-    that.pathCovered.push({lat: marker.getPosition().lat(), lng: marker.getPosition().lng()});
-    
-    that.pathPolyLine.setPath(that.pathCovered);
+    that.pathCovered[level].push({ lat: marker.getPosition().lat(), lng: marker.getPosition().lng() });
+    that.pathPolyLine[level].setPath(that.pathCovered[level]);
   }
   // handle for beacon scan button
   scanBtnClick(event) {
@@ -377,6 +389,8 @@ export class AppComponent implements OnInit {
         that.highLightFeature(selectedFeature, true);
         // update infobar
         that.updateInfoBar(selectedFeature);
+        that.pathCovered[level].push({ lat: marker.getPosition().lat(), lng: marker.getPosition().lng() });
+        that.pathPolyLine[level].setPath(that.pathCovered[level]);
       }
     });
   }
@@ -387,7 +401,7 @@ export class AppComponent implements OnInit {
   getCenter(feature, callback) {
     // find bound of the feature
     if (feature.getGeometry().getType() === 'Polygon' || feature.getGeometry().getType() === 'LineString') {
-      feature.toGeoJson(function(geoJson) {
+      feature.toGeoJson(function (geoJson) {
         var pointArray = [];
         pointArray[0] = [];
         var coordinates = geoJson.geometry.coordinates[0];
@@ -439,6 +453,16 @@ export class AppComponent implements OnInit {
         this.beaconMarkers[key].setVisible(false);
       }
     }
+
+    // hide path if any
+    for (var key in this.pathPolyLine) {
+      if (key != this.selectedLevel) {
+        this.pathPolyLine[key].setVisible(false);
+      } else {
+        this.pathPolyLine[key].setVisible(true);
+      }
+    }
+
     // set options for select box
     window.setTimeout(() => {
       this.optionsForSelect = selectOptions;
@@ -451,7 +475,7 @@ export class AppComponent implements OnInit {
     // Get center of the feature
     // for placing the point
     var that = this;
-    this.getCenter(feature, function(center) {
+    this.getCenter(feature, function (center) {
       // console.log(center);
       var image = 'assets/images/inactive.png';
       // create marker object

@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import 'rxjs/add/operator/map';
+import { environment } from './../environments/environment';
 
 @Injectable()
 export class IndoorDataService {
 
   // location of GeoJSON file in server
-  private _url: string = 'assets/pg.json';
+  private _url: string = environment.geoJsonUrl;
 
   constructor(private _http: Http) {}
 

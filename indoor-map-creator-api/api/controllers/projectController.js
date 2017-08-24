@@ -46,6 +46,7 @@ exports.getGeoJson = function (req, res) {
                 lat: project.centerLat,
                 lng: project.centerLong
             },
+            zoomLevel: project.zoomLevel, 
             geoJson: JSON.parse(project.geoJson)
         };
         res.json(output);

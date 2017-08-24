@@ -4,5 +4,7 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  geoJsonUrl: 'assets/pg.json'
+  // geoJsonUrl: 'http://localhost:3000/hospital/599e545620fcad1506a624e0'
 };

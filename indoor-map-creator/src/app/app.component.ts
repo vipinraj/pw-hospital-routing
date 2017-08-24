@@ -33,6 +33,9 @@ export class AppComponent implements AfterViewInit {
       auth2.signOut().then(function () {
         console.log('User signed out.');
         localStorage.removeItem('isLogined');
+        setTimeout(function () {
+          location.reload();
+        }, 200);
       });
     });
 

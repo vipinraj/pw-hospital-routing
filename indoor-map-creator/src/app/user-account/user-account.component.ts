@@ -52,7 +52,7 @@ export class UserAccountComponent implements OnInit, OnDestroy {
 
   changeActiveProject(project: Project) {
     if (this.activeProject) {
-      let dialogRef = this.dialog.open(ConfirmationDialogComponent, { data: { message: 'Unsaved changes of current projects will<br/>be lost, sure to continue ?' } });
+      let dialogRef = this.dialog.open(ConfirmationDialogComponent, { data: { message: 'Unsaved changes of active project will<br/>be lost, sure to continue ?' } });
       dialogRef.afterClosed().subscribe(result => {
         if (result == 'yes') {
           this.userService.setActiveProject(project);
