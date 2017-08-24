@@ -1051,7 +1051,7 @@
 	            "type":"Feature",
 	            "properties":{
 	                "door":"yes",
-	                "ref:beacon":"0",
+	                "ref:beacon":"EST",
 	                "entrance":"Main entrance",
 	                "level":"0",
 	                "name":"Main Gate",
