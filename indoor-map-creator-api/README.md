@@ -1,5 +1,5 @@
 ## Physical Web Indoor Map Creator API
-REST API to be user by the [Indoor Map Creator](https://github.com/vipinraj/pw-hospital-routing/tree/master/indoor-map-creator) to persist map data in database and to expose GeoJSON resource URLs to be consumed by [Indoor Navigator](https://github.com/vipinraj/pw-hospital-routing/tree/master/indoor-navigation-app).
+REST API to be used by the [Indoor Map Creator](https://github.com/vipinraj/pw-hospital-routing/tree/master/indoor-map-creator) to persist map data in database and to expose GeoJSON resource URLs to be consumed by [Indoor Navigator](https://github.com/vipinraj/pw-hospital-routing/tree/master/indoor-navigation-app).
 
 ### To run
 Install dependencies:
