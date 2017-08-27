@@ -23,6 +23,9 @@ This solution contains three components:
 - Indoor Map Creator API
     - REST API to be consumed by the Indoor Map Creator to persist the data as well as the Indoor Navigator to consume GeoJSON
 
+## Worklog & Documents
+Worklogs and documents are [available here](https://drive.google.com/drive/folders/0BwUVWBhG_j8WT3RJc2VXMlZXRTg?usp=sharing).
+
 ## License
 
 MIT © [Vipin Raj](https://www.linkedin.com/in/vipin-raj-94422476/)
