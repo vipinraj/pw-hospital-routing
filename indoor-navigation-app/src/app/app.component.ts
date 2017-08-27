@@ -509,54 +509,54 @@ export class AppComponent implements OnInit {
   }
 
   scanForBeacons(callback) {
-    // Filter by custom srervice UID
-    var log = console.log;
-    var options = {};
-    options['acceptAllDevices'] = true;
-    navigator['bluetooth'].requestDevice(options)
-    .then(device => {
-      log('> Name:             ' + device.name);
-      log('> Id:               ' + device.id);
-      log('> Connected:        ' + device.gatt.connected);
-      callback(null, device.name);
-    })
-    .catch(error => {
-      log('Argh! ' + error);
-    });
-
-    // let options = { filters: [{ services: ['13333333-3333-3333-3333-333333333337'] }] };
-    // console.log('Requesting Bluetooth Device...');
+    
+    // var log = console.log;
+    // var options = {};
+    // options['acceptAllDevices'] = true;
     // navigator['bluetooth'].requestDevice(options)
-    //   .then(device => {
-    //     console.log('> Name:             ' + device.name);
-    //     console.log('> Id:               ' + device.id);
-    //     console.log('> Connected:        ' + device.gatt.connected);
-    //     // connect to device
-    //     return device.gatt.connect();
-    //   })
-    //   .then(server => {
-    //     // Getting location service
-    //     return server.getPrimaryService('13333333-3333-3333-3333-333333333337');
-    //   })
-    //   .then(service => {
-    //     // Getting url Characteristic...
-    //     return service.getCharacteristic('13333333-3333-3333-3333-333333330003');
-    //   })
-    //   .then(characteristic => {
-    //     // Reading the value of url
-    //     return characteristic.readValue();
-    //   })
-    //   .then(value => {
-    //     let decoder = new TextDecoder('utf-8');
-    //     // Convert Array Buffer to readable string.
-    //     var url = new URL(decoder.decode(value));
-    //     // get ref_beacon parameter from url
-    //     var refBeacon = url.searchParams.get('ref_beacon');
-    //     callback(null, refBeacon);
-    //   })
-    //   .catch(error => {
-    //     console.log('Error: ' + error);
-    //     callback(error, null);
-    //   });
+    // .then(device => {
+    //   log('> Name:             ' + device.name);
+    //   log('> Id:               ' + device.id);
+    //   log('> Connected:        ' + device.gatt.connected);
+    //   callback(null, device.name);
+    // })
+    // .catch(error => {
+    //   log('Argh! ' + error);
+    // });
+    // Filter by custom srervice UID
+    let options = { filters: [{ services: ['13333333-3333-3333-3333-333333333337'] }] };
+    console.log('Requesting Bluetooth Device...');
+    navigator['bluetooth'].requestDevice(options)
+      .then(device => {
+        console.log('> Name:             ' + device.name);
+        console.log('> Id:               ' + device.id);
+        console.log('> Connected:        ' + device.gatt.connected);
+        // connect to device
+        return device.gatt.connect();
+      })
+      .then(server => {
+        // Getting location service
+        return server.getPrimaryService('13333333-3333-3333-3333-333333333337');
+      })
+      .then(service => {
+        // Getting url Characteristic...
+        return service.getCharacteristic('13333333-3333-3333-3333-333333330003');
+      })
+      .then(characteristic => {
+        // Reading the value of url
+        return characteristic.readValue();
+      })
+      .then(value => {
+        let decoder = new TextDecoder('utf-8');
+        // Convert Array Buffer to readable string.
+        var url = new URL(decoder.decode(value));
+        // get ref_beacon parameter from url
+        var refBeacon = url.searchParams.get('ref_beacon');
+        callback(null, refBeacon);
+      })
+      .catch(error => {
+        console.log('Error: ' + error);
+        callback(error, null);
+      });
   }
 }

@@ -85,7 +85,7 @@
 	                
 	                "indoor":"room",
 	                "level":"1",
-	                "name":"Room 25",
+	                "name":"Ward 25",
 	                "note":"Toilet and shower",
 	                "ref":"25",
 	                "ref:beacon":"4",
@@ -133,8 +133,8 @@
 	                
 	                "indoor":"room",
 	                "level":"0",
-	                "name":"Room 13",
-	                "note":"Room with Beds",
+	                "name":"Ward 13",
+	                "note":"Ward with Beds",
 	                "ref":"13"
 	            },
 	            "geometry":{
@@ -171,8 +171,8 @@
 	                
 	                "indoor":"room",
 	                "level":"1",
-	                "name":"Room 21",
-	                "note":"Room with Beds",
+	                "name":"Ward 21",
+	                "note":"Ward with Beds",
 	                "ref":"21"
 	            },
 	            "geometry":{
@@ -302,8 +302,8 @@
 	                
 	                "indoor":"room",
 	                "level":"1",
-	                "name":"Room 18",
-	                "note":"Room with Beds",
+	                "name":"Ward 18",
+	                "note":"Ward with Beds",
 	                "ref":"18",
 	                "ref:beacon":"3"
 	            },
@@ -362,8 +362,8 @@
 	                
 	                "indoor":"room",
 	                "level":"1",
-	                "name":"Room 23",
-	                "note":"Room with Beds",
+	                "name":"Ward 23",
+	                "note":"Ward with Beds",
 	                "ref":"23"
 	            },
 	            "geometry":{
@@ -537,12 +537,12 @@
 	                "levels":"2",
 	                "max_level":"1",
 	                "min_level":"0",
-	                "name":"Sree Sai PG",
-	                "note":"Accomodation for Mens",
+	                "name":"MIMS Hospital",
+	                "note":"Aster MIMS is a NABH accredited 650-bed super-speciality hospital located in Kozhikode, India.",
 	                "ref":"1",
 	                "wheelchair":"no",
 	                "opening_hours": "6AM - 10PM",
-	                "website": "www.sreesaipg.com",
+	                "website": "https://astermims.com/",
 	                "image_url":"/assets/images/building.png"
 	            },
 	            "geometry":{
@@ -764,8 +764,8 @@
 	            "properties":{
 	                "indoor":"room",
 	                "level":"1",
-	                "name":"Room 19",
-	                "note":"Room with Beds",
+	                "name":"Ward 19",
+	                "note":"Ward with Beds",
 	                "ref":"19",
 	                "room":"toilet"
 	            },
@@ -820,8 +820,8 @@
 	                
 	                "indoor":"room",
 	                "level":"0",
-	                "name":"Room 3",
-	                "note":"Room with Beds",
+	                "name":"Ward 3",
+	                "note":"Ward with Beds",
 	                "ref":"3",
 	                "image_url":"/assets/images/room.png"
 	            },
@@ -1013,8 +1013,8 @@
 	            "properties":{
 	                "indoor":"room",
 	                "level":"0",
-	                "name":"Room 6",
-	                "note":"Room with Beds",
+	                "name":"Ward 6",
+	                "note":"Ward with Beds",
 	                "ref":"6",
 	                "ref:beacon":"2",
 	                "room":"toilet"
@@ -1055,7 +1055,7 @@
 	                "entrance":"Main entrance",
 	                "level":"0",
 	                "name":"Main Gate",
-	                "note":"Main entrance to PG",
+	                "note":"Main entrance to Hospital",
 	                "wheelchair":"no",
 	                "ref":"62"
 	            },
@@ -1146,8 +1146,8 @@
 	                
 	                "indoor":"room",
 	                "level":"0",
-	                "name":"Room 7",
-	                "note":"Room with Beds",
+	                "name":"Ward 7",
+	                "note":"Ward with Beds, Telephone",
 	                "ref":"7"
 	            },
 	            "geometry":{
