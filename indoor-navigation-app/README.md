@@ -17,4 +17,4 @@ The GeoJSON source can be set in the environment.ts file:
 ```
 src/environments/environment.ts
 ```
-Source can be a URL to a file placed in `assets` folder or a URL to a project created by the [Indoor Map Creator](https://github.com/vipinraj/pw-hospital-routing/tree/master/indoor-map-creator)
+Source can be a URL to a file placed in `assets` folder or a URL to a project created by the [Indoor Map Creator](https://github.com/vipinraj/pw-hospital-routing/tree/master/indoor-map-creator).
