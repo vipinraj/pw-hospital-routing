@@ -17,11 +17,11 @@ Framework for building interactive single page web applications.
 ## Architecture
 This solution contains three components:
 - Indoor Navigator
-Provides indoor map of a building with ability to switch between levels (floors). Also, lets used to find their current location by highlighting the nearest feature (room, corridor, etc) based on the proximity of the Physical Web Beacon.
+    - Provides indoor map of a building with ability to switch between levels (floors). Also, lets used to find their current location by highlighting the nearest feature (room, corridor, etc) based on the proximity of the Physical Web Beacon.
 - Indoor Map Creator
-Provides a DIY based GUI to build indoor maps of buildings with multiple floors. Provides option to attach a Physical Web Beacon reference number to all features to enable beacon based navigation.
+    - Provides a DIY based GUI to build indoor maps of buildings with multiple floors. Provides option to attach a Physical Web Beacon reference number to all features to enable beacon based navigation.
 - Indoor Map Creator API
-REST API to be consumed by the Indoor Map Creator to persist the data as well as the Indoor Navigator to consume GeoJSON
+    - REST API to be consumed by the Indoor Map Creator to persist the data as well as the Indoor Navigator to consume GeoJSON
 
 ## License
 
