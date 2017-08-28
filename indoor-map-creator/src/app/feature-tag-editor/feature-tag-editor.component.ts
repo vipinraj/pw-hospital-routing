@@ -1,3 +1,8 @@
+/*
+ * Component which render a form with multiple
+ * fields for editing the tags of a particular
+ * feature.
+ */
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FeatureService } from "../services/feature.service";
@@ -22,27 +27,34 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
   providers: []
 })
 export class FeatureTagEditorComponent implements OnInit {
+  // the form
   tagForm: FormGroup;
+  // reference id of selected feature
   selectedFeatureRefId: string;
-  // selectedFeatureControls: BaseControl<any>[] = [];
+  // The feature item object corresponding to
+  // the selected feature
   selectedItem: any;
+  // The index of feature item object in
+  // feature service.
   selectedItemIndex: number;
+  // true if the feature is deleted
   featureDeleted: boolean;
 
   constructor(fb: FormBuilder, private route: ActivatedRoute, private featureService: FeatureService, private ffs: FormFieldService, private levelFilterService: LevelFilterService, private beaconReferenceService: BeaconReferenceService, public dialog: MdDialog, private router: Router) {
     this.featureDeleted = false;
+    // get the feature reference id from route
     route.params.subscribe(params => {
       this.selectedFeatureRefId = params['refId'];
-      console.log('selectedFeatureRefId: ' + this.selectedFeatureRefId);
+      // Find out the corresponding feature item object from
+      // the feature service
       this.featureService.observableList.subscribe(
         items => {
           items.forEach((item, index) => {
             if (item.refId == this.selectedFeatureRefId) {
               // populating the reference textbox
               item.feature.formControls[0].value = this.selectedFeatureRefId;
-              console.log(item.feature.formControls[0]);
+              // generate the form
               this.tagForm = ffs.toFormGroup(item.feature.formControls);
-              // this.selectedFeatureControls = item.feature.formControls;
               this.selectedItem = item;
               this.selectedItemIndex = index;
             }
@@ -55,6 +67,9 @@ export class FeatureTagEditorComponent implements OnInit {
   ngOnInit() {
   }
 
+  // Return false if the form is not valid.
+  // Else, save form data in memory and return
+  // true.
   get isFormValid() {
     if (this.featureDeleted) {
       return true;
@@ -65,21 +80,21 @@ export class FeatureTagEditorComponent implements OnInit {
       this.selectedItem.feature.formControls.forEach((control) => {
         if (!control.disabled) {
           control.value = formData[control.key];
+          // update the level service
           if (control.tag == 'level' || control.tag == 'building') {
             var level: string = formData[control.key].toString();
             this.selectedItem.geometry.level = level;
             this.levelFilterService.newLevel = level;
           }
+          // update the beaconref service
           if (control.tag == 'ref:beacon') {
             var ref = formData[control.key];
-            console.log(ref);
             if (ref) {
               this.beaconReferenceService.add(ref);
             }
           }
         }
       });
-      console.log(this.selectedItem.geometry);
       return true;
     }
     return false;
@@ -89,6 +104,7 @@ export class FeatureTagEditorComponent implements OnInit {
 
   }
 
+  // delete a feature
   onDeleteFeature() {
     let dialogRef = this.dialog.open(ConfirmationDialogComponent,
       { data: { message: 'Are you sure you want to delete<br/> this feature permanently ?' } }

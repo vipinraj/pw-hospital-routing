@@ -1,3 +1,8 @@
+/* 
+  Parent class for all other models
+  Contains form controls which are
+  common for all models.
+*/
 import { BaseControl } from '../ui-controls/base-control';
 import { TextBox } from '../ui-controls/textbox';
 import { TextArea } from '../ui-controls/textarea';
@@ -43,6 +48,7 @@ export class Feature {
 
     constructor() {
     }
+    // get all properties along with their values (if value is not null).
     getProperties() {
         var properties = {};
         this.formControls.forEach((control) => {

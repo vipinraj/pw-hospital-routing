@@ -1,3 +1,6 @@
+/*
+ * The root component.
+*/
 import { Component, AfterViewInit, NgZone } from '@angular/core';
 import { MapComponent } from './map/map.component';
 import { SidePaneComponent } from './side-pane/side-pane.component';
@@ -21,10 +24,12 @@ export class AppComponent implements AfterViewInit {
     _internalMapApiService.setApi(_mapApi);
   }
 
+  // open UserAccount Dialog
   onMyAccountClick() {
     this.dialog.open(UserAccountComponent, { disableClose: true, width: '60vw', height: 'auto' });
   }
 
+  // signout the user
   onLogoutClick() {
     gapi.load('auth2', function () {
       gapi.auth2.init();
@@ -40,7 +45,10 @@ export class AppComponent implements AfterViewInit {
     });
 
   }
+
   ngAfterViewInit() {
+    // Render hidden google signin button
+    // to load respective Google libraries.
     setTimeout(() => {
       gapi.signin2.render('my-signin', {
         'onsuccess': param => this.onSignIn(param),
@@ -50,6 +58,7 @@ export class AppComponent implements AfterViewInit {
     }, 1000);
   }
 
+  // Funtion to run after signing in
   onSignIn(googleUser) {
     console.log('Signing in . . .');
     this.userService.signIn(googleUser, (err, isSuccess) => {

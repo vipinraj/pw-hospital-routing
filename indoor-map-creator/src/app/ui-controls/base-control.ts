@@ -1,3 +1,9 @@
+/*
+ * Base class for all other control classes.
+ * A control class represents a particluar
+ * form control type along with validations
+ * if any.
+ */
 export class BaseControl<T>{
   value: T;
   key: string;

@@ -3,10 +3,6 @@ module.exports = function (app) {
     var userController = require('../controllers/userController');
     var projectController = require('../controllers/projectController');
 
-    // app.route('/users/:userId')
-    //     .get(userController.getUserById)
-    //     .delete(userController.deleteUserById);
-
     // userId (google id) for get and delete command are appended by 
     // "autheticator" middleware.
     app.route('/users')

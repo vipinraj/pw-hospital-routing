@@ -1,3 +1,6 @@
+/*
+ * Dialog to create a new project.
+ */
 import { Component, OnInit } from '@angular/core';
 import { MdDialog, MdDialogRef } from '@angular/material';
 import { UserService } from '../services/user.service';
@@ -43,6 +46,7 @@ export class CreateProjectDialogComponent implements OnInit {
   ngOnInit() {
   }
 
+  // Create the project and save to database
   onSubmit() {
     console.log(this.tagForm.value);
     // create project object

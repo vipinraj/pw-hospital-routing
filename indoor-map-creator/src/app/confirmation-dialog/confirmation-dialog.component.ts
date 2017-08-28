@@ -1,3 +1,7 @@
+/*
+ * Component to show a confirmation dialog with 
+ * Yes/No buttons for various operations.
+ */
 import { Component, OnInit, Inject } from '@angular/core';
 import { MdDialog, MdDialogRef } from '@angular/material';
 import { MD_DIALOG_DATA } from '@angular/material';

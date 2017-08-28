@@ -1,3 +1,8 @@
+/*
+ * This component interact with map to
+ * draw geometrical features on top
+ * of the map.
+ */
 import {
   Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef,
   ViewChild, ElementRef, AfterContentInit, HostBinding, NgZone
@@ -24,19 +29,26 @@ declare var google: any;
   providers: [GoogleMapsAPIWrapper]
 })
 export class ToolBarComponent implements OnInit {
+  // map object
   @Input() map: any;
+  // map api
   @Input('mapApi') mapApi: GoogleMapsAPIWrapper;
   _selectedLevels = [];
+
+  // Hide geometries based on currently
+  // selected level(s).
   @Input() set selectedLevels(value) {
     this._selectedLevels = value;
     this.hideFeatures(this.selectedLevels);
   }
+  // get currently selected levels
   get selectedLevels() {
     return this._selectedLevels;
   }
-  // polygon
+
   drawButtonsEnabled = true;
   canChangeFeatureSelection = true;
+  // collection of feature item objects
   private featureCollection = [];
   private activePolygon?: any;
   private activePolyLine?: any;
@@ -46,13 +58,16 @@ export class ToolBarComponent implements OnInit {
   private _onMapClickListener: any;
   private _onMapRightClickListner: any;
   private currentGeometryType: string = 'none';
+  // options to be set for a geometry while it is being drawn
   private featureOptionsOnDrawing = { editable: true, draggable: true, strokeWeight: 2, strokeColor: "black" };
+  // options to be set for a geometry when it is highlighted
   private featureOptionsOnHihglighted = { editable: true, draggable: true, strokeWeight: 2, strokeColor: "red" };
+  // options to be set for a geometry when it is not highlighted
   private featureOptionsOnNotHighlighted = { editable: false, draggable: false, strokeWeight: 2, strokeColor: "black" };
 
   constructor(private _chRef: ChangeDetectorRef, private router: Router, private zone: NgZone, private featureService: FeatureService, private userService: UserService, public snackBar: MdSnackBar) {
     // create geometry objects when loding a new project
-    console.log("Constructor");
+    // get active project
     userService.activeProjectAsObservable.subscribe(
       (activeProject) => {
         if (activeProject) {
@@ -62,11 +77,11 @@ export class ToolBarComponent implements OnInit {
                 this._onMapClickListener = this.map.addListener('click', this.onMapClick);
               }
               if (items && items.length > 0) {
+                // create geometry corresponding to each feature
                 items.forEach(item => {
                   if (!item.geometry) {
                     this.createGeometry(item.feature.featureJson, item.feature.featureType, (err, geometry) => {
                       item.geometry = geometry;
-                      console.log(geometry);
                     });
                   }
                 });
@@ -83,7 +98,6 @@ export class ToolBarComponent implements OnInit {
 
   // handle map click
   private onMapClick = (e): void => {
-    console.log('clicked');
     if (this.isDrawingMode) {
       if (this.currentGeometryType == "point") {
         this.drawPoint(e);
@@ -172,6 +186,7 @@ export class ToolBarComponent implements OnInit {
       });
   }
 
+  // To finish drawing a geometry
   finishDrawing() {
     var saveResult = true;
     var refId;
@@ -199,6 +214,7 @@ export class ToolBarComponent implements OnInit {
     }
   }
 
+  // Handle click on a existing geometry
   featureClickHandler(feature, geomType) {
     var refId = feature.refId;
     if (feature.hasOwnProperty('featureType') && feature.featureType != null) {
@@ -272,15 +288,15 @@ export class ToolBarComponent implements OnInit {
     }
   }
 
+  // save a polygon in memory
   savePolygon() {
     if (this.activePolygon && this.activePolygon != null && this.activePolygon.getPath().length > 2) {
-      // this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePolygon });
       this.featureService.add({
         refId: this.activePolygon.refId, geomType: 'polygon',
         geometry: this.activePolygon, feature: null
       });
       // then you need to dispose used objects
-      this.disposeSomeObjects();
+      this.finalize();
       return true;
     }
     return false;
@@ -314,15 +330,13 @@ export class ToolBarComponent implements OnInit {
         refId: this.activePolyLine.refId, geomType: 'line',
         geometry: this.activePolyLine, feature: null
       });
-      // then you need to dispose used objects
-      this.disposeSomeObjects();
+      this.finalize();
       return true;
     }
     return false;
   }
-
+  // draw a new point geometry on map
   drawPoint(e) {
-    // draw marker
     if (!this.activePoint) {
       var marker = new google.maps.Marker({
         position: e.latLng,
@@ -341,20 +355,22 @@ export class ToolBarComponent implements OnInit {
     }
   }
 
+  // save point geometry in memory
   savePoint() {
     if (this.activePoint) {
-      // this.featureCollection.push({ refId: UUID.UUID(), feature: this.activePoint });
       this.featureService.add({
         refId: this.activePoint.refId, geomType: 'point',
         geometry: this.activePoint, feature: null
       });
-      this.disposeSomeObjects();
+      this.finalize();
       return true;
     } else {
       return false;
     }
   }
-  private disposeSomeObjects() {
+  
+  // finalize drawing
+  private finalize() {
     if (this.activePolygon) {
       this.highLightedFeature = this.activePolygon;
       this.highLightedFeature.setOptions(this.featureOptionsOnHihglighted);
@@ -376,6 +392,7 @@ export class ToolBarComponent implements OnInit {
     }
   }
 
+  // hide featurs that are not in given level(s)
   hideFeatures(levels: any[]) {
     var subscription = this.featureService.observableList.subscribe(
       items => {
@@ -405,7 +422,7 @@ export class ToolBarComponent implements OnInit {
     this.userService.setZoomAndCenter(center.lat().toString(), center.lng().toString(), this.map.getZoom());
     // save
     this.userService.updateProject();
-    this.snackBar.open("Project saved successfully",'Dismiss', {
+    this.snackBar.open("Project saved successfully", 'Dismiss', {
       duration: 1000,
     });
   }

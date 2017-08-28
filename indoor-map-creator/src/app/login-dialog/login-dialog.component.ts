@@ -1,3 +1,6 @@
+/* 
+  Component to show the google login dialog box
+*/
 import { Component, OnInit, NgZone, AfterViewInit } from '@angular/core';
 import { MdDialog, MdDialogRef } from '@angular/material';
 import { LoginActivateGuard } from '../services/LoginActivateGuard'
@@ -22,6 +25,7 @@ export class LoginDialogComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    // render the google signin button
     gapi.signin2.render('my-signin2', {
       'onsuccess': param => this.onSignIn(param),
       'scope': 'profile email',
@@ -29,7 +33,9 @@ export class LoginDialogComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // function to run after signin
   onSignIn(googleUser) {
+    // perform operations after client side login
     this.userService.signIn(googleUser, (err, isSuccess) => {
       if (isSuccess) {
         this.zone.run(() => {

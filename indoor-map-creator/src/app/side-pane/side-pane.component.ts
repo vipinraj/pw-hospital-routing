@@ -1,14 +1,14 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { GoogleMapsAPIWrapper } from '@agm/core';
-import { Subscription } from 'rxjs/Subscription';
-
 /*
  * Root component of side pane.
  * Only contains a <router-outlet> wherein
- * the the location search box, feature type
+ * the the empty login bar,
+ * location search box, feature type
  * selector or feature tag editor will be
  * displayed.
  */
+import { Component, OnInit, Input } from '@angular/core';
+import { GoogleMapsAPIWrapper } from '@agm/core';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-side-pane',

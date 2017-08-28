@@ -1,3 +1,7 @@
+/*
+ * Takes care of the logics related
+ * to users.
+*/
 'use strict';
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
