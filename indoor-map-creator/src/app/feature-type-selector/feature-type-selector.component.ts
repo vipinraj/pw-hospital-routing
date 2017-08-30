@@ -28,6 +28,8 @@ export class FeatureTypeSelectorComponent implements OnInit {
   // type of selected geometry
   selectedGeometry: string;
   selectedGeometryRefid: string;
+  // indicate whether this route can be deactivated
+  canDeactivate: boolean = false;
   geometryFeatureMapping = {
     'area': [
       { name: "building", label: "Building", icon: "home" },
@@ -54,6 +56,7 @@ export class FeatureTypeSelectorComponent implements OnInit {
   }
 
   onChooseFeatureType(featureType) {
+    this.canDeactivate = true;
     var feature;
     switch (featureType) {
       case "building":
@@ -114,6 +117,7 @@ export class FeatureTypeSelectorComponent implements OnInit {
   
   // delete feature without selecting the type
   onDeleteFeature() {
+    this.canDeactivate = true;
     let dialogRef = this.dialog.open(ConfirmationDialogComponent, { data: { message: 'Are you sure you want to delete<br/> this feature permanently ?' } });
     var sub = dialogRef.afterClosed().subscribe(result => {
       if (result == 'yes') {

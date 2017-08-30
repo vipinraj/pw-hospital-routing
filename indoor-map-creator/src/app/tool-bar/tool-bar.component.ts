@@ -86,6 +86,7 @@ export class ToolBarComponent implements OnInit {
                   }
                 });
               }
+              this.hideFeatures(this.selectedLevels);
             });
           subscription.unsubscribe();
         }
@@ -368,7 +369,7 @@ export class ToolBarComponent implements OnInit {
       return false;
     }
   }
-  
+
   // finalize drawing
   private finalize() {
     if (this.activePolygon) {
@@ -417,14 +418,20 @@ export class ToolBarComponent implements OnInit {
   }
 
   saveMapToServer() {
-    // set center, zoom
-    var center = this.map.getCenter();
-    this.userService.setZoomAndCenter(center.lat().toString(), center.lng().toString(), this.map.getZoom());
-    // save
-    this.userService.updateProject();
-    this.snackBar.open("Project saved successfully", 'Dismiss', {
-      duration: 1000,
-    });
+    // navigate and check if navigation success
+    this.router.navigateByUrl("/").then(
+      (success) => {
+        if (success || success == null) {
+          // set center, zoom
+          var center = this.map.getCenter();
+          this.userService.setZoomAndCenter(center.lat().toString(), center.lng().toString(), this.map.getZoom());
+          // save
+          this.userService.updateProject();
+          this.snackBar.open("Project saved successfully", 'Dismiss', {
+            duration: 1000,
+          });
+        }
+      });
   }
 
   // Create and return gemetry objects.
@@ -461,6 +468,11 @@ export class ToolBarComponent implements OnInit {
             if (featureJson.properties.level) {
               geometry['level'] = featureJson.properties.level;
             }
+            if (featureJson.properties.building) {
+              console.log('Is building');
+              geometry['level'] = featureJson.properties.building;
+            }
+            google.maps.event.trigger(this.map, 'click');
             console.log(geometry);
             callback(null, geometry);
           });
@@ -492,6 +504,7 @@ export class ToolBarComponent implements OnInit {
             if (featureJson.properties.level) {
               geometry['level'] = featureJson.properties.level;
             }
+            google.maps.event.trigger(this.map, 'click');
             callback(null, geometry);
           });
         break;

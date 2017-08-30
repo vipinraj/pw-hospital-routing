@@ -23,6 +23,7 @@ export class LevelFilterComponent implements OnInit {
     levelFilterService.levelList$.subscribe(
       (items) => {
         this.levels = items;
+        console.log('Done');
       }, (error: any) => {
       }, () => console.log('Complete')
     );

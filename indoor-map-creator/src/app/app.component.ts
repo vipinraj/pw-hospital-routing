@@ -58,7 +58,7 @@ export class AppComponent implements AfterViewInit {
     }, 1000);
   }
 
-  // Funtion to run after signing in
+  // Function to run after signing in
   onSignIn(googleUser) {
     console.log('Signing in . . .');
     this.userService.signIn(googleUser, (err, isSuccess) => {
@@ -66,7 +66,7 @@ export class AppComponent implements AfterViewInit {
         console.log('Login success');
         this.zone.run(() => {
           // open project dialog
-          this.dialog.open(UserAccountComponent, { disableClose: false, width: '60vw', height: 'auto' });
+          this.dialog.open(UserAccountComponent, { disableClose: true, width: '60vw', height: 'auto' });
         });
       } else {
         console.error('Login failed');

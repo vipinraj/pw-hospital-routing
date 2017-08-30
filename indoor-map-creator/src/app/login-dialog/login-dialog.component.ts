@@ -41,7 +41,7 @@ export class LoginDialogComponent implements OnInit, AfterViewInit {
         this.zone.run(() => {
           this.dialogRef.close();
           // open project dialog
-          this.dialog.open(UserAccountComponent, { disableClose: false, width: '60vw', height: 'auto' });
+          this.dialog.open(UserAccountComponent, { disableClose: true, width: '60vw', height: 'auto' });
         });
       }
     });
