@@ -9,6 +9,7 @@ var Project = require('./api/models/projectModel');
 var authenticator = require('./api/controllers/authenticater');
 
 mongoose.Promise = global.Promise;
+// set database 
 mongoose.connect('mongodb://localhost/indoorMapDb');
 
 
@@ -16,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 app.use(authenticator.authenticate);
-
+// import routes
 var routes = require('./api/routes/routes');
 routes(app);
 

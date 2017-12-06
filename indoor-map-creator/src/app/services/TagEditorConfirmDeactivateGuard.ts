@@ -1,3 +1,10 @@
+/*
+ * This guard ensures that all the
+ * required fields of the tag editor
+ * form are filled  before the user
+ * can switch to another feature or
+ * activity.
+ */
 import { Injectable, Inject } from '@angular/core';
 import { CanDeactivate } from '@angular/router';
 import { FeatureTagEditorComponent } from '../feature-tag-editor/feature-tag-editor.component';

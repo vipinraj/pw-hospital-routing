@@ -3,7 +3,7 @@
 }
 
 md-sidenav-container {
-    height: 90%;
+    height: calc(100% - 64px);
 }
 
 md-sidenav {

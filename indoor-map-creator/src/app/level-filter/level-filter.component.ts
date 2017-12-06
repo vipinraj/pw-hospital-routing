@@ -1,3 +1,7 @@
+/* 
+  This component is responsible for showing the
+  layer filter select box.
+*/
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { LevelFilterService } from '../services/level-filter.service';
 import { ChangeDetectionStrategy } from '@angular/core';
@@ -15,12 +19,12 @@ export class LevelFilterComponent implements OnInit {
 
   constructor(private levelFilterService: LevelFilterService) {
     this.onFilterChanged = new EventEmitter();
+    // get the list of levels from levelFilterService
     levelFilterService.levelList$.subscribe(
       (items) => {
         this.levels = items;
-        // console.log(items);
+        console.log('Done');
       }, (error: any) => {
-        // console.log(error);
       }, () => console.log('Complete')
     );
   }
@@ -29,7 +33,6 @@ export class LevelFilterComponent implements OnInit {
   }
 
   onFilterChange(event) {
-    console.log(event.value);
     this.onFilterChanged.emit(event.value);
   }
 }

@@ -1,3 +1,7 @@
+/*
+ * Takes care of the logics related
+ * to projects.
+*/
 'use strict';
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
@@ -46,7 +50,7 @@ exports.getGeoJson = function (req, res) {
                 lat: project.centerLat,
                 lng: project.centerLong
             },
-            zoomLevel: project.zoomLevel, 
+            zoomLevel: project.zoomLevel,
             geoJson: JSON.parse(project.geoJson)
         };
         res.json(output);

@@ -76,8 +76,8 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.sideNavOpened = !this.sideNavOpened;
   }
 
+  // invoked when level filter values are changed
   onLayerFilterChanged(levels) {
-    console.log(levels);
     this.selectedLevels = levels;
   }
 

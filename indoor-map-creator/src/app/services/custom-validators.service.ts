@@ -1,3 +1,7 @@
+/* 
+ * Custom validator for validating uniqueness
+ * of beacon reference numbers.
+*/
 import { FormControl } from '@angular/forms';
 import { Injectable } from '@angular/core';
 import { BeaconReferenceService } from './beacon-reference.service';

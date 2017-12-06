@@ -1,3 +1,9 @@
+/* 
+  This component displays the avaialable 
+  feature types for a perticular geometry.
+  User has to choose one among the available
+  types.
+*/
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FeatureService } from "../services/feature.service";
@@ -13,8 +19,6 @@ import { Elevator } from '../models/elevator.model';
 import { MdDialog, MdDialogRef } from '@angular/material';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
-// This component represent the feature types
-// for a perticular geometry.
 @Component({
   selector: 'app-feature-type',
   templateUrl: './feature-type-selector.component.html',
@@ -24,6 +28,8 @@ export class FeatureTypeSelectorComponent implements OnInit {
   // type of selected geometry
   selectedGeometry: string;
   selectedGeometryRefid: string;
+  // indicate whether this route can be deactivated
+  canDeactivate: boolean = false;
   geometryFeatureMapping = {
     'area': [
       { name: "building", label: "Building", icon: "home" },
@@ -50,7 +56,7 @@ export class FeatureTypeSelectorComponent implements OnInit {
   }
 
   onChooseFeatureType(featureType) {
-    console.log("featureType: " + featureType);
+    this.canDeactivate = true;
     var feature;
     switch (featureType) {
       case "building":
@@ -90,9 +96,9 @@ export class FeatureTypeSelectorComponent implements OnInit {
         feature.ref = this.selectedGeometryRefid;
         break;
     }
+    // set feature type
     var sub = this.featureService.observableList.subscribe(
       items => {
-        console.log(items);
         items.forEach((item) => {
           if (item.refId == this.selectedGeometryRefid) {
             item.geometry.featureType = featureType;
@@ -108,8 +114,10 @@ export class FeatureTypeSelectorComponent implements OnInit {
 
   ngOnInit() {
   }
-
+  
+  // delete feature without selecting the type
   onDeleteFeature() {
+    this.canDeactivate = true;
     let dialogRef = this.dialog.open(ConfirmationDialogComponent, { data: { message: 'Are you sure you want to delete<br/> this feature permanently ?' } });
     var sub = dialogRef.afterClosed().subscribe(result => {
       if (result == 'yes') {

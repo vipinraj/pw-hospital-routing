@@ -27,6 +27,7 @@ import { CustomValidatorService } from './services/custom-validators.service';
 import { UserService } from './services/user.service';
 import { DynamicFormFieldComponent } from './dynamic-form-field/dynamic-form-field.component';
 import { TagEditorConfirmDeactivateGuard } from './services/TagEditorConfirmDeactivateGuard';
+import { FeatureTypeSelectorConfirmDeactivateGuard } from './services/FeatureTypeSelectorConfirmDeactivateGuard';
 import { LoginActivateGuard } from './services/LoginActivateGuard';
 import { LevelFilterComponent } from './level-filter/level-filter.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
@@ -38,7 +39,7 @@ import { CreateProjectDialogComponent } from './create-project-dialog/create-pro
 const routes = [
   { path: 'login', component: LoginPageComponent },
   { path: '', component: SearchPlacesComponent, canActivate: [LoginActivateGuard] },
-  { path: 'select-feature/:selectedGeomType/:refId', component: FeatureTypeSelectorComponent },
+  { path: 'select-feature/:selectedGeomType/:refId', component: FeatureTypeSelectorComponent, canDeactivate: [FeatureTypeSelectorConfirmDeactivateGuard] },
   { path: 'edit-tags/:refId', component: FeatureTagEditorComponent, canDeactivate: [TagEditorConfirmDeactivateGuard] }
 ];
 
@@ -81,7 +82,7 @@ const routes = [
     }),
     RouterModule.forRoot(routes)
   ],
-  providers: [FeatureService, TagEditorConfirmDeactivateGuard, LoginActivateGuard, LevelFilterService, BeaconReferenceService, CustomValidatorService, UserService, FormFieldService],
+  providers: [FeatureService, TagEditorConfirmDeactivateGuard, FeatureTypeSelectorConfirmDeactivateGuard, LoginActivateGuard, LevelFilterService, BeaconReferenceService, CustomValidatorService, UserService, FormFieldService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

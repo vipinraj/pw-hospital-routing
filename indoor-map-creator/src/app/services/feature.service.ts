@@ -1,3 +1,6 @@
+/*
+ * Service which keeps track of all features
+*/
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -18,7 +21,7 @@ import { LevelFilterService } from './level-filter.service';
 export class FeatureService {
 
     constructor(private levelFilterService: LevelFilterService) {}
-
+    // registry of features
     private _list: { refId: string, geomType: string, geometry: any, feature: any }[] = [];
     private _observableList:
     BehaviorSubject<{ refId: string, geomType: string, geometry: any, feature: any }[]> = new BehaviorSubject([]);
@@ -27,11 +30,13 @@ export class FeatureService {
         return this._observableList.asObservable();
     };
 
+    // add a new feature to registry
     add(feature: { refId: string, geomType: string, geometry: any, feature: any }) {
         this._list.push(feature);
         this._observableList.next(this._list);
     }
 
+    // delete a feature from registry
     delete(index: number) {
         this._list.splice(index, 1);
         this._observableList.next(this._list);
@@ -88,6 +93,7 @@ export class FeatureService {
         return { geoJson: geo, featureTypes: featureTypes };
     }
 
+    // convert GeoJSON to Feature Collection
     geoJsonToFeatureCollection(geoJson, featureTypes) {
         console.log(geoJson);
         var featureList: { refId: string, geomType: string, geometry: any, feature: any }[] = [];
@@ -156,6 +162,7 @@ export class FeatureService {
         }
     }
 
+    // clear the registry
     clearCurrentFeatures() {
         this._list.forEach((item) => {
             console.log('Clearing..');

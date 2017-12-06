@@ -1,3 +1,9 @@
+/* 
+ * This service contains various operations
+ * related to user and projects.
+ * Serve as an interface between the client
+ * application and the REST API.
+ */
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -12,9 +18,12 @@ declare var gapi: any;
 
 @Injectable()
 export class UserService {
+    // google login token
     private loginToken: string;
     private currentUser: User;
+    // list of projects created by the current user
     private projects: Project[];
+    // currently editing project
     private activeProject: Project;
     private loginTokenObservable: BehaviorSubject<string> = new BehaviorSubject(null);
     private currentUserObservable: BehaviorSubject<User> = new BehaviorSubject(null);
@@ -68,12 +77,14 @@ export class UserService {
         this.projectsObservable.next(this.projects);
     }
 
+    // create a new project
     createProject(project: Project) {
         // create project
         let headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
         let body = JSON.parse(JSON.stringify(project));
         body.token = this.loginToken;
+        // API call to persist the project
         this.http.post(environment.apiBaseUrl + '/projects', body, options).subscribe((res: Response) => {
             var createdProject = res.json();
             project.projectId = createdProject._id;
@@ -112,9 +123,8 @@ export class UserService {
                 }
             });
     }
-
+    // get projects from server
     fetchProjects() {
-        // get projects from server
         var projectObjs: Project[] = [];
         this.http.request(environment.apiBaseUrl + '/users/' + this.currentUser.userId + '/projects/?token=' + this.loginToken)
             .subscribe((res: Response) => {
@@ -150,8 +160,8 @@ export class UserService {
             });
     }
 
+    // delete a project permenantly
     deleteProject(project: Project) {
-        // delete project
         this.http.delete(environment.apiBaseUrl + '/projects/' + project.projectId + '?token=' + this.loginToken).subscribe((res: Response) => {
             var result = res.json();
             console.log(result);
@@ -164,31 +174,36 @@ export class UserService {
         });
     }
 
+    // Delete a user along with his projects 
+    // permenantly.
     deleteUser() {
         this.http.delete(environment.apiBaseUrl + '/users?token=' + this.loginToken).subscribe((res: Response) => {
             var result = res.json();
             console.log(result);
             this.signOut();
-            setTimeout(function() {
+            setTimeout(function () {
                 location.reload();
             }, 200);
         });
     }
 
-    // function to run after loging in
+    // Function to run after loging in
     signIn(googleUser, callback) {
         var profile = googleUser.getBasicProfile();
-        console.log("ID: " + profile.getId()); // Don't send this directly to your server!
-        console.log('Full Name: ' + profile.getName());
-        console.log('Given Name: ' + profile.getGivenName());
-        console.log('Family Name: ' + profile.getFamilyName());
-        console.log("Image URL: " + profile.getImageUrl());
-        console.log("Email: " + profile.getEmail());
+        // console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+        // console.log('Full Name: ' + profile.getName());
+        // console.log('Given Name: ' + profile.getGivenName());
+        // console.log('Family Name: ' + profile.getFamilyName());
+        // console.log("Image URL: " + profile.getImageUrl());
+        // console.log("Email: " + profile.getEmail());
+        // set local storage params to indicate that the user is logined
         localStorage.setItem('isLogined', 'true');
         localStorage.setItem('accountId', profile.getId());
         this.setLoginToken(googleUser.getAuthResponse().id_token);
+        // fetch the corresponding user object from the database.
         this.fetchUser(profile.getId(), profile.getEmail(), (err, result) => {
             if (!err) {
+                // fetch prohects from database
                 this.fetchProjects();
                 callback(null, true);
             } else {
@@ -198,6 +213,7 @@ export class UserService {
         });
     }
 
+    // logout a user
     signOut() {
         gapi.load('auth2', function () {
             gapi.auth2.init();
@@ -210,16 +226,11 @@ export class UserService {
         });
     }
 
-    // convert GeoJSON to feature collection
-    convertToFeatureCollection(geoJson) {
-    }
-
     // update Project
     updateProject() {
         var result = this.featureService.convertToGeoJson();
         this.activeProject.geoJson = JSON.stringify(result.geoJson);
         this.activeProject.featureTypes = result.featureTypes;
-        // create project
         let headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
         let body = JSON.parse(JSON.stringify(this.activeProject));
@@ -245,6 +256,8 @@ export class UserService {
         });
     }
 
+    // Set zoom level and center latlong of 
+    // the currently active project.
     setZoomAndCenter(lat, long, zoomLevel) {
         this.activeProject.centerLat = lat;
         this.activeProject.centerLong = long;

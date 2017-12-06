@@ -1,13 +1,12 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { GoogleMapsAPIWrapper } from '@agm/core';
-import { MapApiService } from '../services/map-api.service';
-declare var google: any;
-
 /*
  * This component corresponds to the location (places)
  * search box. It uses Google Map's Places API to get
  * the search done.
  */
+import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { GoogleMapsAPIWrapper } from '@agm/core';
+import { MapApiService } from '../services/map-api.service';
+declare var google: any;
 
 @Component({
   selector: 'app-search-places',
