@@ -27,8 +27,8 @@ This solution contains three components:
 Worklogs and documents are [available here](https://drive.google.com/drive/folders/0BwUVWBhG_j8WT3RJc2VXMlZXRTg?usp=sharing).
 
 ## Links
-Physical Web Official Page: http://physical-web-project.github.io/
-Video Recording of Demo: https://www.youtube.com/watch?v=ppM_sJMJl8M
+- Physical Web Official Page: http://physical-web-project.github.io/
+- Video Recording of Demo: https://www.youtube.com/watch?v=ppM_sJMJl8M
 
 ## License
 
