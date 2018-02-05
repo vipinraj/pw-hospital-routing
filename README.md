@@ -1,5 +1,5 @@
 # Physical Web Hospital Routing Project
-This project is done as part of the [Google Summer of Code 2017](https://summerofcode.withgoogle.com/projects/#5755385163022336) program.
+This project is done as part of the [Google Summer of Code 2017](https://summerofcode.withgoogle.com/archive/2017/projects/4861610652860416/) program.
 The basic idea of this project is to build a solution with which users can easily navigate inside hospitals using an application in his/her smartphone/tablet/laptop. The application will show the indoor map of the hospital with the position of the user highlighted and updated as he/she move within the building. This solution does not require GPS but uses Physical Web beacons for positioning.
 ## Core technologies
 ###### Physical Web beacons
@@ -25,6 +25,10 @@ This solution contains three components:
 
 ## Worklog & Documents
 Worklogs and documents are [available here](https://drive.google.com/drive/folders/0BwUVWBhG_j8WT3RJc2VXMlZXRTg?usp=sharing).
+
+## Links
+Physical Web Official Page: http://physical-web-project.github.io/
+Video Recording of Demo: https://www.youtube.com/watch?v=ppM_sJMJl8M
 
 ## License
 
