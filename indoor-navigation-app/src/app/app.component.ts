@@ -4,13 +4,15 @@ import { GoogleMap, MapOptions } from "@agm/core/services/google-maps-types";
 import { IndoorDataService } from "./indoordata.service";
 import { TextEncoder, TextDecoder } from 'text-encoding-shim';
 import * as polylabel from 'polylabel';
+import {AssestsPipe} from './pipes/assests.pipe';
+
 declare var google: any;
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [IndoorDataService, GoogleMapsAPIWrapper]
+  providers: [IndoorDataService, GoogleMapsAPIWrapper, AssestsPipe]
 })
 
 export class AppComponent implements OnInit {
@@ -32,7 +34,7 @@ export class AppComponent implements OnInit {
   // style for indoor features
   mapFillColor: string = '#FFFFDD';
   mapStrokeColor: string = '#CFA992';
-  // Holds the information about currently 
+  // Holds the information about currently
   // selected feature's data.
   selectedFeatureData = {
     ref: null, title: null, subtitle: null,
@@ -40,13 +42,14 @@ export class AppComponent implements OnInit {
     beaconRef: null, website: null,
     openTime: null, imageUrl: null
   };
+  defaultImagePath = '/assets/images/corridor.png';
 
   // to make the select box enable/disable
   isDisabled = false;
   // Options array for select box -
   // contains features in the current layer.
   optionsForSelect: any;
-  // Contain an entry for each beacon and the 
+  // Contain an entry for each beacon and the
   // corresponding marker in the map.
   // Format: "ref:beacon":"marker"
   // Example: {"3": marker1, "2": marker2, ...}
@@ -57,7 +60,7 @@ export class AppComponent implements OnInit {
   pathCovered = {};
   pathPolyLine = {};
 
-  constructor(private _indoorDataService: IndoorDataService, private mapApi: GoogleMapsAPIWrapper, private _chRef: ChangeDetectorRef) { }
+  constructor(private _indoorDataService: IndoorDataService, private mapApi: GoogleMapsAPIWrapper, private _chRef: ChangeDetectorRef, private assetpipe: AssestsPipe) { }
 
   // function to consume IndoorDataService observable
   getGeoJSON(): void {
@@ -183,7 +186,7 @@ export class AppComponent implements OnInit {
         });
       });
 
-      // initialize path polyline 
+      // initialize path polyline
     }));
   }
 
@@ -205,11 +208,11 @@ export class AppComponent implements OnInit {
     this.selectedFeatureData = this.extractFeatureData(feature);
   }
 
-  /* 
+  /*
    * Extract feature informations and convert them
-   * into a form which is compatible to be displayed 
-   * in info bar. 
-   * 
+   * into a form which is compatible to be displayed
+   * in info bar.
+   *
    */
   extractFeatureData(feature) {
     var featureData = {
@@ -302,7 +305,9 @@ export class AppComponent implements OnInit {
     }
 
     if (feature.getProperty('image_url')) {
-      featureData.imageUrl = feature.getProperty('image_url');
+      featureData.imageUrl = this.assetpipe.transform(feature.getProperty('image_url'));
+    } else {
+      featureData.imageUrl  =  this.assetpipe.transform(this.defaultImagePath);
     }
 
     return featureData;
@@ -322,7 +327,7 @@ export class AppComponent implements OnInit {
     var beaconRef = (<HTMLInputElement>document.getElementById('beaconRefTxt')).value;;
     // get the marker corresponding to the beacon
     var marker = that.beaconMarkers[beaconRef];
-    // get the feature attached to the beacon 
+    // get the feature attached to the beacon
     // and set it as selected feature
     var selectedFeature = marker.feature;
     // get the level of beacon
@@ -365,7 +370,7 @@ export class AppComponent implements OnInit {
         var beaconRef = refBeacon;
         // get the marker corresponding to the beacon
         var marker = that.beaconMarkers[beaconRef];
-        // get the feature attached to the beacon 
+        // get the feature attached to the beacon
         // and set it as selected feature
         var selectedFeature = marker.feature;
         // get the level of beacon
@@ -411,7 +416,7 @@ export class AppComponent implements OnInit {
           // console.log(coordinates[i][0]);
         }
         console.log(pointArray);
-        var centerPoint = polylabel(pointArray, .000000001, true);
+        var centerPoint: any = polylabel(pointArray, .000000001, true);
         console.log(centerPoint);
         var latLong = new google.maps.LatLng(centerPoint[1], centerPoint[0]);
         // console.log(latLong);
@@ -509,7 +514,7 @@ export class AppComponent implements OnInit {
   }
 
   scanForBeacons(callback) {
-    
+
     // var log = console.log;
     // var options = {};
     // options['acceptAllDevices'] = true;

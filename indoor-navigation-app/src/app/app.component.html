@@ -5,10 +5,8 @@
 <!-- HTML for infobar -->
 <div class="infoBarContainer" #infoBarContainer id="infoBarContainer">
   <md-grid-list cols="5" rowHeight="25" gutterSize="0px">
-    <md-grid-tile class="infoImageContainer" rowspan="5" [ngStyle]="{ 
-        'background' : (selectedFeatureData.imageUrl) ?
-        'url('+selectedFeatureData.imageUrl+') no-repeat':
-        'url(/assets/images/corridor.png) no-repeat'}">
+    <md-grid-tile class="infoImageContainer" rowspan="5" [ngStyle]="{
+        'background' : 'url('+selectedFeatureData.imageUrl+') no-repeat'}">
     </md-grid-tile>
     <md-grid-tile colspan="3" rowspan="2" class="titleTile">
       <div>
@@ -28,7 +26,7 @@
       <p class="mat-body-1">{{selectedFeatureData.description}}
       </p>
     </md-grid-tile>
-    <md-grid-tile colspan="3" class="footerTile" 
+    <md-grid-tile colspan="3" class="footerTile"
       [class.topborder]="selectedFeatureData.openTime || selectedFeatureData.website">
       <div class="attachmentContainer">
         <div *ngIf="selectedFeatureData.openTime" class="attachment">
@@ -58,7 +56,7 @@
   <button md-menu-item disabled>
     <span>Level {{selectedLevel}}</span>
   </button>
-  <button *ngFor="let option of optionsForSelect" 
+  <button *ngFor="let option of optionsForSelect"
     md-menu-item (click)="selectChanged(option)">
     <!--<md-icon>voicemail</md-icon>-->
     <span>{{option.name}}</span>
